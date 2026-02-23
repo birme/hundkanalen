@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="container-wide section-padding">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-semibold text-white text-lg mb-3">Hundkanalen 3</h3>
+            <h3 className="font-semibold text-white text-lg mb-3">Hundkanalen</h3>
             <p className="text-sm text-forest-300">
               A countryside retreat in the heart of Hälsingland, Sweden.
               Perfect for families, nature lovers, and those seeking tranquility.
@@ -17,20 +17,18 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link href="/gallery" className="text-forest-300 hover:text-white transition-colors">Gallery</Link></li>
               <li><Link href="/area-guide" className="text-forest-300 hover:text-white transition-colors">Area Guide</Link></li>
-              <li><Link href="/contact" className="text-forest-300 hover:text-white transition-colors">Contact & Booking</Link></li>
-              <li><Link href="/login" className="text-forest-300 hover:text-white transition-colors">Guest Login</Link></li>
+              <li><Link href="/contact" className="text-forest-300 hover:text-white transition-colors">Contact</Link></li>
+              <li><Link href="/stay" className="text-forest-300 hover:text-white transition-colors">Guest Access</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold text-white mb-3">Location</h3>
-            <address className="text-sm text-forest-300 not-italic">
-              Hundkanalen 3<br />
-              820 64 Färila<br />
+            <h3 className="font-semibold text-white mb-3">Region</h3>
+            <p className="text-sm text-forest-300">
               Hälsingland, Sweden
-            </address>
-            <p className="text-sm text-forest-300 mt-3">
-              ~350 km north of Stockholm<br />
-              Train to Ljusdal station
+            </p>
+            <p className="text-sm text-forest-300 mt-2">
+              A UNESCO World Heritage region known for its decorated farmhouses,
+              vast forests, and the majestic Ljusnan river.
             </p>
           </div>
         </div>

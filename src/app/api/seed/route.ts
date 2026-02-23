@@ -160,6 +160,60 @@ export async function POST(request: NextRequest) {
 
   await sql`CREATE INDEX IF NOT EXISTS idx_photos_category ON photos(category)`;
 
+  // === Migration 003: Privacy controls, global access code, favorite places ===
+  await sql`ALTER TABLE photos ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT false`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS site_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS favorite_places (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      description TEXT NOT NULL,
+      category TEXT NOT NULL DEFAULT 'activity',
+      icon TEXT DEFAULT '',
+      url TEXT,
+      distance TEXT,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS idx_favorite_places_category ON favorite_places(category)`;
+
+  // Seed default site settings
+  await sql`
+    INSERT INTO site_settings (key, value) VALUES
+      ('global_access_code', 'HUNDKANALEN')
+    ON CONFLICT (key) DO NOTHING
+  `;
+
+  // Seed default favorite places
+  const existingPlaces = await sql`SELECT id FROM favorite_places LIMIT 1`;
+  if (existingPlaces.length === 0) {
+    await sql`
+      INSERT INTO favorite_places (name, description, category, icon, url, distance, sort_order) VALUES
+        ('Bommars, Letsbo', 'One of the 7 UNESCO World Heritage decorated farmhouses. Guided summer tours with stunning painted interiors.', 'culture', '🏛️', 'https://bommars.se', '15 min', 0),
+        ('Järvzoo / Vildriket', 'Walk among wolves, bears, lynx and wolverines on a 3 km forest boardwalk. Open year-round.', 'family', '🐻', 'https://vildriket.se/en/', '35 min', 1),
+        ('Järvsöbacken', 'Family-friendly ski resort with 20 pistes. Children under 6 ski free. Ski school available.', 'winter', '⛷️', 'https://www.jarvsobacken.se/english-information/', '35 min', 2),
+        ('Stenegård, Järvsö', '19th-century farm estate with artisan craft shops, gallery, bakery, and local products.', 'culture', '🎨', 'https://stenegard.com/english', '35 min', 3),
+        ('Hamra National Park', 'Old-growth forest with trees over 400 years old. Highest brown bear density in Sweden. Beautiful hiking.', 'nature', '🌲', 'https://www.sverigesnationalparker.se/en/choose-park---list/hamra-national-park/', '1.5 h', 4),
+        ('Ljusnan River Fishing', 'World-class fishing for grayling, trout and pike. Permits available at ifiske.se.', 'outdoor', '🎣', 'https://www.ifiske.se', '0 min', 5),
+        ('Skålvallssjön', 'Swimming lake with sandy beach. Perfect for summer days. Walking distance from the property.', 'outdoor', '🏊', NULL, '5 min', 6),
+        ('Järvsö Bergscykelpark', 'Sweden''s best-rated mountain bike park with trails for all skill levels.', 'outdoor', '🚵', 'https://jarvsobergscykelpark.se/?lang=en', '35 min', 7),
+        ('Loos Cobalt Mine', 'Underground museum with guided tours. A fascinating piece of Swedish mining history.', 'culture', '⛏️', NULL, '45 min', 8),
+        ('Ersk-Matsgården, Ljusdal', 'Traditional Hälsingland cuisine in a heritage setting. Perfect for a special dinner.', 'dining', '🍽️', NULL, '20 min', 9),
+        ('Dellen Crater Lakes', 'Ancient meteor crater lakes with crystal-clear water. Great for cycling and swimming.', 'nature', '🌊', NULL, '45 min', 10)
+    `;
+  }
+
   // Seed admin user
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@hundkanalen.se';
   const adminPassword = process.env.ADMIN_PASSWORD || 'changeme123';
@@ -224,7 +278,7 @@ export async function POST(request: NextRequest) {
     message: 'Database seeded successfully',
     tables: [
       'users', 'bookings', 'blocked_dates', 'pricing_defaults', 'pricing_seasons', 'inquiries',
-      'stays', 'checklist_items', 'property_info', 'photos',
+      'stays', 'checklist_items', 'property_info', 'photos', 'site_settings', 'favorite_places',
     ],
   });
 }

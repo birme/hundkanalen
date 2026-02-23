@@ -15,7 +15,7 @@ export async function GET() {
 
   const sql = getDb();
   const photos = await sql`
-    SELECT id, filename, caption, category, sort_order, storage_url, created_at
+    SELECT id, filename, caption, category, sort_order, storage_url, is_public, created_at
     FROM photos
     ORDER BY sort_order ASC, created_at ASC
   `;

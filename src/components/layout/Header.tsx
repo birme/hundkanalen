@@ -16,8 +16,8 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-2">
           <span className="text-2xl">🏡</span>
           <div>
-            <span className="font-semibold text-forest-800 text-lg">Hundkanalen 3</span>
-            <span className="hidden sm:inline text-sm text-wood-600 ml-2">Färila, Hälsingland</span>
+            <span className="font-semibold text-forest-800 text-lg">Hundkanalen</span>
+            <span className="hidden sm:inline text-sm text-wood-600 ml-2">Hälsingland</span>
           </div>
         </Link>
 

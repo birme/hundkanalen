@@ -44,7 +44,7 @@ export default function StayAccessPage() {
           <div className="bg-forest-700 px-8 py-8 text-center">
             <div className="text-4xl mb-3">🏡</div>
             <h1 className="text-2xl font-bold text-white">Guest Portal</h1>
-            <p className="text-forest-200 text-sm mt-1">Hundkanalen 3, Färila</p>
+            <p className="text-forest-200 text-sm mt-1">Hälsingland, Sweden</p>
           </div>
 
           {/* Card body */}

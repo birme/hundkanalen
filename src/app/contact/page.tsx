@@ -43,7 +43,7 @@ export default function ContactPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-forest-800 mb-4">Contact & Booking</h1>
           <p className="text-gray-600 max-w-xl mx-auto">
-            Interested in staying at Hundkanalen 3? Fill out the form below and we will
+            Interested in staying with us? Fill out the form below and we will
             get back to you with availability and pricing.
           </p>
         </div>

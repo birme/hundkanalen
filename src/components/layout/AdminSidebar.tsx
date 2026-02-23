@@ -9,6 +9,8 @@ const navItems = [
   { href: '/admin/checklists', label: 'Checklists', icon: '✅' },
   { href: '/admin/property-info', label: 'Property Info', icon: '📋' },
   { href: '/admin/photos', label: 'Photos', icon: '📷' },
+  { href: '/admin/favorites', label: 'Favorites', icon: '⭐' },
+  { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
   { href: '/admin/users', label: 'Admin Users', icon: '👤' },
 ];
 

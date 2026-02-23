@@ -8,9 +8,9 @@ import SessionWrapper from '@/components/layout/SessionWrapper';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Hundkanalen 3 | Countryside Retreat in Hälsingland, Sweden',
+  title: 'Hundkanalen | Countryside Retreat in Hälsingland, Sweden',
   description:
-    'Book your stay at Hundkanalen 3 — a renovated 1950s villa in Färila, Hälsingland. 160m², 4-5 bedrooms, modern kitchen, terrace, and fireplace. Perfect for families and nature lovers.',
+    'A renovated 1950s villa in Hälsingland, Sweden. Spacious living with 4-5 bedrooms, modern kitchen, terrace, and fireplace. Perfect for families and nature lovers.',
 };
 
 export default function RootLayout({

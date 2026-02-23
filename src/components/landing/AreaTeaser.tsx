@@ -9,7 +9,7 @@ const activities = [
   {
     icon: '🎣',
     title: 'Fishing',
-    description: 'World-class fishing in the Ljusnan river and surrounding lakes — pike, trout, and grayling.',
+    description: 'World-class fishing in the Ljusnan river and surrounding lakes — grayling, trout, and pike.',
   },
   {
     icon: '⛷️',
@@ -36,20 +36,11 @@ export default function AreaTeaser() {
               A Region Rich in Nature &amp; Culture
             </h2>
             <p className="text-gray-600 mb-6">
-              Färila is nestled in the heart of Hälsingland — a region celebrated for its
+              Our retreat is nestled in the heart of Hälsingland — a region celebrated for its
               vast forests, the majestic Ljusnan river, and a living cultural heritage.
               From UNESCO-listed decorated farmhouses to endless outdoor adventures,
               there is something for everyone in every season.
             </p>
-            <div className="bg-cream-50 border border-cream-200 rounded-xl p-4 mb-6">
-              <h3 className="font-semibold text-forest-800 mb-2">Getting Here</h3>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>~350 km north of Stockholm (3.5h by car)</li>
-                <li>Train to Ljusdal station (SJ regional)</li>
-                <li>Nearest airport: Hudiksvall or Sundsvall</li>
-                <li>Grocery stores and services in Ljusdal (20 min)</li>
-              </ul>
-            </div>
             <Link href="/area-guide" className="btn-secondary">
               Explore the Area Guide
             </Link>

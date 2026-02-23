@@ -15,29 +15,33 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   const { id } = await context.params;
   const sql = getDb();
 
-  const [existing] = await sql`SELECT id FROM photos WHERE id = ${id}`;
+  const [existing] = await sql`SELECT id FROM favorite_places WHERE id = ${id}`;
   if (!existing) {
-    return Response.json({ error: 'Photo not found' }, { status: 404 });
+    return Response.json({ error: 'Place not found' }, { status: 404 });
   }
 
   const body = await request.json();
-  const { caption, category, sort_order, is_public } = body;
-
   const updates: Record<string, unknown> = {};
-  if (caption !== undefined) updates.caption = caption;
-  if (category !== undefined) updates.category = category;
-  if (sort_order !== undefined) updates.sort_order = sort_order;
-  if (is_public !== undefined) updates.is_public = is_public;
 
-  if (Object.keys(updates).length === 0) {
+  if (body.name !== undefined) updates.name = body.name;
+  if (body.description !== undefined) updates.description = body.description;
+  if (body.category !== undefined) updates.category = body.category;
+  if (body.icon !== undefined) updates.icon = body.icon;
+  if (body.url !== undefined) updates.url = body.url || null;
+  if (body.distance !== undefined) updates.distance = body.distance || null;
+  if (body.sort_order !== undefined) updates.sort_order = body.sort_order;
+
+  updates.updated_at = new Date();
+
+  if (Object.keys(updates).length <= 1) {
     return Response.json({ error: 'No fields provided for update' }, { status: 400 });
   }
 
   const [updated] = await sql`
-    UPDATE photos
+    UPDATE favorite_places
     SET ${sql(updates)}
     WHERE id = ${id}
-    RETURNING id, filename, caption, category, sort_order, storage_url, is_public, created_at
+    RETURNING id, name, description, category, icon, url, distance, sort_order, created_at
   `;
 
   return Response.json(updated);
@@ -52,12 +56,12 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
   const { id } = await context.params;
   const sql = getDb();
 
-  const [existing] = await sql`SELECT id FROM photos WHERE id = ${id}`;
+  const [existing] = await sql`SELECT id FROM favorite_places WHERE id = ${id}`;
   if (!existing) {
-    return Response.json({ error: 'Photo not found' }, { status: 404 });
+    return Response.json({ error: 'Place not found' }, { status: 404 });
   }
 
-  await sql`DELETE FROM photos WHERE id = ${id}`;
+  await sql`DELETE FROM favorite_places WHERE id = ${id}`;
 
   return Response.json({ success: true });
 }

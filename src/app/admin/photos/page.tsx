@@ -10,6 +10,7 @@ type Photo = {
   sort_order: number;
   storage_url: string;
   created_at: string;
+  is_public: boolean;
 };
 
 const CATEGORY_OPTIONS = [
@@ -74,12 +75,14 @@ function PhotoCard({
   onDelete,
 }: {
   photo: Photo;
-  onUpdate: (id: string, data: { caption?: string; category?: string }) => Promise<void>;
+  onUpdate: (id: string, data: { caption?: string; category?: string; is_public?: boolean }) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }) {
   const [caption, setCaption] = useState(photo.caption ?? '');
   const [category, setCategory] = useState(photo.category ?? '');
+  const [isPublic, setIsPublic] = useState(photo.is_public);
   const [saving, setSaving] = useState(false);
+  const [togglingPublic, setTogglingPublic] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,6 +113,20 @@ function PhotoCard({
     }
   }
 
+  async function handleTogglePublic() {
+    setTogglingPublic(true);
+    setError(null);
+    const next = !isPublic;
+    try {
+      await onUpdate(photo.id, { is_public: next });
+      setIsPublic(next);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update visibility.');
+    } finally {
+      setTogglingPublic(false);
+    }
+  }
+
   async function handleDelete() {
     if (!confirm(`Delete photo "${photo.filename}"?`)) return;
     setDeleting(true);
@@ -132,10 +149,52 @@ function PhotoCard({
           className="w-full h-full object-cover"
           loading="lazy"
         />
+        {/* Public badge overlay */}
+        <div className="absolute top-2 left-2">
+          {isPublic ? (
+            <span className="inline-flex items-center gap-1 bg-forest-600 text-white text-xs font-medium px-2 py-0.5 rounded-full shadow-sm">
+              <span aria-hidden="true">&#9679;</span> Public
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 bg-gray-500 text-white text-xs font-medium px-2 py-0.5 rounded-full shadow-sm">
+              <span aria-hidden="true">&#9675;</span> Private
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Metadata */}
       <div className="p-4 flex flex-col gap-3 flex-1">
+        {/* Public toggle */}
+        <button
+          type="button"
+          onClick={handleTogglePublic}
+          disabled={togglingPublic}
+          className={`flex items-center justify-between w-full rounded-lg px-3 py-2 border text-sm font-medium transition-colors disabled:opacity-60 ${
+            isPublic
+              ? 'bg-forest-50 border-forest-200 text-forest-800 hover:bg-forest-100'
+              : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <span>Show on public site</span>
+          <span className="flex items-center gap-1.5">
+            {togglingPublic && <SpinnerIcon className="size-3" />}
+            {/* Toggle pill */}
+            <span
+              aria-hidden="true"
+              className={`inline-block w-8 h-4 rounded-full transition-colors relative ${
+                isPublic ? 'bg-forest-500' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform ${
+                  isPublic ? 'translate-x-4' : 'translate-x-0'
+                }`}
+              />
+            </span>
+          </span>
+        </button>
+
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Caption</label>
           <input
@@ -264,7 +323,7 @@ export default function AdminPhotosPage() {
     }
   }
 
-  async function handleUpdate(id: string, data: { caption?: string; category?: string }) {
+  async function handleUpdate(id: string, data: { caption?: string; category?: string; is_public?: boolean }) {
     const res = await fetch(`/api/admin/photos/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
