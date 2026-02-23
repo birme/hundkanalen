@@ -153,7 +153,7 @@ function ChecklistSection({
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       {/* Section header */}
-      <div className={`px-6 py-4 border-b ${headerBg} flex items-center justify-between`}>
+      <div className={`px-4 sm:px-6 py-4 border-b ${headerBg} flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2`}>
         <div className="flex items-center gap-3">
           <span className={`text-lg font-semibold ${headerText}`}>{title}</span>
           <span className="text-xs font-medium bg-white border border-gray-200 text-gray-500 rounded-full px-2 py-0.5">
@@ -179,13 +179,13 @@ function ChecklistSection({
       {/* Items list */}
       <div className="divide-y divide-gray-100">
         {items.length === 0 && !showAddForm && (
-          <div className="px-6 py-10 text-center">
+          <div className="px-4 sm:px-6 py-10 text-center">
             <p className="text-sm text-gray-400 italic">No items yet. Add one to get started.</p>
           </div>
         )}
 
         {items.map((item) => (
-          <div key={item.id} className="px-6 py-4">
+          <div key={item.id} className="px-4 sm:px-6 py-4">
             {editingId === item.id ? (
               /* Inline edit form */
               <div className="space-y-3">
@@ -266,7 +266,7 @@ function ChecklistSection({
 
         {/* Add form */}
         {showAddForm && (
-          <div className="px-6 py-5 bg-gray-50">
+          <div className="px-4 sm:px-6 py-5 bg-gray-50">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">New Item</p>
             <form onSubmit={handleAdd} className="space-y-3">
               <div>

@@ -80,7 +80,7 @@ export default async function AdminStaysPage({
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-forest-800">Stays</h1>
           <p className="text-sm text-gray-500 mt-0.5">
@@ -93,7 +93,7 @@ export default async function AdminStaysPage({
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex gap-1 mb-5 border-b border-gray-200">
+      <div className="flex gap-1 mb-5 border-b border-gray-200 overflow-x-auto whitespace-nowrap -mx-4 px-4 sm:mx-0 sm:px-0">
         {STATUS_TABS.map((tab) => {
           const isActive = (statusFilter ?? '') === tab.key;
           const href = tab.key ? `/admin/stays?status=${tab.key}` : '/admin/stays';
@@ -101,7 +101,7 @@ export default async function AdminStaysPage({
             <Link
               key={tab.key}
               href={href}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors -mb-px border-b-2 ${
+              className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors -mb-px border-b-2 ${
                 isActive
                   ? 'border-forest-600 text-forest-700 bg-white'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -149,7 +149,7 @@ export default async function AdminStaysPage({
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[800px]">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">

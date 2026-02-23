@@ -138,7 +138,7 @@ function FavoriteCard({
     return (
       <div className="bg-white rounded-xl border border-forest-300 p-5 flex flex-col gap-3">
         <form onSubmit={handleSave} className="flex flex-col gap-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="col-span-2">
               <label className="block text-xs font-medium text-gray-600 mb-1">Name *</label>
               <input
@@ -377,7 +377,7 @@ export default function AdminFavoritesPage() {
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-forest-800">Favorite Places</h1>
           <p className="text-sm text-gray-500 mt-0.5">

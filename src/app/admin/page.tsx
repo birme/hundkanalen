@@ -32,7 +32,7 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-forest-800 mb-1">Dashboard</h1>
           <p className="text-gray-600">
@@ -74,7 +74,7 @@ export default async function AdminDashboard() {
           <p className="text-sm text-gray-400 italic">No upcoming stays. Create one to get started.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[600px]">
               <thead className="border-b border-gray-100">
                 <tr>
                   <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">Guest</th>
