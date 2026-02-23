@@ -30,6 +30,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   if (body.url !== undefined) updates.url = body.url || null;
   if (body.distance !== undefined) updates.distance = body.distance || null;
   if (body.sort_order !== undefined) updates.sort_order = body.sort_order;
+  if (body.owner_tips !== undefined) updates.owner_tips = body.owner_tips || null;
 
   updates.updated_at = new Date();
 
@@ -41,7 +42,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     UPDATE favorite_places
     SET ${sql(updates)}
     WHERE id = ${id}
-    RETURNING id, name, description, category, icon, url, distance, sort_order, created_at
+    RETURNING id, name, description, category, icon, url, distance, sort_order, owner_tips, created_at
   `;
 
   return Response.json(updated);

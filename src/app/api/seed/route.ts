@@ -188,6 +188,21 @@ export async function POST(request: NextRequest) {
 
   await sql`CREATE INDEX IF NOT EXISTS idx_favorite_places_category ON favorite_places(category)`;
 
+  // === Migration 004: Owner tips and stay-featured activities ===
+  await sql`ALTER TABLE favorite_places ADD COLUMN IF NOT EXISTS owner_tips TEXT`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS stay_favorites (
+      stay_id UUID NOT NULL REFERENCES stays(id) ON DELETE CASCADE,
+      favorite_id UUID NOT NULL REFERENCES favorite_places(id) ON DELETE CASCADE,
+      added_at TIMESTAMPTZ DEFAULT NOW(),
+      PRIMARY KEY (stay_id, favorite_id)
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS idx_stay_favorites_stay_id ON stay_favorites(stay_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_stay_favorites_favorite_id ON stay_favorites(favorite_id)`;
+
   // Seed default site settings
   await sql`
     INSERT INTO site_settings (key, value) VALUES
@@ -278,7 +293,7 @@ export async function POST(request: NextRequest) {
     message: 'Database seeded successfully',
     tables: [
       'users', 'bookings', 'blocked_dates', 'pricing_defaults', 'pricing_seasons', 'inquiries',
-      'stays', 'checklist_items', 'property_info', 'photos', 'site_settings', 'favorite_places',
+      'stays', 'checklist_items', 'property_info', 'photos', 'site_settings', 'favorite_places', 'stay_favorites',
     ],
   });
 }

@@ -7,6 +7,7 @@ import StayStatusBadge from '@/components/admin/StayStatusBadge';
 import CopyButton from '@/components/admin/CopyButton';
 import StayActions from './StayActions';
 import StayEditForm from './StayEditForm';
+import StayFavorites from './StayFavorites';
 
 export const dynamic = 'force-dynamic';
 
@@ -267,8 +268,13 @@ export default async function StayDetailPage({
         </div>
       </div>
 
-      {/* Edit form — full width below */}
+      {/* Featured activities — full width below */}
       <div className="mt-8">
+        <StayFavorites stayId={stay.id} />
+      </div>
+
+      {/* Edit form — full width below */}
+      <div className="mt-4">
         <StayEditForm stay={stay} />
       </div>
     </div>

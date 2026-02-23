@@ -10,6 +10,7 @@ type FavoritePlace = {
   icon: string | null;
   url: string | null;
   distance: string | null;
+  owner_tips: string | null;
 };
 
 type GroupedPlaces = Record<string, FavoritePlace[]>;
@@ -138,6 +139,11 @@ function FavoritePlaceCard({ place }: { place: FavoritePlace }) {
       </div>
       {place.description && (
         <p className="text-sm text-gray-600 leading-relaxed">{place.description}</p>
+      )}
+      {place.owner_tips && (
+        <div className="bg-cream-50 border-l-4 border-wood-400 rounded-r-lg px-3 py-2">
+          <p className="text-sm text-wood-700 italic">Owner&apos;s tip: {place.owner_tips}</p>
+        </div>
       )}
       {place.url && (
         <a

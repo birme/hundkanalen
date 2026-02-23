@@ -10,6 +10,7 @@ type FavoritePlace = {
   icon: string | null;
   url: string | null;
   distance: string | null;
+  owner_tips: string | null;
 };
 
 type NewFavorite = {
@@ -19,6 +20,7 @@ type NewFavorite = {
   icon: string;
   url: string;
   distance: string;
+  owner_tips: string;
 };
 
 const CATEGORY_OPTIONS = [
@@ -52,6 +54,7 @@ const DEFAULT_NEW: NewFavorite = {
   icon: '',
   url: '',
   distance: '',
+  owner_tips: '',
 };
 
 function SpinnerIcon({ className = 'size-4' }: { className?: string }) {
@@ -97,6 +100,7 @@ function FavoriteCard({
     icon: place.icon ?? '',
     url: place.url ?? '',
     distance: place.distance ?? '',
+    owner_tips: place.owner_tips ?? '',
   });
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -207,6 +211,18 @@ function FavoriteCard({
                 className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
               />
             </div>
+            <div className="col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Owner&apos;s Tip</label>
+              <textarea
+                name="owner_tips"
+                value={form.owner_tips}
+                onChange={handleChange}
+                rows={2}
+                placeholder="e.g. Try the elk meatballs — amazing!"
+                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+              />
+              <p className="text-xs text-gray-400 mt-1">Personal recommendation shown to guests</p>
+            </div>
           </div>
           {error && <ErrorBanner message={error} />}
           <div className="flex items-center gap-2">
@@ -252,6 +268,11 @@ function FavoriteCard({
       </div>
       {place.description && (
         <p className="text-sm text-gray-600 leading-relaxed">{place.description}</p>
+      )}
+      {place.owner_tips && (
+        <div className="bg-cream-50 border-l-4 border-wood-400 rounded-r-lg px-3 py-2">
+          <p className="text-sm text-wood-700 italic">Owner&apos;s tip: {place.owner_tips}</p>
+        </div>
       )}
       {place.url && (
         <a
@@ -334,6 +355,7 @@ export default function AdminFavoritesPage() {
           icon: newForm.icon.trim() || undefined,
           url: newForm.url.trim() || undefined,
           distance: newForm.distance.trim() || undefined,
+          owner_tips: newForm.owner_tips.trim() || undefined,
         }),
       });
       if (!res.ok) {
@@ -472,6 +494,18 @@ export default function AdminFavoritesPage() {
                 placeholder="Describe this place for guests..."
                 className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
               />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Owner&apos;s Tip</label>
+              <textarea
+                name="owner_tips"
+                value={newForm.owner_tips}
+                onChange={handleNewChange}
+                rows={2}
+                placeholder="e.g. Try the elk meatballs — amazing!"
+                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+              />
+              <p className="text-xs text-gray-400 mt-1">Personal recommendation shown to guests</p>
             </div>
             {addError && (
               <div className="sm:col-span-2">
