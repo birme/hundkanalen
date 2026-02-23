@@ -30,7 +30,20 @@ function LoginForm() {
       setError('Invalid email or password');
       setLoading(false);
     } else {
-      window.location.href = callbackUrl;
+      // Fetch session to determine role-based redirect
+      try {
+        const sessionRes = await fetch('/api/auth/session');
+        const session = await sessionRes.json();
+        if (callbackUrl && callbackUrl !== '/') {
+          window.location.href = callbackUrl;
+        } else if (session?.user?.role === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/guest';
+        }
+      } catch {
+        window.location.href = callbackUrl || '/';
+      }
     }
   }
 
