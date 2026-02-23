@@ -84,7 +84,7 @@ export default async function AdminStaysPage({
         <div>
           <h1 className="text-2xl font-bold text-forest-800">Stays</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            Manage all guest stays at Hundkanalen 3
+            Manage all guest stays at Färila anno 1923
           </p>
         </div>
         <Link href="/admin/stays/new" className="btn-primary text-sm">

@@ -203,6 +203,20 @@ export async function POST(request: NextRequest) {
   await sql`CREATE INDEX IF NOT EXISTS idx_stay_favorites_stay_id ON stay_favorites(stay_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_stay_favorites_favorite_id ON stay_favorites(favorite_id)`;
 
+  // === Migration 005: Packing notes, guest reviews ===
+  await sql`ALTER TABLE stays ADD COLUMN IF NOT EXISTS packing_notes TEXT`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS guest_reviews (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      stay_id UUID NOT NULL REFERENCES stays(id) ON DELETE CASCADE,
+      rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+      message TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_guest_reviews_stay_id ON guest_reviews(stay_id)`;
+
   // Seed default site settings
   await sql`
     INSERT INTO site_settings (key, value) VALUES
@@ -288,12 +302,24 @@ export async function POST(request: NextRequest) {
     `;
   }
 
+  // Seed default packing info (if none exist)
+  const existingPacking = await sql`SELECT id FROM property_info WHERE category = 'packing' LIMIT 1`;
+  if (existingPacking.length === 0) {
+    await sql`
+      INSERT INTO property_info (title, content, category, sort_order) VALUES
+        ('Bed Sheets & Pillows', 'Bed sheets, pillows, and pillowcases are provided. You do not need to bring your own.', 'packing', 0),
+        ('Towels', 'Towels are provided for all guests. Extra towels can be found in the hallway closet.', 'packing', 1),
+        ('Kitchen Essentials', 'Basic cooking supplies (oil, salt, pepper, coffee, tea) are available. Bring any specialty ingredients you need.', 'packing', 2)
+    `;
+  }
+
   return Response.json({
     success: true,
     message: 'Database seeded successfully',
     tables: [
       'users', 'bookings', 'blocked_dates', 'pricing_defaults', 'pricing_seasons', 'inquiries',
       'stays', 'checklist_items', 'property_info', 'photos', 'site_settings', 'favorite_places', 'stay_favorites',
+      'guest_reviews',
     ],
   });
 }

@@ -190,7 +190,7 @@ export default function AdminUsersPage() {
         <div>
           <h1 className="text-2xl font-bold text-forest-800">Admin Users</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            Manage who has admin access to the Hundkanalen dashboard.
+            Manage who has admin access to the Färila anno 1923 dashboard.
           </p>
         </div>
         <button

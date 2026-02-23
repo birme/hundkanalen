@@ -2,7 +2,7 @@ const highlights = [
   {
     icon: '🏠',
     title: '160 m² Living Space',
-    description: 'A spacious 6-room renovated villa from the 1950s with generous room for the whole family.',
+    description: 'A spacious 6-room renovated villa from the 1920s with generous room for the whole family.',
   },
   {
     icon: '🛏️',
@@ -38,7 +38,7 @@ export default function PropertyHighlights() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-forest-800 mb-4">The Property</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            A lovingly renovated 1950s villa that blends authentic Swedish character
+            A lovingly renovated 1920s villa that blends authentic Swedish character
             with modern comfort, set in the peaceful countryside of Hälsingland.
           </p>
         </div>

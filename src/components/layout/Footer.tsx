@@ -7,7 +7,8 @@ export default function Footer() {
   const pathname = usePathname();
 
   // Hide site footer on admin pages — admin has its own layout
-  if (pathname.startsWith('/admin')) {
+  // Hide on portal paths — portal has its own minimal layout
+  if (pathname.startsWith('/admin') || pathname.startsWith('/stay/portal')) {
     return null;
   }
 
@@ -16,7 +17,7 @@ export default function Footer() {
       <div className="container-wide section-padding">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-semibold text-white text-lg mb-3">Hundkanalen</h3>
+            <h3 className="font-semibold text-white text-lg mb-3">Färila anno 1923</h3>
             <p className="text-sm text-forest-300">
               A countryside retreat in the heart of Hälsingland, Sweden.
               Perfect for families, nature lovers, and those seeking tranquility.

@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
     total_price,
     keybox_code,
     notes,
+    packing_notes,
   } = body;
 
   if (!guest_name || !check_in || !check_out || !guests || total_price == null) {
@@ -95,6 +96,7 @@ export async function POST(request: NextRequest) {
       access_code,
       keybox_code,
       notes,
+      packing_notes,
       status,
       created_by
     ) VALUES (
@@ -107,6 +109,7 @@ export async function POST(request: NextRequest) {
       ${access_code},
       ${keybox_code ?? null},
       ${notes ?? null},
+      ${packing_notes ?? null},
       'upcoming',
       ${session.user.id}
     )

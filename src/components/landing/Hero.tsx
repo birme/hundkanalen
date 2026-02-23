@@ -17,13 +17,13 @@ export default function Hero() {
             Hälsingland, Sweden
           </p>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            Hundkanalen
+            Färila anno 1923
           </h1>
           <p className="text-xl sm:text-2xl text-forest-200 mb-4">
             A countryside retreat in Hälsingland
           </p>
           <p className="text-forest-300 text-lg max-w-2xl mb-8">
-            Experience the beauty of northern Sweden in this renovated 1950s villa.
+            Experience the beauty of northern Sweden in this renovated 1920s villa.
             Spacious living with 4&ndash;5 bedrooms, a modern kitchen, cozy fireplace,
             and a terrace &mdash; perfect for families and nature lovers.
           </p>

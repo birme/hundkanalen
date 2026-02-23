@@ -23,6 +23,7 @@ const CATEGORY_OPTIONS = [
   { value: 'living', label: 'Living Room' },
   { value: 'garden', label: 'Garden & Outdoors' },
   { value: 'area', label: 'Area & Nature' },
+  { value: 'keybox', label: 'Keybox Location' },
   { value: 'other', label: 'Other' },
 ];
 

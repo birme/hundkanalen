@@ -63,6 +63,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   if (total_price !== undefined) updates.total_price = total_price;
   if (keybox_code !== undefined) updates.keybox_code = keybox_code;
   if (notes !== undefined) updates.notes = notes;
+  if (body.packing_notes !== undefined) updates.packing_notes = body.packing_notes || null;
   if (status !== undefined) updates.status = status;
 
   if (Object.keys(updates).length === 0) {

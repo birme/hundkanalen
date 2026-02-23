@@ -11,7 +11,8 @@ export default function Header() {
   const pathname = usePathname();
 
   // Hide site header on admin pages — admin has its own sidebar navigation
-  if (pathname.startsWith('/admin')) {
+  // Hide on portal paths — portal has its own minimal header
+  if (pathname.startsWith('/admin') || pathname.startsWith('/stay/portal')) {
     return null;
   }
 
@@ -22,10 +23,7 @@ export default function Header() {
       <nav className="container-wide flex items-center justify-between py-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-2xl">🏡</span>
-          <div>
-            <span className="font-semibold text-forest-800 text-lg">Hundkanalen</span>
-            <span className="hidden sm:inline text-sm text-wood-600 ml-2">Hälsingland</span>
-          </div>
+          <span className="font-semibold text-forest-800 text-lg">Färila anno 1923</span>
         </Link>
 
         {/* Desktop nav */}

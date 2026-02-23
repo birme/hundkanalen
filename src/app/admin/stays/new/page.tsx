@@ -13,6 +13,7 @@ type FormData = {
   total_price: string;
   keybox_code: string;
   notes: string;
+  packing_notes: string;
 };
 
 type CreatedStay = {
@@ -32,6 +33,7 @@ const INITIAL_FORM: FormData = {
   total_price: '',
   keybox_code: '',
   notes: '',
+  packing_notes: '',
 };
 
 export default function NewStayPage() {
@@ -62,6 +64,7 @@ export default function NewStayPage() {
         total_price: parseFloat(form.total_price),
         keybox_code: form.keybox_code.trim() || undefined,
         notes: form.notes.trim() || undefined,
+        packing_notes: form.packing_notes.trim() || undefined,
       };
 
       const res = await fetch('/api/admin/stays', {
@@ -395,6 +398,28 @@ export default function NewStayPage() {
                   placeholder="Any special requests or reminders..."
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
                 />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="packing_notes"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Guest Packing Notes
+                  <span className="ml-1 text-xs font-normal text-gray-400">(optional)</span>
+                </label>
+                <textarea
+                  id="packing_notes"
+                  name="packing_notes"
+                  rows={3}
+                  value={form.packing_notes}
+                  onChange={handleChange}
+                  placeholder="e.g. Bed sheets are provided. Bring warm layers for evening walks..."
+                  className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Per-stay packing info shown to guests. Leave empty to use global defaults.
+                </p>
               </div>
             </div>
           </div>

@@ -14,6 +14,7 @@ type Stay = {
   status: string;
   keybox_code: string | null;
   notes: string | null;
+  packing_notes: string | null;
 };
 
 type FormData = {
@@ -25,6 +26,7 @@ type FormData = {
   total_price: string;
   keybox_code: string;
   notes: string;
+  packing_notes: string;
   status: string;
 };
 
@@ -51,6 +53,7 @@ function stayToForm(stay: Stay): FormData {
     total_price: String(stay.total_price),
     keybox_code: stay.keybox_code ?? '',
     notes: stay.notes ?? '',
+    packing_notes: stay.packing_notes ?? '',
     status: stay.status,
   };
 }
@@ -87,6 +90,7 @@ export default function StayEditForm({ stay }: { stay: Stay }) {
         total_price: parseFloat(form.total_price),
         keybox_code: form.keybox_code.trim() || null,
         notes: form.notes.trim() || null,
+        packing_notes: form.packing_notes.trim() || null,
         status: form.status,
       };
 
@@ -337,6 +341,23 @@ export default function StayEditForm({ stay }: { stay: Stay }) {
                   placeholder="Any special requests or reminders..."
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
                 />
+              </div>
+              <div>
+                <label htmlFor="edit_packing_notes" className="block text-sm font-medium text-gray-700 mb-1">
+                  Guest Packing Notes
+                </label>
+                <textarea
+                  id="edit_packing_notes"
+                  name="packing_notes"
+                  rows={3}
+                  value={form.packing_notes}
+                  onChange={handleChange}
+                  placeholder="e.g. Bed sheets are provided. Bring warm layers for evening walks..."
+                  className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Per-stay packing info shown to guests. Leave empty to use global defaults.
+                </p>
               </div>
             </div>
           </div>

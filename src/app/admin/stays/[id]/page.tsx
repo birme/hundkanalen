@@ -23,6 +23,7 @@ type Stay = {
   access_code: string;
   keybox_code: string | null;
   notes: string | null;
+  packing_notes: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -45,6 +46,8 @@ export default async function StayDetailPage({
   if (!stay) {
     notFound();
   }
+
+  const [review] = await sql`SELECT rating, message, created_at FROM guest_reviews WHERE stay_id = ${id} LIMIT 1`;
 
   const nights = daysBetween(stay.check_in, stay.check_out);
   const canCancel = stay.status !== 'cancelled' && stay.status !== 'completed';
@@ -212,6 +215,16 @@ export default async function StayDetailPage({
               <p className="text-sm text-gray-700 whitespace-pre-wrap">{stay.notes}</p>
             </div>
           )}
+
+          {/* Packing notes */}
+          {stay.packing_notes && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                Guest Packing Notes
+              </h2>
+              <p className="text-sm text-gray-700 whitespace-pre-wrap">{stay.packing_notes}</p>
+            </div>
+          )}
         </div>
 
         {/* Sidebar — right column */}
@@ -264,6 +277,36 @@ export default async function StayDetailPage({
                 </dd>
               </div>
             </dl>
+          </div>
+
+          {/* Guest Review */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              Guest Review
+            </h2>
+            {review ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-base leading-none" aria-label={`${review.rating} out of 5 stars`}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        className={star <= review.rating ? 'text-yellow-400' : 'text-gray-200'}
+                      >
+                        {star <= review.rating ? '★' : '☆'}
+                      </span>
+                    ))}
+                  </span>
+                  <span className="text-sm font-medium text-gray-700">{review.rating}/5</span>
+                </div>
+                {review.message && (
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{review.message}</p>
+                )}
+                <p className="text-xs text-gray-400">{formatDate(review.created_at)}</p>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 italic">No review submitted</p>
+            )}
           </div>
         </div>
       </div>

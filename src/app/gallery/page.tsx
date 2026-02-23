@@ -164,7 +164,7 @@ export default function GalleryPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-forest-800 mb-4">Gallery</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Explore Hundkanalen through photos of the interior, exterior, garden, and the
+            Explore Färila anno 1923 through photos of the interior, exterior, garden, and the
             surrounding Hälsingland landscape.
           </p>
         </div>

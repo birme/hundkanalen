@@ -35,6 +35,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   practical: 'Practical Information',
   emergency: 'Emergency',
   location: 'Location & Directions',
+  packing: 'Packing & What to Bring',
   general: 'General',
 };
 
@@ -48,6 +49,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   practical: 'bg-wood-50 border-wood-200 text-wood-800',
   emergency: 'bg-falu-50 border-falu-200 text-falu-800',
   location: 'bg-cream-100 border-cream-300 text-cream-900',
+  packing: 'bg-blue-50 border-blue-200 text-blue-800',
   general: 'bg-gray-50 border-gray-200 text-gray-800',
 };
 
