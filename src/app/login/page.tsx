@@ -39,7 +39,7 @@ function LoginForm() {
         } else if (session?.user?.role === 'admin') {
           window.location.href = '/admin';
         } else {
-          window.location.href = '/guest';
+          window.location.href = '/admin';
         }
       } catch {
         window.location.href = callbackUrl || '/';
@@ -51,8 +51,8 @@ function LoginForm() {
     <div className="section-padding">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-forest-800 mb-2">Welcome Back</h1>
-          <p className="text-gray-600">Sign in to access your booking or admin panel.</p>
+          <h1 className="text-3xl font-bold text-forest-800 mb-2">Admin Login</h1>
+          <p className="text-gray-600">Sign in to manage the property.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 space-y-5">
@@ -94,7 +94,7 @@ function LoginForm() {
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          Need a guest account? Contact us after your booking is confirmed.
+          Guest? Use your <a href="/stay" className="text-forest-600 hover:text-forest-800 underline">access code</a> instead.
         </p>
       </div>
     </div>

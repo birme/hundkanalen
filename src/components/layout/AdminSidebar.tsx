@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: '📊' },
-  { href: '/admin/bookings', label: 'Bookings', icon: '📅' },
-  { href: '/admin/calendar', label: 'Calendar', icon: '🗓️' },
-  { href: '/admin/pricing', label: 'Pricing', icon: '💰' },
-  { href: '/admin/guests', label: 'Guests', icon: '👥' },
+  { href: '/admin/stays', label: 'Stays', icon: '🏠' },
+  { href: '/admin/checklists', label: 'Checklists', icon: '✅' },
+  { href: '/admin/property-info', label: 'Property Info', icon: '📋' },
+  { href: '/admin/photos', label: 'Photos', icon: '📷' },
+  { href: '/admin/users', label: 'Admin Users', icon: '👤' },
 ];
 
 export default function AdminSidebar() {
@@ -18,7 +19,7 @@ export default function AdminSidebar() {
     <aside className="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-65px)]">
       <nav className="p-4 space-y-1">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
           return (
             <Link
               key={item.href}

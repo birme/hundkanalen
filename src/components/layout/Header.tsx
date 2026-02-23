@@ -8,7 +8,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
 
-  const dashboardHref = session?.user?.role === 'admin' ? '/admin' : '/guest';
+  const dashboardHref = '/admin';
 
   return (
     <header className="bg-white/90 backdrop-blur-sm border-b border-forest-100 sticky top-0 z-50">
@@ -32,6 +32,9 @@ export default function Header() {
           <Link href="/contact" className="text-sm text-gray-600 hover:text-forest-700 transition-colors">
             Contact
           </Link>
+          <Link href="/stay" className="text-sm text-forest-700 font-medium hover:text-forest-800 transition-colors">
+            Access Your Stay
+          </Link>
           {session ? (
             <div className="flex items-center gap-3">
               <Link href={dashboardHref} className="text-sm text-forest-700 font-medium hover:text-forest-800 transition-colors">
@@ -45,8 +48,8 @@ export default function Header() {
               </button>
             </div>
           ) : (
-            <Link href="/login" className="btn-primary text-sm !py-2 !px-4">
-              Log in
+            <Link href="/login" className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+              Admin
             </Link>
           )}
         </div>
@@ -79,6 +82,9 @@ export default function Header() {
           <Link href="/contact" className="block text-gray-600 hover:text-forest-700" onClick={() => setMobileMenuOpen(false)}>
             Contact
           </Link>
+          <Link href="/stay" className="block text-forest-700 font-medium" onClick={() => setMobileMenuOpen(false)}>
+            Access Your Stay
+          </Link>
           {session ? (
             <>
               <Link href={dashboardHref} className="block text-forest-700 font-medium" onClick={() => setMobileMenuOpen(false)}>
@@ -92,8 +98,8 @@ export default function Header() {
               </button>
             </>
           ) : (
-            <Link href="/login" className="btn-primary text-sm !py-2 !px-4 w-full text-center" onClick={() => setMobileMenuOpen(false)}>
-              Log in
+            <Link href="/login" className="block text-sm text-gray-500 hover:text-gray-700" onClick={() => setMobileMenuOpen(false)}>
+              Admin Login
             </Link>
           )}
         </div>

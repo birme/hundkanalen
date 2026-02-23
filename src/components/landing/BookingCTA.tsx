@@ -13,8 +13,8 @@ export default function BookingCTA() {
           <Link href="/contact" className="btn-primary !bg-white !text-forest-800 hover:!bg-cream-100">
             Send a Booking Inquiry
           </Link>
-          <Link href="/login" className="btn-outline !border-white/40 !text-white hover:!bg-white/10">
-            Returning Guest? Log in
+          <Link href="/stay" className="btn-outline !border-white/40 !text-white hover:!bg-white/10">
+            Have an access code? Enter here
           </Link>
         </div>
       </div>
