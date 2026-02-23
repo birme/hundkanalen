@@ -3,10 +3,17 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
+  const pathname = usePathname();
+
+  // Hide site header on admin pages — admin has its own sidebar navigation
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   const dashboardHref = '/admin';
 

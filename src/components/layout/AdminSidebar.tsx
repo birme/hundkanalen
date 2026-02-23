@@ -84,7 +84,7 @@ export default function AdminSidebar() {
       </div>
 
       {/* Desktop sidebar */}
-      <aside className="hidden md:block w-64 flex-shrink-0 bg-white border-r border-gray-200 min-h-[calc(100vh-65px)]">
+      <aside className="hidden md:block w-64 flex-shrink-0 bg-white border-r border-gray-200 min-h-screen">
         {navContent}
       </aside>
 
