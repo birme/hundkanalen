@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-forest: #438a43;
+    --color-wood: #b07d3e;
+    --color-cream: #fdf9ed;
+    --color-falu: #a72d2d;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream-50 text-gray-800 antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-forest-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-forest-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-600;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg bg-wood-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-wood-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wood-500;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-lg border-2 border-forest-600 px-6 py-3 text-sm font-semibold text-forest-700 transition-colors hover:bg-forest-50;
+  }
+
+  .section-padding {
+    @apply px-4 py-16 sm:px-6 lg:px-8;
+  }
+
+  .container-narrow {
+    @apply mx-auto max-w-4xl;
+  }
+
+  .container-wide {
+    @apply mx-auto max-w-7xl;
+  }
+}
