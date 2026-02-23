@@ -20,14 +20,12 @@ type AddFormState = {
   title: string;
   content: string;
   category: string;
-  sort_order: string;
 };
 
 const EMPTY_ADD_FORM: AddFormState = {
   title: '',
   content: '',
   category: 'general',
-  sort_order: '0',
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -113,6 +111,7 @@ export default function AdminPropertyInfoPage() {
   const [addForm, setAddForm] = useState<AddFormState>(EMPTY_ADD_FORM);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [reordering, setReordering] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -203,6 +202,9 @@ export default function AdminPropertyInfoPage() {
     setSaving(true);
     setFormError(null);
     try {
+      // Auto-assign sort_order: max in this category + 1
+      const categoryItems = items.filter((i) => i.category === addForm.category);
+      const maxOrder = categoryItems.reduce((max, i) => Math.max(max, i.sort_order), -1);
       const res = await fetch('/api/admin/property-info', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -210,7 +212,7 @@ export default function AdminPropertyInfoPage() {
           title: addForm.title.trim(),
           content: addForm.content.trim(),
           category: addForm.category,
-          sort_order: parseInt(addForm.sort_order, 10) || 0,
+          sort_order: maxOrder + 1,
         }),
       });
       if (!res.ok) {
@@ -225,6 +227,94 @@ export default function AdminPropertyInfoPage() {
       setFormError(err instanceof Error ? err.message : 'Failed to add item.');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleMoveUp(id: string) {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+    const group = items
+      .filter((i) => i.category === item.category)
+      .sort((a, b) => a.sort_order - b.sort_order);
+    const idx = group.findIndex((i) => i.id === id);
+    if (idx <= 0) return;
+
+    setReordering(id);
+    const prev = items.map((i) => ({ ...i }));
+
+    // Swap sort_order with the item above
+    const above = group[idx - 1];
+    setItems((current) =>
+      current
+        .map((i) => {
+          if (i.id === id) return { ...i, sort_order: above.sort_order };
+          if (i.id === above.id) return { ...i, sort_order: item.sort_order };
+          return i;
+        })
+        .sort((a, b) => a.sort_order - b.sort_order)
+    );
+
+    // Build new ordered IDs for the whole category group
+    const newGroup = [...group];
+    [newGroup[idx - 1], newGroup[idx]] = [newGroup[idx], newGroup[idx - 1]];
+    const orderedIds = newGroup.map((i) => i.id);
+
+    try {
+      const res = await fetch('/api/admin/property-info/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: item.category, orderedIds }),
+      });
+      if (!res.ok) throw new Error('Failed to save order');
+    } catch {
+      setItems(prev);
+      setPageError('Failed to reorder items. Please try again.');
+    } finally {
+      setReordering(null);
+    }
+  }
+
+  async function handleMoveDown(id: string) {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+    const group = items
+      .filter((i) => i.category === item.category)
+      .sort((a, b) => a.sort_order - b.sort_order);
+    const idx = group.findIndex((i) => i.id === id);
+    if (idx < 0 || idx >= group.length - 1) return;
+
+    setReordering(id);
+    const prev = items.map((i) => ({ ...i }));
+
+    // Swap sort_order with the item below
+    const below = group[idx + 1];
+    setItems((current) =>
+      current
+        .map((i) => {
+          if (i.id === id) return { ...i, sort_order: below.sort_order };
+          if (i.id === below.id) return { ...i, sort_order: item.sort_order };
+          return i;
+        })
+        .sort((a, b) => a.sort_order - b.sort_order)
+    );
+
+    // Build new ordered IDs for the whole category group
+    const newGroup = [...group];
+    [newGroup[idx], newGroup[idx + 1]] = [newGroup[idx + 1], newGroup[idx]];
+    const orderedIds = newGroup.map((i) => i.id);
+
+    try {
+      const res = await fetch('/api/admin/property-info/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: item.category, orderedIds }),
+      });
+      if (!res.ok) throw new Error('Failed to save order');
+    } catch {
+      setItems(prev);
+      setPageError('Failed to reorder items. Please try again.');
+    } finally {
+      setReordering(null);
     }
   }
 
@@ -305,16 +395,6 @@ export default function AdminPropertyInfoPage() {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={addForm.sort_order}
-                  onChange={(e) => setAddForm((v) => ({ ...v, sort_order: e.target.value }))}
-                  className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-                />
-              </div>
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Content <span className="text-falu-600">*</span>
@@ -370,7 +450,7 @@ export default function AdminPropertyInfoPage() {
               </div>
 
               <div className="divide-y divide-gray-100">
-                {grouped[category].map((item) => (
+                {grouped[category].sort((a, b) => a.sort_order - b.sort_order).map((item, index, arr) => (
                   <div key={item.id} className="px-6 py-4">
                     {editingId === item.id ? (
                       /* Inline edit form */
@@ -439,6 +519,30 @@ export default function AdminPropertyInfoPage() {
                           </pre>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0 pt-0.5">
+                          {/* Reorder arrows */}
+                          <button
+                            type="button"
+                            onClick={() => handleMoveUp(item.id)}
+                            disabled={reordering !== null || index === 0}
+                            className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            title="Move up"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-4">
+                              <path fillRule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveDown(item.id)}
+                            disabled={reordering !== null || index === arr.length - 1}
+                            className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            title="Move down"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-4">
+                              <path fillRule="evenodd" d="M10.53 13.53a.75.75 0 0 1-1.06 0l-4.25-4.25a.75.75 0 1 1 1.06-1.06L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25Z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                          <span className="text-gray-300" aria-hidden="true">|</span>
                           <button
                             type="button"
                             onClick={() => startEdit(item)}

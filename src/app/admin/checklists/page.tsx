@@ -77,6 +77,8 @@ function ChecklistSection({
   onAdd,
   onUpdate,
   onDelete,
+  onMoveUp,
+  onMoveDown,
 }: {
   title: string;
   type: 'checkin' | 'checkout';
@@ -85,6 +87,8 @@ function ChecklistSection({
   onAdd: (type: 'checkin' | 'checkout', data: AddFormState) => Promise<void>;
   onUpdate: (id: string, data: EditState) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onMoveUp: (id: string) => Promise<void>;
+  onMoveDown: (id: string) => Promise<void>;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<EditState>({ title: '', description: '' });
@@ -96,6 +100,31 @@ function ChecklistSection({
   const [linkingId, setLinkingId] = useState<string | null>(null);
   const [linkedIds, setLinkedIds] = useState<string[]>([]);
   const [linkSaving, setLinkSaving] = useState(false);
+  const [reordering, setReordering] = useState<string | null>(null);
+
+  async function handleMoveUp(id: string) {
+    setReordering(id);
+    setError(null);
+    try {
+      await onMoveUp(id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reorder.');
+    } finally {
+      setReordering(null);
+    }
+  }
+
+  async function handleMoveDown(id: string) {
+    setReordering(id);
+    setError(null);
+    try {
+      await onMoveDown(id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reorder.');
+    } finally {
+      setReordering(null);
+    }
+  }
 
   function startEdit(item: ChecklistItem) {
     setEditingId(item.id);
@@ -288,7 +317,32 @@ function ChecklistSection({
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleMoveUp(item.id)}
+                    disabled={reordering !== null || items.indexOf(item) === 0}
+                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    title="Move up"
+                    aria-label={`Move "${item.title}" up`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-4">
+                      <path fillRule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleMoveDown(item.id)}
+                    disabled={reordering !== null || items.indexOf(item) === items.length - 1}
+                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    title="Move down"
+                    aria-label={`Move "${item.title}" down`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-4">
+                      <path fillRule="evenodd" d="M10.53 13.53a.75.75 0 0 1-1.06 0l-4.25-4.25a.75.75 0 1 1 1.06-1.06L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25Z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  <span className="text-gray-200 mx-0.5" aria-hidden="true">|</span>
                   <button
                     type="button"
                     onClick={() => startEdit(item)}
@@ -397,16 +451,6 @@ function ChecklistSection({
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
                 />
               </div>
-              <div className="w-32">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Sort Order</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={addForm.sort_order}
-                  onChange={(e) => setAddForm((v) => ({ ...v, sort_order: e.target.value }))}
-                  className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-                />
-              </div>
               <div className="flex items-center gap-3 pt-1">
                 <button
                   type="submit"
@@ -468,7 +512,81 @@ export default function AdminChecklistsPage() {
     }
   }
 
+  async function handleMoveUp(id: string) {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    const typeItems = items.filter((i) => i.type === item.type);
+    const idx = typeItems.findIndex((i) => i.id === id);
+    if (idx <= 0) return;
+
+    const newOrder = [...typeItems];
+    [newOrder[idx - 1], newOrder[idx]] = [newOrder[idx], newOrder[idx - 1]];
+    const orderedIds = newOrder.map((i) => i.id);
+
+    const updatedItems = items.map((i) => {
+      const orderIdx = orderedIds.indexOf(i.id);
+      if (orderIdx !== -1) return { ...i, sort_order: orderIdx };
+      return i;
+    });
+    updatedItems.sort((a, b) => {
+      if (a.type !== b.type) return a.type < b.type ? -1 : 1;
+      return a.sort_order - b.sort_order;
+    });
+    const previousItems = items;
+    setItems(updatedItems);
+
+    const res = await fetch('/api/admin/checklists/reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: item.type, orderedIds }),
+    });
+    if (!res.ok) {
+      setItems(previousItems);
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error ?? 'Failed to reorder');
+    }
+  }
+
+  async function handleMoveDown(id: string) {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    const typeItems = items.filter((i) => i.type === item.type);
+    const idx = typeItems.findIndex((i) => i.id === id);
+    if (idx >= typeItems.length - 1) return;
+
+    const newOrder = [...typeItems];
+    [newOrder[idx], newOrder[idx + 1]] = [newOrder[idx + 1], newOrder[idx]];
+    const orderedIds = newOrder.map((i) => i.id);
+
+    const updatedItems = items.map((i) => {
+      const orderIdx = orderedIds.indexOf(i.id);
+      if (orderIdx !== -1) return { ...i, sort_order: orderIdx };
+      return i;
+    });
+    updatedItems.sort((a, b) => {
+      if (a.type !== b.type) return a.type < b.type ? -1 : 1;
+      return a.sort_order - b.sort_order;
+    });
+    const previousItems = items;
+    setItems(updatedItems);
+
+    const res = await fetch('/api/admin/checklists/reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: item.type, orderedIds }),
+    });
+    if (!res.ok) {
+      setItems(previousItems);
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error ?? 'Failed to reorder');
+    }
+  }
+
   async function handleAdd(type: 'checkin' | 'checkout', data: AddFormState) {
+    const typeItems = items.filter((i) => i.type === type);
+    const maxOrder = typeItems.length > 0 ? Math.max(...typeItems.map((i) => i.sort_order)) : -1;
     const res = await fetch('/api/admin/checklists', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -476,7 +594,7 @@ export default function AdminChecklistsPage() {
         type,
         title: data.title,
         description: data.description || undefined,
-        sort_order: parseInt(data.sort_order, 10) || 0,
+        sort_order: maxOrder + 1,
       }),
     });
     if (!res.ok) {
@@ -547,6 +665,8 @@ export default function AdminChecklistsPage() {
             onAdd={handleAdd}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
+            onMoveUp={handleMoveUp}
+            onMoveDown={handleMoveDown}
           />
           <ChecklistSection
             title="Check-out Checklist"
@@ -556,6 +676,8 @@ export default function AdminChecklistsPage() {
             onAdd={handleAdd}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
+            onMoveUp={handleMoveUp}
+            onMoveDown={handleMoveDown}
           />
         </div>
       )}
