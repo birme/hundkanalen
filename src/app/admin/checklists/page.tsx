@@ -21,6 +21,12 @@ type AddFormState = {
   sort_order: string;
 };
 
+type PropertyInfoItem = {
+  id: string;
+  title: string;
+  category: string;
+};
+
 const EMPTY_ADD_FORM: AddFormState = { title: '', description: '', sort_order: '0' };
 
 function SpinnerIcon() {
@@ -67,6 +73,7 @@ function ChecklistSection({
   title,
   type,
   items,
+  propertyInfoItems,
   onAdd,
   onUpdate,
   onDelete,
@@ -74,6 +81,7 @@ function ChecklistSection({
   title: string;
   type: 'checkin' | 'checkout';
   items: ChecklistItem[];
+  propertyInfoItems: PropertyInfoItem[];
   onAdd: (type: 'checkin' | 'checkout', data: AddFormState) => Promise<void>;
   onUpdate: (id: string, data: EditState) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
@@ -85,6 +93,9 @@ function ChecklistSection({
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [linkingId, setLinkingId] = useState<string | null>(null);
+  const [linkedIds, setLinkedIds] = useState<string[]>([]);
+  const [linkSaving, setLinkSaving] = useState(false);
 
   function startEdit(item: ChecklistItem) {
     setEditingId(item.id);
@@ -95,6 +106,42 @@ function ChecklistSection({
   function cancelEdit() {
     setEditingId(null);
     setError(null);
+  }
+
+  async function startLinking(itemId: string) {
+    setLinkingId(itemId);
+    setLinkSaving(false);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/checklists/${itemId}/links`);
+      if (!res.ok) throw new Error('Failed to load links');
+      const ids = await res.json();
+      setLinkedIds(ids);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load links');
+      setLinkingId(null);
+    }
+  }
+
+  async function saveLinks(itemId: string) {
+    setLinkSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/checklists/${itemId}/links`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ propertyInfoIds: linkedIds }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? 'Failed to save links');
+      }
+      setLinkingId(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save links');
+    } finally {
+      setLinkSaving(false);
+    }
   }
 
   async function handleSaveEdit(id: string) {
@@ -252,11 +299,68 @@ function ChecklistSection({
                   <span className="text-gray-300" aria-hidden="true">|</span>
                   <button
                     type="button"
+                    onClick={() => startLinking(item.id)}
+                    className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                  >
+                    Link Info
+                  </button>
+                  <span className="text-gray-300" aria-hidden="true">|</span>
+                  <button
+                    type="button"
                     onClick={() => handleDelete(item.id)}
                     disabled={deleting === item.id}
                     className="text-xs font-medium text-falu-600 hover:text-falu-800 transition-colors disabled:opacity-60"
                   >
                     {deleting === item.id ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
+              </div>
+            )}
+            {linkingId === item.id && (
+              <div className="mt-3 bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
+                <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                  Link Property Info to &ldquo;{item.title}&rdquo;
+                </p>
+                {propertyInfoItems.length === 0 ? (
+                  <p className="text-sm text-gray-400 italic">No property info items available.</p>
+                ) : (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {propertyInfoItems.map((pi) => (
+                      <label key={pi.id} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={linkedIds.includes(pi.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setLinkedIds((prev) => [...prev, pi.id]);
+                            } else {
+                              setLinkedIds((prev) => prev.filter((lid) => lid !== pi.id));
+                            }
+                          }}
+                          className="rounded border-gray-300 text-forest-600 focus:ring-forest-500"
+                        />
+                        <span className="text-sm text-gray-700">{pi.title}</span>
+                        <span className="text-xs text-gray-400">({pi.category})</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => saveLinks(item.id)}
+                    disabled={linkSaving}
+                    className="btn-primary text-xs disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                  >
+                    {linkSaving && <SpinnerIcon />}
+                    Save Links
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLinkingId(null)}
+                    className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Cancel
                   </button>
                 </div>
               </div>
@@ -332,6 +436,7 @@ export default function AdminChecklistsPage() {
   const [items, setItems] = useState<ChecklistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
+  const [propertyInfoItems, setPropertyInfoItems] = useState<PropertyInfoItem[]>([]);
 
   useEffect(() => {
     fetchItems();
@@ -341,10 +446,21 @@ export default function AdminChecklistsPage() {
     setLoading(true);
     setPageError(null);
     try {
-      const res = await fetch('/api/admin/checklists');
-      if (!res.ok) throw new Error(`Failed to load checklists (${res.status})`);
-      const data = await res.json();
-      setItems(data);
+      const [checklistRes, infoRes] = await Promise.all([
+        fetch('/api/admin/checklists'),
+        fetch('/api/admin/property-info'),
+      ]);
+      if (!checklistRes.ok) throw new Error(`Failed to load checklists (${checklistRes.status})`);
+      const checklistData = await checklistRes.json();
+      setItems(checklistData);
+      if (infoRes.ok) {
+        const infoData = await infoRes.json();
+        setPropertyInfoItems(infoData.map((i: PropertyInfoItem & { content: string; sort_order: number }) => ({
+          id: i.id,
+          title: i.title,
+          category: i.category,
+        })));
+      }
     } catch (err) {
       setPageError(err instanceof Error ? err.message : 'Failed to load checklists.');
     } finally {
@@ -427,6 +543,7 @@ export default function AdminChecklistsPage() {
             title="Check-in Checklist"
             type="checkin"
             items={checkinItems}
+            propertyInfoItems={propertyInfoItems}
             onAdd={handleAdd}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
@@ -435,6 +552,7 @@ export default function AdminChecklistsPage() {
             title="Check-out Checklist"
             type="checkout"
             items={checkoutItems}
+            propertyInfoItems={propertyInfoItems}
             onAdd={handleAdd}
             onUpdate={handleUpdate}
             onDelete={handleDelete}

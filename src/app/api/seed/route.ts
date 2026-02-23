@@ -217,6 +217,17 @@ export async function POST(request: NextRequest) {
   `;
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_guest_reviews_stay_id ON guest_reviews(stay_id)`;
 
+  // === Migration 006: Checklist-to-property-info links ===
+  await sql`
+    CREATE TABLE IF NOT EXISTS checklist_property_info (
+      checklist_item_id UUID NOT NULL REFERENCES checklist_items(id) ON DELETE CASCADE,
+      property_info_id UUID NOT NULL REFERENCES property_info(id) ON DELETE CASCADE,
+      PRIMARY KEY (checklist_item_id, property_info_id)
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_cpi_checklist_item_id ON checklist_property_info(checklist_item_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_cpi_property_info_id ON checklist_property_info(property_info_id)`;
+
   // Seed default site settings
   await sql`
     INSERT INTO site_settings (key, value) VALUES
@@ -319,7 +330,7 @@ export async function POST(request: NextRequest) {
     tables: [
       'users', 'bookings', 'blocked_dates', 'pricing_defaults', 'pricing_seasons', 'inquiries',
       'stays', 'checklist_items', 'property_info', 'photos', 'site_settings', 'favorite_places', 'stay_favorites',
-      'guest_reviews',
+      'guest_reviews', 'checklist_property_info',
     ],
   });
 }

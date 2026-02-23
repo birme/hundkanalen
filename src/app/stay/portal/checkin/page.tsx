@@ -4,25 +4,30 @@ import { redirect } from 'next/navigation';
 import { getGuestSession } from '@/lib/guest-auth';
 import { getDb } from '@/lib/db';
 import StepNavigation from '@/components/portal/StepNavigation';
-
-type ChecklistItem = {
-  id: string;
-  title: string;
-  description: string | null;
-  sort_order: number;
-};
+import ChecklistWithModals from '@/components/portal/ChecklistWithModals';
+import type { ChecklistItemWithLinks } from '@/components/portal/ChecklistWithModals';
 
 export default async function CheckInPage() {
   const session = await getGuestSession();
   if (!session) redirect('/stay');
 
   const sql = getDb();
-  const items = await sql<ChecklistItem[]>`
-    SELECT id, title, description, sort_order
-    FROM checklist_items
-    WHERE type = 'checkin'
-    ORDER BY sort_order ASC
+  const rows = await sql<(ChecklistItemWithLinks & { linked_info: string })[]>`
+    SELECT ci.id, ci.title, ci.description, ci.sort_order,
+      COALESCE(json_agg(json_build_object('id', pi.id, 'title', pi.title, 'content', pi.content))
+        FILTER (WHERE pi.id IS NOT NULL), '[]'::json) AS linked_info
+    FROM checklist_items ci
+    LEFT JOIN checklist_property_info cpi ON cpi.checklist_item_id = ci.id
+    LEFT JOIN property_info pi ON pi.id = cpi.property_info_id
+    WHERE ci.type = 'checkin'
+    GROUP BY ci.id, ci.title, ci.description, ci.sort_order
+    ORDER BY ci.sort_order ASC
   `;
+
+  const items: ChecklistItemWithLinks[] = rows.map((row) => ({
+    ...row,
+    linked_info: typeof row.linked_info === 'string' ? JSON.parse(row.linked_info) : row.linked_info,
+  }));
 
   return (
     <div className="space-y-8">
@@ -32,24 +37,7 @@ export default async function CheckInPage() {
       </div>
 
       {items.length > 0 ? (
-        <div className="space-y-3">
-          {items.map((item, index) => (
-            <div
-              key={item.id}
-              className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4 flex gap-3"
-            >
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-forest-100 text-forest-700 font-bold text-sm flex items-center justify-center">
-                {index + 1}
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-forest-800 text-sm">{item.title}</h3>
-                {item.description && (
-                  <p className="text-sm text-gray-600 mt-1 leading-relaxed">{item.description}</p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <ChecklistWithModals items={items} accentColor="forest" />
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 px-5 py-8 text-center">
           <p className="text-gray-400 text-sm">No check-in instructions yet.</p>
