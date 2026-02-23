@@ -24,6 +24,8 @@ declare module '@auth/core/jwt' {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   providers: [
     Credentials({
       credentials: {
@@ -31,31 +33,48 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log('[auth] Missing email or password');
+            return null;
+          }
 
-        const email = credentials.email as string;
-        const password = credentials.password as string;
+          const email = credentials.email as string;
+          const password = credentials.password as string;
 
-        const sql = getDb();
-        const users = await sql`
-          SELECT id, email, name, password_hash, role
-          FROM users
-          WHERE email = ${email}
-        `;
+          console.log('[auth] Attempting login for:', email);
+          const sql = getDb();
+          const users = await sql`
+            SELECT id, email, name, password_hash, role
+            FROM users
+            WHERE email = ${email}
+          `;
 
-        if (users.length === 0) return null;
+          if (users.length === 0) {
+            console.log('[auth] No user found for:', email);
+            return null;
+          }
 
-        const user = users[0];
-        const isValid = await compare(password, user.password_hash);
+          const user = users[0];
+          console.log('[auth] User found, verifying password');
+          const isValid = await compare(password, user.password_hash);
 
-        if (!isValid) return null;
+          if (!isValid) {
+            console.log('[auth] Invalid password for:', email);
+            return null;
+          }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
+          console.log('[auth] Login successful for:', email, 'role:', user.role);
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error('[auth] Authorize error:', error);
+          return null;
+        }
       },
     }),
   ],
