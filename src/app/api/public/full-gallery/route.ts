@@ -2,12 +2,15 @@ export const dynamic = 'force-dynamic';
 
 import { getDb } from '@/lib/db';
 import { cookies } from 'next/headers';
+import { getGuestSession } from '@/lib/guest-auth';
 
 export async function GET() {
   const cookieStore = await cookies();
   const accessCookie = cookieStore.get('hk-site-access');
+  const guestSession = await getGuestSession();
 
-  if (accessCookie?.value !== 'verified') {
+  // Allow access via global access code OR valid stay session
+  if (accessCookie?.value !== 'verified' && !guestSession) {
     return Response.json({ error: 'Access code required' }, { status: 401 });
   }
 
