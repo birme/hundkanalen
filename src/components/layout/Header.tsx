@@ -2,9 +2,13 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: session } = useSession();
+
+  const dashboardHref = session?.user?.role === 'admin' ? '/admin' : '/guest';
 
   return (
     <header className="bg-white/90 backdrop-blur-sm border-b border-forest-100 sticky top-0 z-50">
@@ -28,9 +32,23 @@ export default function Header() {
           <Link href="/contact" className="text-sm text-gray-600 hover:text-forest-700 transition-colors">
             Contact
           </Link>
-          <Link href="/login" className="btn-primary text-sm !py-2 !px-4">
-            Log in
-          </Link>
+          {session ? (
+            <div className="flex items-center gap-3">
+              <Link href={dashboardHref} className="text-sm text-forest-700 font-medium hover:text-forest-800 transition-colors">
+                {session.user?.name || 'Dashboard'}
+              </Link>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <Link href="/login" className="btn-primary text-sm !py-2 !px-4">
+              Log in
+            </Link>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -61,9 +79,23 @@ export default function Header() {
           <Link href="/contact" className="block text-gray-600 hover:text-forest-700" onClick={() => setMobileMenuOpen(false)}>
             Contact
           </Link>
-          <Link href="/login" className="btn-primary text-sm !py-2 !px-4 w-full text-center" onClick={() => setMobileMenuOpen(false)}>
-            Log in
-          </Link>
+          {session ? (
+            <>
+              <Link href={dashboardHref} className="block text-forest-700 font-medium" onClick={() => setMobileMenuOpen(false)}>
+                {session.user?.name || 'Dashboard'}
+              </Link>
+              <button
+                onClick={() => { setMobileMenuOpen(false); signOut({ callbackUrl: '/' }); }}
+                className="block text-gray-500 hover:text-gray-700"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="btn-primary text-sm !py-2 !px-4 w-full text-center" onClick={() => setMobileMenuOpen(false)}>
+              Log in
+            </Link>
+          )}
         </div>
       )}
     </header>
