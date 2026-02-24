@@ -5,10 +5,11 @@ import { useEffect } from 'react';
 type PropertyInfoModalProps = {
   title: string;
   content: string;
+  photoId?: string | null;
   onClose: () => void;
 };
 
-export default function PropertyInfoModal({ title, content, onClose }: PropertyInfoModalProps) {
+export default function PropertyInfoModal({ title, content, photoId, onClose }: PropertyInfoModalProps) {
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -41,6 +42,16 @@ export default function PropertyInfoModal({ title, content, onClose }: PropertyI
             </svg>
           </button>
         </div>
+
+        {/* Photo */}
+        {photoId && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`/api/photos/${photoId}`}
+            alt=""
+            className="w-full max-h-56 object-cover"
+          />
+        )}
 
         {/* Body */}
         <div className="px-5 py-4">

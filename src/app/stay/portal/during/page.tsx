@@ -24,6 +24,7 @@ type PropertyInfoItem = {
   title: string;
   content: string;
   sort_order: number;
+  photo_id: string | null;
 };
 
 type Photo = {
@@ -68,7 +69,7 @@ export default async function DuringYourStayPage() {
       ORDER BY fp.sort_order ASC, fp.created_at ASC
     `,
     sql<PropertyInfoItem[]>`
-      SELECT id, category, title, content, sort_order
+      SELECT id, category, title, content, sort_order, photo_id
       FROM property_info
       WHERE category IN ('rules', 'practical', 'emergency', 'general')
       ORDER BY category ASC, sort_order ASC
@@ -169,6 +170,14 @@ export default async function DuringYourStayPage() {
                         <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-wrap">
                           {item.content}
                         </p>
+                        {item.photo_id && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={`/api/photos/${item.photo_id}`}
+                            alt=""
+                            className="mt-2 w-full max-h-48 object-cover rounded-lg"
+                          />
+                        )}
                       </div>
                     ))}
                   </div>

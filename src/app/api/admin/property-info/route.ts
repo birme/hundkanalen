@@ -12,7 +12,7 @@ export async function GET() {
 
   const sql = getDb();
   const items = await sql`
-    SELECT id, title, content, category, sort_order, created_at, updated_at
+    SELECT id, title, content, category, sort_order, photo_id, created_at, updated_at
     FROM property_info
     ORDER BY category ASC, sort_order ASC
   `;
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { title, content, category, sort_order } = body;
+  const { title, content, category, sort_order, photo_id } = body;
 
   if (!title || !content || !category) {
     return Response.json(
@@ -38,14 +38,15 @@ export async function POST(request: NextRequest) {
 
   const sql = getDb();
   const [item] = await sql`
-    INSERT INTO property_info (title, content, category, sort_order)
+    INSERT INTO property_info (title, content, category, sort_order, photo_id)
     VALUES (
       ${title},
       ${content},
       ${category},
-      ${sort_order ?? 0}
+      ${sort_order ?? 0},
+      ${photo_id ?? null}
     )
-    RETURNING id, title, content, category, sort_order, created_at, updated_at
+    RETURNING id, title, content, category, sort_order, photo_id, created_at, updated_at
   `;
 
   return Response.json(item, { status: 201 });

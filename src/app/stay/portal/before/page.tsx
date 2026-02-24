@@ -10,6 +10,7 @@ type PropertyInfoItem = {
   title: string;
   content: string;
   sort_order: number;
+  photo_id: string | null;
 };
 
 export default async function BeforeYourStayPage() {
@@ -22,11 +23,11 @@ export default async function BeforeYourStayPage() {
       SELECT packing_notes FROM stays WHERE id = ${session.stayId} LIMIT 1
     `,
     sql<PropertyInfoItem[]>`
-      SELECT id, title, content, sort_order FROM property_info
+      SELECT id, title, content, sort_order, photo_id FROM property_info
       WHERE category = 'packing' ORDER BY sort_order ASC
     `,
     sql<PropertyInfoItem[]>`
-      SELECT id, title, content, sort_order FROM property_info
+      SELECT id, title, content, sort_order, photo_id FROM property_info
       WHERE category = 'location' ORDER BY sort_order ASC
     `,
   ]);
@@ -64,6 +65,14 @@ export default async function BeforeYourStayPage() {
                 <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-wrap">
                   {item.content}
                 </p>
+                {item.photo_id && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`/api/photos/${item.photo_id}`}
+                    alt=""
+                    className="mt-2 w-full max-h-48 object-cover rounded-lg"
+                  />
+                )}
               </div>
             ))}
           </div>
@@ -90,6 +99,14 @@ export default async function BeforeYourStayPage() {
                 <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-wrap">
                   {item.content}
                 </p>
+                {item.photo_id && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`/api/photos/${item.photo_id}`}
+                    alt=""
+                    className="mt-2 w-full max-h-48 object-cover rounded-lg"
+                  />
+                )}
               </div>
             ))}
           </div>

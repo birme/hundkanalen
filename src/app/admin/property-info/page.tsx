@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import PhotoPicker from '@/components/admin/PhotoPicker';
 
 type PropertyInfoItem = {
   id: string;
@@ -8,24 +9,28 @@ type PropertyInfoItem = {
   content: string;
   category: string;
   sort_order: number;
+  photo_id: string | null;
 };
 
 type EditState = {
   title: string;
   content: string;
   category: string;
+  photo_id: string | null;
 };
 
 type AddFormState = {
   title: string;
   content: string;
   category: string;
+  photo_id: string | null;
 };
 
 const EMPTY_ADD_FORM: AddFormState = {
   title: '',
   content: '',
   category: 'general',
+  photo_id: null,
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -106,7 +111,7 @@ export default function AdminPropertyInfoPage() {
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValues, setEditValues] = useState<EditState>({ title: '', content: '', category: 'general' });
+  const [editValues, setEditValues] = useState<EditState>({ title: '', content: '', category: 'general', photo_id: null });
   const [showAddForm, setShowAddForm] = useState(false);
   const [addForm, setAddForm] = useState<AddFormState>(EMPTY_ADD_FORM);
   const [saving, setSaving] = useState(false);
@@ -135,7 +140,7 @@ export default function AdminPropertyInfoPage() {
 
   function startEdit(item: PropertyInfoItem) {
     setEditingId(item.id);
-    setEditValues({ title: item.title, content: item.content, category: item.category });
+    setEditValues({ title: item.title, content: item.content, category: item.category, photo_id: item.photo_id ?? null });
     setFormError(null);
   }
 
@@ -159,6 +164,7 @@ export default function AdminPropertyInfoPage() {
           title: editValues.title.trim(),
           content: editValues.content.trim(),
           category: editValues.category,
+          photo_id: editValues.photo_id || null,
         }),
       });
       if (!res.ok) {
@@ -213,6 +219,7 @@ export default function AdminPropertyInfoPage() {
           content: addForm.content.trim(),
           category: addForm.category,
           sort_order: maxOrder + 1,
+          photo_id: addForm.photo_id || null,
         }),
       });
       if (!res.ok) {
@@ -408,6 +415,13 @@ export default function AdminPropertyInfoPage() {
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-y"
                 />
               </div>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                <PhotoPicker
+                  photoId={addForm.photo_id}
+                  onSelect={(id) => setAddForm((v) => ({ ...v, photo_id: id }))}
+                />
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -489,6 +503,13 @@ export default function AdminPropertyInfoPage() {
                             className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-y"
                           />
                         </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Photo</label>
+                          <PhotoPicker
+                            photoId={editValues.photo_id}
+                            onSelect={(id) => setEditValues((v) => ({ ...v, photo_id: id }))}
+                          />
+                        </div>
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
@@ -517,6 +538,14 @@ export default function AdminPropertyInfoPage() {
                           <pre className="text-sm text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">
                             {item.content}
                           </pre>
+                          {item.photo_id && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={`/api/photos/${item.photo_id}`}
+                              alt=""
+                              className="mt-2 w-20 h-14 object-cover rounded-lg border border-gray-200"
+                            />
+                          )}
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0 pt-0.5">
                           {/* Reorder arrows */}

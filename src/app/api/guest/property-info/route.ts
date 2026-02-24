@@ -16,7 +16,8 @@ export async function GET() {
       category,
       title,
       content,
-      sort_order
+      sort_order,
+      photo_id
     FROM property_info
     ORDER BY category ASC, sort_order ASC
   `;

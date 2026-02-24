@@ -21,13 +21,14 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   }
 
   const body = await request.json();
-  const { title, content, category, sort_order } = body;
+  const { title, content, category, sort_order, photo_id } = body;
 
   const updates: Record<string, unknown> = {};
   if (title !== undefined) updates.title = title;
   if (content !== undefined) updates.content = content;
   if (category !== undefined) updates.category = category;
   if (sort_order !== undefined) updates.sort_order = sort_order;
+  if (photo_id !== undefined) updates.photo_id = photo_id ?? null;
 
   if (Object.keys(updates).length === 0) {
     return Response.json({ error: 'No fields provided for update' }, { status: 400 });
@@ -37,7 +38,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     UPDATE property_info
     SET ${sql(updates)}, updated_at = NOW()
     WHERE id = ${id}
-    RETURNING id, title, content, category, sort_order, created_at, updated_at
+    RETURNING id, title, content, category, sort_order, photo_id, created_at, updated_at
   `;
 
   return Response.json(updated);

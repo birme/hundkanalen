@@ -21,7 +21,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   }
 
   const body = await request.json();
-  const { title, description, sort_order, type } = body;
+  const { title, description, sort_order, type, photo_id } = body;
 
   const updates: Record<string, unknown> = {};
   if (title !== undefined) updates.title = title;
@@ -36,6 +36,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     }
     updates.type = type;
   }
+  if (photo_id !== undefined) updates.photo_id = photo_id ?? null;
 
   if (Object.keys(updates).length === 0) {
     return Response.json({ error: 'No fields provided for update' }, { status: 400 });
@@ -45,7 +46,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     UPDATE checklist_items
     SET ${sql(updates)}, updated_at = NOW()
     WHERE id = ${id}
-    RETURNING id, type, title, description, sort_order, created_at, updated_at
+    RETURNING id, type, title, description, sort_order, photo_id, created_at, updated_at
   `;
 
   return Response.json(updated);

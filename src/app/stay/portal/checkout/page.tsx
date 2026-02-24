@@ -15,14 +15,14 @@ export default async function CheckOutPage() {
   const sql = getDb();
   const [rows, [stay]] = await Promise.all([
     sql<(ChecklistItemWithLinks & { linked_info: string })[]>`
-      SELECT ci.id, ci.title, ci.description, ci.sort_order,
-        COALESCE(json_agg(json_build_object('id', pi.id, 'title', pi.title, 'content', pi.content))
+      SELECT ci.id, ci.title, ci.description, ci.sort_order, ci.photo_id,
+        COALESCE(json_agg(json_build_object('id', pi.id, 'title', pi.title, 'content', pi.content, 'photoId', pi.photo_id))
           FILTER (WHERE pi.id IS NOT NULL), '[]'::json) AS linked_info
       FROM checklist_items ci
       LEFT JOIN checklist_property_info cpi ON cpi.checklist_item_id = ci.id
       LEFT JOIN property_info pi ON pi.id = cpi.property_info_id
       WHERE ci.type = 'checkout'
-      GROUP BY ci.id, ci.title, ci.description, ci.sort_order
+      GROUP BY ci.id, ci.title, ci.description, ci.sort_order, ci.photo_id
       ORDER BY ci.sort_order ASC
     `,
     sql<{ check_out: string }[]>`

@@ -228,6 +228,10 @@ export async function POST(request: NextRequest) {
   await sql`CREATE INDEX IF NOT EXISTS idx_cpi_checklist_item_id ON checklist_property_info(checklist_item_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_cpi_property_info_id ON checklist_property_info(property_info_id)`;
 
+  // === Migration 007: Photo attachments on checklist items and property info ===
+  await sql`ALTER TABLE checklist_items ADD COLUMN IF NOT EXISTS photo_id UUID REFERENCES photos(id) ON DELETE SET NULL`;
+  await sql`ALTER TABLE property_info ADD COLUMN IF NOT EXISTS photo_id UUID REFERENCES photos(id) ON DELETE SET NULL`;
+
   // Seed default site settings
   await sql`
     INSERT INTO site_settings (key, value) VALUES

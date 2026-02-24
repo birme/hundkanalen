@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import PhotoPicker from '@/components/admin/PhotoPicker';
 
 type ChecklistItem = {
   id: string;
@@ -8,17 +9,20 @@ type ChecklistItem = {
   title: string;
   description: string | null;
   sort_order: number;
+  photo_id: string | null;
 };
 
 type EditState = {
   title: string;
   description: string;
+  photo_id: string | null;
 };
 
 type AddFormState = {
   title: string;
   description: string;
   sort_order: string;
+  photo_id: string | null;
 };
 
 type PropertyInfoItem = {
@@ -27,7 +31,7 @@ type PropertyInfoItem = {
   category: string;
 };
 
-const EMPTY_ADD_FORM: AddFormState = { title: '', description: '', sort_order: '0' };
+const EMPTY_ADD_FORM: AddFormState = { title: '', description: '', sort_order: '0', photo_id: null };
 
 function SpinnerIcon() {
   return (
@@ -91,7 +95,7 @@ function ChecklistSection({
   onMoveDown: (id: string) => Promise<void>;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValues, setEditValues] = useState<EditState>({ title: '', description: '' });
+  const [editValues, setEditValues] = useState<EditState>({ title: '', description: '', photo_id: null });
   const [showAddForm, setShowAddForm] = useState(false);
   const [addForm, setAddForm] = useState<AddFormState>(EMPTY_ADD_FORM);
   const [saving, setSaving] = useState(false);
@@ -128,7 +132,7 @@ function ChecklistSection({
 
   function startEdit(item: ChecklistItem) {
     setEditingId(item.id);
-    setEditValues({ title: item.title, description: item.description ?? '' });
+    setEditValues({ title: item.title, description: item.description ?? '', photo_id: item.photo_id ?? null });
     setError(null);
   }
 
@@ -181,7 +185,7 @@ function ChecklistSection({
     setSaving(true);
     setError(null);
     try {
-      await onUpdate(id, { title: editValues.title.trim(), description: editValues.description.trim() });
+      await onUpdate(id, { title: editValues.title.trim(), description: editValues.description.trim(), photo_id: editValues.photo_id });
       setEditingId(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save.');
@@ -212,7 +216,7 @@ function ChecklistSection({
     setSaving(true);
     setError(null);
     try {
-      await onAdd(type, { ...addForm, title: addForm.title.trim(), description: addForm.description.trim() });
+      await onAdd(type, { ...addForm, title: addForm.title.trim(), description: addForm.description.trim(), photo_id: addForm.photo_id });
       setAddForm(EMPTY_ADD_FORM);
       setShowAddForm(false);
     } catch (err) {
@@ -285,6 +289,13 @@ function ChecklistSection({
                     placeholder="Optional description..."
                   />
                 </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Photo</label>
+                  <PhotoPicker
+                    photoId={editValues.photo_id}
+                    onSelect={(id) => setEditValues((v) => ({ ...v, photo_id: id }))}
+                  />
+                </div>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -310,10 +321,20 @@ function ChecklistSection({
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 min-w-0">
                   <span className={`mt-0.5 flex-shrink-0 size-5 rounded-full border-2 ${type === 'checkin' ? 'border-forest-300' : 'border-wood-300'}`} aria-hidden="true" />
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900">{item.title}</p>
-                    {item.description && (
-                      <p className="text-sm text-gray-500 mt-0.5">{item.description}</p>
+                  <div className="min-w-0 flex items-start gap-3 flex-1">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900">{item.title}</p>
+                      {item.description && (
+                        <p className="text-sm text-gray-500 mt-0.5">{item.description}</p>
+                      )}
+                    </div>
+                    {item.photo_id && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={`/api/photos/${item.photo_id}`}
+                        alt=""
+                        className="w-12 h-9 object-cover rounded-md border border-gray-200 flex-shrink-0"
+                      />
                     )}
                   </div>
                 </div>
@@ -449,6 +470,13 @@ function ChecklistSection({
                   rows={2}
                   placeholder="Optional description..."
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Photo</label>
+                <PhotoPicker
+                  photoId={addForm.photo_id}
+                  onSelect={(id) => setAddForm((v) => ({ ...v, photo_id: id }))}
                 />
               </div>
               <div className="flex items-center gap-3 pt-1">
@@ -595,6 +623,7 @@ export default function AdminChecklistsPage() {
         title: data.title,
         description: data.description || undefined,
         sort_order: maxOrder + 1,
+        photo_id: data.photo_id || null,
       }),
     });
     if (!res.ok) {
@@ -612,6 +641,7 @@ export default function AdminChecklistsPage() {
       body: JSON.stringify({
         title: data.title,
         description: data.description || null,
+        photo_id: data.photo_id || null,
       }),
     });
     if (!res.ok) {

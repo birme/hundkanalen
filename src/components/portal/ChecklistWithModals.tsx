@@ -7,6 +7,7 @@ type LinkedPropertyInfo = {
   id: string;
   title: string;
   content: string;
+  photoId?: string | null;
 };
 
 export type ChecklistItemWithLinks = {
@@ -14,6 +15,7 @@ export type ChecklistItemWithLinks = {
   title: string;
   description: string | null;
   sort_order: number;
+  photo_id: string | null;
   linked_info: LinkedPropertyInfo[];
 };
 
@@ -24,6 +26,7 @@ type Props = {
 
 export default function ChecklistWithModals({ items, accentColor }: Props) {
   const [activeModal, setActiveModal] = useState<LinkedPropertyInfo | null>(null);
+  const [activeModalPhotoId, setActiveModalPhotoId] = useState<string | null | undefined>(undefined);
 
   const numberBg = accentColor === 'forest'
     ? 'bg-forest-100 text-forest-700'
@@ -45,13 +48,21 @@ export default function ChecklistWithModals({ items, accentColor }: Props) {
               {item.description && (
                 <p className="text-sm text-gray-600 mt-1 leading-relaxed">{item.description}</p>
               )}
+              {item.photo_id && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={`/api/photos/${item.photo_id}`}
+                  alt=""
+                  className="mt-2 w-full max-h-48 object-cover rounded-lg"
+                />
+              )}
               {item.linked_info.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {item.linked_info.map((info) => (
                     <button
                       key={info.id}
                       type="button"
-                      onClick={() => setActiveModal(info)}
+                      onClick={() => { setActiveModal(info); setActiveModalPhotoId(info.photoId); }}
                       className="inline-flex items-center gap-1 text-xs font-medium text-forest-600 bg-forest-50 border border-forest-200 rounded-full px-2.5 py-0.5 hover:bg-forest-100 transition-colors cursor-pointer"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +83,8 @@ export default function ChecklistWithModals({ items, accentColor }: Props) {
         <PropertyInfoModal
           title={activeModal.title}
           content={activeModal.content}
-          onClose={() => setActiveModal(null)}
+          photoId={activeModalPhotoId}
+          onClose={() => { setActiveModal(null); setActiveModalPhotoId(undefined); }}
         />
       )}
     </>

@@ -12,7 +12,7 @@ export async function GET() {
 
   const sql = getDb();
   const items = await sql`
-    SELECT id, type, title, description, sort_order, created_at, updated_at
+    SELECT id, type, title, description, sort_order, photo_id, created_at, updated_at
     FROM checklist_items
     ORDER BY type ASC, sort_order ASC
   `;
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { type, title, description, sort_order } = body;
+  const { type, title, description, sort_order, photo_id } = body;
 
   if (!type || !title) {
     return Response.json(
@@ -45,14 +45,15 @@ export async function POST(request: NextRequest) {
 
   const sql = getDb();
   const [item] = await sql`
-    INSERT INTO checklist_items (type, title, description, sort_order)
+    INSERT INTO checklist_items (type, title, description, sort_order, photo_id)
     VALUES (
       ${type},
       ${title},
       ${description ?? null},
-      ${sort_order ?? 0}
+      ${sort_order ?? 0},
+      ${photo_id ?? null}
     )
-    RETURNING id, type, title, description, sort_order, created_at, updated_at
+    RETURNING id, type, title, description, sort_order, photo_id, created_at, updated_at
   `;
 
   return Response.json(item, { status: 201 });
