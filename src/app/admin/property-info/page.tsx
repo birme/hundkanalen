@@ -532,8 +532,8 @@ export default function AdminPropertyInfoPage() {
                       </div>
                     ) : (
                       /* Display row */
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
+                      <div className="space-y-2">
+                        <div className="min-w-0">
                           <p className="text-sm font-semibold text-gray-900 mb-1">{item.title}</p>
                           <pre className="text-sm text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">
                             {item.content}
@@ -547,13 +547,12 @@ export default function AdminPropertyInfoPage() {
                             />
                           )}
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0 pt-0.5">
-                          {/* Reorder arrows */}
+                        <div className="flex items-center gap-1 flex-wrap">
                           <button
                             type="button"
                             onClick={() => handleMoveUp(item.id)}
                             disabled={reordering !== null || index === 0}
-                            className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="p-1.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                             title="Move up"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-4">
@@ -564,27 +563,26 @@ export default function AdminPropertyInfoPage() {
                             type="button"
                             onClick={() => handleMoveDown(item.id)}
                             disabled={reordering !== null || index === arr.length - 1}
-                            className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="p-1.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                             title="Move down"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-4">
                               <path fillRule="evenodd" d="M10.53 13.53a.75.75 0 0 1-1.06 0l-4.25-4.25a.75.75 0 1 1 1.06-1.06L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25Z" clipRule="evenodd" />
                             </svg>
                           </button>
-                          <span className="text-gray-300" aria-hidden="true">|</span>
+                          <span className="text-gray-200 mx-0.5" aria-hidden="true">|</span>
                           <button
                             type="button"
                             onClick={() => startEdit(item)}
-                            className="text-xs font-medium text-forest-600 hover:text-forest-800 transition-colors"
+                            className="px-2 py-1 text-xs font-medium text-forest-600 hover:text-forest-800 hover:bg-forest-50 rounded transition-colors"
                           >
                             Edit
                           </button>
-                          <span className="text-gray-300" aria-hidden="true">|</span>
                           <button
                             type="button"
                             onClick={() => handleDelete(item.id)}
                             disabled={deleting === item.id}
-                            className="text-xs font-medium text-falu-600 hover:text-falu-800 transition-colors disabled:opacity-60"
+                            className="px-2 py-1 text-xs font-medium text-falu-600 hover:text-falu-800 hover:bg-falu-50 rounded transition-colors disabled:opacity-60"
                           >
                             {deleting === item.id ? 'Deleting...' : 'Delete'}
                           </button>

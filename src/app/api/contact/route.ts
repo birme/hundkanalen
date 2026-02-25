@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db';
+import { sendContactEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   const sql = getDb();
@@ -15,6 +16,13 @@ export async function POST(request: NextRequest) {
     VALUES (${name}, ${email}, ${checkin || null}, ${checkout || null}, ${guests || null}, ${message || null})
     RETURNING *
   `;
+
+  // Send email notification (don't block the response on failure)
+  try {
+    await sendContactEmail({ name, email, checkin, checkout, guests, message });
+  } catch (err) {
+    console.error('Failed to send contact email:', err);
+  }
 
   return Response.json({ success: true, id: inquiry.id });
 }

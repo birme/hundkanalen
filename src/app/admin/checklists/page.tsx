@@ -318,8 +318,8 @@ function ChecklistSection({
               </div>
             ) : (
               /* Display row */
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3 min-w-0">
+              <div className="space-y-2">
+                <div className="flex items-start gap-3">
                   <span className={`mt-0.5 flex-shrink-0 size-5 rounded-full border-2 ${type === 'checkin' ? 'border-forest-300' : 'border-wood-300'}`} aria-hidden="true" />
                   <div className="min-w-0 flex items-start gap-3 flex-1">
                     <div className="flex-1 min-w-0">
@@ -338,12 +338,12 @@ function ChecklistSection({
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex items-center gap-1 pl-8 flex-wrap">
                   <button
                     type="button"
                     onClick={() => handleMoveUp(item.id)}
                     disabled={reordering !== null || items.indexOf(item) === 0}
-                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="Move up"
                     aria-label={`Move "${item.title}" up`}
                   >
@@ -355,7 +355,7 @@ function ChecklistSection({
                     type="button"
                     onClick={() => handleMoveDown(item.id)}
                     disabled={reordering !== null || items.indexOf(item) === items.length - 1}
-                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="Move down"
                     aria-label={`Move "${item.title}" down`}
                   >
@@ -367,24 +367,22 @@ function ChecklistSection({
                   <button
                     type="button"
                     onClick={() => startEdit(item)}
-                    className="text-xs font-medium text-forest-600 hover:text-forest-800 transition-colors"
+                    className="px-2 py-1 text-xs font-medium text-forest-600 hover:text-forest-800 hover:bg-forest-50 rounded transition-colors"
                   >
                     Edit
                   </button>
-                  <span className="text-gray-300" aria-hidden="true">|</span>
                   <button
                     type="button"
                     onClick={() => startLinking(item.id)}
-                    className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    className="px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
                   >
                     Link Info
                   </button>
-                  <span className="text-gray-300" aria-hidden="true">|</span>
                   <button
                     type="button"
                     onClick={() => handleDelete(item.id)}
                     disabled={deleting === item.id}
-                    className="text-xs font-medium text-falu-600 hover:text-falu-800 transition-colors disabled:opacity-60"
+                    className="px-2 py-1 text-xs font-medium text-falu-600 hover:text-falu-800 hover:bg-falu-50 rounded transition-colors disabled:opacity-60"
                   >
                     {deleting === item.id ? 'Deleting...' : 'Delete'}
                   </button>
