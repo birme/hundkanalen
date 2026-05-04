@@ -24,8 +24,14 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
    - Unused new parameters.
    Any match → **must** be flagged `[blocking]`.
 5. Check each acceptance criterion from the sub-ticket body; state whether the diff satisfies it. Unsatisfied criterion → `[blocking]`.
-6. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
-7. Post a **single** comment on the PR using this exact format:
+6. Check project-specific conventions in new API route files:
+   - `export const dynamic = 'force-dynamic'` must be present as the first line — missing → `[blocking]`.
+   - Responses must use `Response.json()`, never `NextResponse.json()` — violation → `[blocking]`.
+   - Error responses must have shape `{ error: 'message' }` — deviation → `[blocking]`.
+   - Auth guards must follow the pattern: `const session = await requireAdmin()` (or `requireGuest()`), then an immediate null-check returning 401 — missing guard → `[blocking]`.
+   - Database access must use `getDb()` called inside the handler; a module-level imported `sql` singleton is non-conformant → `[nit]`.
+7. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
+8. Post a **single** comment on the PR using this exact format:
 
 ```
 Verdict: APPROVE
@@ -37,9 +43,9 @@ Verdict: REQUEST CHANGES
 
 followed by:
 
-- `[blocking]` bullets for every fabricated reference, stub, or missed acceptance criterion.
+- `[blocking]` bullets for every fabricated reference, stub, missed acceptance criterion, or convention violation.
 - `[nit]` bullets for optional improvements only.
-- A **Risks not tested** section listing what could not be verified and why (e.g. "CI lint not run locally", "database migration not applied").
+- A **Risks not tested** section listing what could not be verified and why (e.g. "CI lint not run locally", "database migration not applied against a live schema").
 
 ## Hard rules — MANDATE
 

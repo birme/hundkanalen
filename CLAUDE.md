@@ -39,12 +39,26 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
 ## Coding conventions
 
 - TypeScript strict mode is on — no `any` casts, no `@ts-ignore` without an explanatory comment.
-- API routes live under `src/app/api/`. Each route file exports named HTTP-method handlers (`GET`, `POST`, etc.).
-- Auth guards: use `src/lib/admin-auth.ts` for admin routes and `src/lib/guest-auth.ts` for guest routes.
-- Database access goes through the global pool in `src/lib/db.ts`; import `sql` from there.
+- API routes live under `src/app/api/`. Each route file exports named HTTP-method handlers (`GET`, `POST`, etc.) and must begin with `export const dynamic = 'force-dynamic'`.
+- Response shape: use `Response.json(data, { status })` in all API routes — never `NextResponse.json()`. `NextResponse` is reserved for `src/middleware.ts` only (redirects and pass-through via `NextResponse.next()`).
+- Error responses always have the shape `{ error: 'message' }` with an appropriate HTTP status code.
+- Auth guards: call `await requireAdmin()` (or `requireGuest()`) at the very top of each handler; if it returns `null`, immediately `return Response.json({ error: 'Unauthorized' }, { status: 401 })`.
+- Database access: call `getDb()` inside each handler to get the tagged-template `sql` client (`import { getDb } from '@/lib/db'`). Do not import a module-level `sql` singleton.
 - Tailwind utility classes only — no inline `style=` props. Custom component classes (`.btn-primary`, etc.) are defined in `src/app/globals.css`.
 - No test framework is present; PRs must pass `npm run lint` and `npx tsc --noEmit` cleanly.
-- Keep migrations additive; never alter or delete an existing migration file.
+- Keep migrations additive; never alter or delete an existing migration file. Name new migrations with a sequential 3-digit prefix: `NNN_description.sql`.
+
+## Shared utilities (`src/lib/utils.ts`)
+
+| Function | Purpose |
+|---|---|
+| `formatSEK(amount)` | Format a number as Swedish krona (SEK) |
+| `formatDate(date)` | Long Swedish date string (e.g. "4 maj 2026") |
+| `formatDateShort(date)` | Short Swedish date string (YYYY-MM-DD) |
+| `daysBetween(start, end)` | Number of days between two dates |
+| `classNames(...classes)` | Conditionally join Tailwind class strings |
+
+Use these instead of reimplementing equivalent logic.
 
 ## Deployment
 
