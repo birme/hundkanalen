@@ -28,14 +28,29 @@ Implement a single sub-ticket completely — no stubs, no hardcoded return value
 - Always use `Response.json(data, { status })` — never `NextResponse.json()`. `NextResponse` is for `src/middleware.ts` only.
 - Error response shape: `{ error: 'message' }` with the correct HTTP status code.
 
-**Auth guards**
-- Admin routes: `import { requireAdmin } from '@/lib/admin-auth'`
-- Guest routes: `import { requireGuest } from '@/lib/guest-auth'`
-- Invocation pattern at the top of every handler:
-  ```ts
-  const session = await requireAdmin(); // or requireGuest()
+**Auth guards — two distinct patterns, do not mix them**
+
+Admin routes:
+```ts
+import { requireAdmin } from '@/lib/admin-auth';
+
+export async function GET() {
+  const session = await requireAdmin();
   if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  ```
+  // ...
+}
+```
+
+Guest routes (there is **no** `requireGuest()` — always use `getGuestSession()`):
+```ts
+import { getGuestSession } from '@/lib/guest-auth';
+
+export async function GET() {
+  const session = await getGuestSession();
+  if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  // session.stayId and session.guestName are available
+}
+```
 
 **Database**
 - `import { getDb } from '@/lib/db'` — call `getDb()` inside each handler to obtain the tagged-template `sql` client.
@@ -43,17 +58,28 @@ Implement a single sub-ticket completely — no stubs, no hardcoded return value
 
 **Styling**
 - Tailwind utility classes only; no inline `style=` props.
-- Use existing custom classes (`.btn-primary`, etc.) defined in `src/app/globals.css`.
+- Use existing custom classes from `src/app/globals.css`:
+  - `.btn-primary` — forest-green filled button
+  - `.btn-secondary` — wood-brown filled button
+  - `.btn-outline` — forest-green outlined button
+  - `.section-padding` — standard page-section padding
+  - `.container-narrow` — centered `max-w-4xl` container
+  - `.container-wide` — centered `max-w-7xl` container
 
-**Shared utilities (`src/lib/utils.ts`)**
-- `formatSEK(amount)` — Swedish krona formatting
-- `formatDate(date)` / `formatDateShort(date)` — Swedish locale date strings
-- `daysBetween(start, end)` — day count between dates
-- `classNames(...classes)` — conditional Tailwind class joining
-- Use these instead of reimplementing equivalent logic.
+**Shared utilities**
+
+`src/lib/utils.ts`: `formatSEK`, `formatDate`, `formatDateShort`, `daysBetween`, `classNames`
+
+`src/lib/access-code.ts`: `generateUniqueAccessCode(length?)` — collision-checked access codes
+
+`src/lib/email.ts`: `sendContactEmail({ name, email, checkin?, checkout?, guests?, message? })`
+
+`src/lib/guest-auth.ts`: `createGuestSession`, `getGuestSession`, `clearGuestSession`
+
+Use these instead of reimplementing equivalent logic.
 
 **Migrations**
-- Name new files with a sequential 3-digit prefix: `NNN_description.sql`.
+- Name new files with a sequential 3-digit prefix: `NNN_description.sql`. The current highest is `007`, so the next must be `008_description.sql`.
 - Never alter or delete an existing migration file.
 
 **TypeScript**

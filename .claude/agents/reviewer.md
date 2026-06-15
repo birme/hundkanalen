@@ -25,10 +25,11 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
    Any match → **must** be flagged `[blocking]`.
 5. Check each acceptance criterion from the sub-ticket body; state whether the diff satisfies it. Unsatisfied criterion → `[blocking]`.
 6. Check project-specific conventions in new API route files:
-   - `export const dynamic = 'force-dynamic'` must be present as the first line — missing → `[blocking]`.
+   - `export const dynamic = 'force-dynamic'` must be the **first line** of every new route file — missing → `[blocking]`.
    - Responses must use `Response.json()`, never `NextResponse.json()` — violation → `[blocking]`.
    - Error responses must have shape `{ error: 'message' }` — deviation → `[blocking]`.
-   - Auth guards must follow the pattern: `const session = await requireAdmin()` (or `requireGuest()`), then an immediate null-check returning 401 — missing guard → `[blocking]`.
+   - **Admin routes** must use `requireAdmin()` from `@/lib/admin-auth` with an immediate null-check returning 401 — missing guard → `[blocking]`.
+   - **Guest routes** must use `getGuestSession()` from `@/lib/guest-auth` with an immediate null-check returning 401 — missing guard → `[blocking]`. Note: there is **no** `requireGuest()` function in this codebase; any diff that calls `requireGuest()` is a fabricated reference and must be flagged `[blocking]`.
    - Database access must use `getDb()` called inside the handler; a module-level imported `sql` singleton is non-conformant → `[nit]`.
 7. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
 8. Post a **single** comment on the PR using this exact format:

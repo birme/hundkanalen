@@ -42,13 +42,24 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
 - API routes live under `src/app/api/`. Each route file exports named HTTP-method handlers (`GET`, `POST`, etc.) and must begin with `export const dynamic = 'force-dynamic'`.
 - Response shape: use `Response.json(data, { status })` in all API routes — never `NextResponse.json()`. `NextResponse` is reserved for `src/middleware.ts` only (redirects and pass-through via `NextResponse.next()`).
 - Error responses always have the shape `{ error: 'message' }` with an appropriate HTTP status code.
-- Auth guards: call `await requireAdmin()` (or `requireGuest()`) at the very top of each handler; if it returns `null`, immediately `return Response.json({ error: 'Unauthorized' }, { status: 401 })`.
+- Auth guards differ by route type:
+  - Admin routes: `import { requireAdmin } from '@/lib/admin-auth'` → `const session = await requireAdmin(); if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });`
+  - Guest routes: `import { getGuestSession } from '@/lib/guest-auth'` → `const session = await getGuestSession(); if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });`
+  - Note: there is **no** `requireGuest()` function — always use `getGuestSession()` for guest API routes.
 - Database access: call `getDb()` inside each handler to get the tagged-template `sql` client (`import { getDb } from '@/lib/db'`). Do not import a module-level `sql` singleton.
-- Tailwind utility classes only — no inline `style=` props. Custom component classes (`.btn-primary`, etc.) are defined in `src/app/globals.css`.
+- Tailwind utility classes only — no inline `style=` props. Custom component classes from `src/app/globals.css`:
+  - `.btn-primary` — forest-green filled button
+  - `.btn-secondary` — wood-brown filled button
+  - `.btn-outline` — forest-green outlined button
+  - `.section-padding` — standard page-section padding (`px-4 py-16 sm:px-6 lg:px-8`)
+  - `.container-narrow` — centered `max-w-4xl` container
+  - `.container-wide` — centered `max-w-7xl` container
 - No test framework is present; PRs must pass `npm run lint` and `npx tsc --noEmit` cleanly.
-- Keep migrations additive; never alter or delete an existing migration file. Name new migrations with a sequential 3-digit prefix: `NNN_description.sql`.
+- Keep migrations additive; never alter or delete an existing migration file. Name new migrations with a sequential 3-digit prefix: `NNN_description.sql`. The current highest migration is `007`, so the next file must be `008_description.sql`.
 
-## Shared utilities (`src/lib/utils.ts`)
+## Shared utilities
+
+**`src/lib/utils.ts`**
 
 | Function | Purpose |
 |---|---|
@@ -57,6 +68,26 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
 | `formatDateShort(date)` | Short Swedish date string (YYYY-MM-DD) |
 | `daysBetween(start, end)` | Number of days between two dates |
 | `classNames(...classes)` | Conditionally join Tailwind class strings |
+
+**`src/lib/access-code.ts`**
+
+| Function | Purpose |
+|---|---|
+| `generateUniqueAccessCode(length?)` | Generates a collision-checked, URL-safe 8-char access code (default), avoiding ambiguous chars (0/O, 1/I/L) |
+
+**`src/lib/guest-auth.ts`**
+
+| Function | Purpose |
+|---|---|
+| `createGuestSession(stayId, guestName, checkOut)` | Mints a signed JWT, sets the `hundkanalen-guest-session` cookie |
+| `getGuestSession()` | Reads and verifies the guest cookie; returns `{ stayId, guestName }` or `null` |
+| `clearGuestSession()` | Deletes the guest session cookie |
+
+**`src/lib/email.ts`**
+
+| Function | Purpose |
+|---|---|
+| `sendContactEmail(params)` | Sends a contact/inquiry email via Nodemailer SMTP; params: `{ name, email, checkin?, checkout?, guests?, message? }` |
 
 Use these instead of reimplementing equivalent logic.
 
