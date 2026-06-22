@@ -28,11 +28,15 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
    - `export const dynamic = 'force-dynamic'` must be the **first line** of every new route file — missing → `[blocking]`.
    - Responses must use `Response.json()`, never `NextResponse.json()` — violation → `[blocking]`.
    - Error responses must have shape `{ error: 'message' }` — deviation → `[blocking]`.
-   - **Admin routes** must use `requireAdmin()` from `@/lib/admin-auth` with an immediate null-check returning 401 — missing guard → `[blocking]`.
-   - **Guest routes** must use `getGuestSession()` from `@/lib/guest-auth` with an immediate null-check returning 401 — missing guard → `[blocking]`. Note: there is **no** `requireGuest()` function in this codebase; any diff that calls `requireGuest()` is a fabricated reference and must be flagged `[blocking]`.
+   - **Auth tier must match the route's location** — do not flag missing guards on intentionally public routes:
+     - Routes under `src/app/api/admin/` must use `requireAdmin()` from `@/lib/admin-auth` with an immediate null-check returning 401 — missing guard → `[blocking]`.
+     - Routes under `src/app/api/guest/` must use `getGuestSession()` from `@/lib/guest-auth` with an immediate null-check returning 401 — missing guard → `[blocking]`. Note: there is **no** `requireGuest()` function; any diff that calls `requireGuest()` is a fabricated reference → `[blocking]`.
+     - Routes under `src/app/api/public/` intentionally have **no** auth guard — do not flag this as missing.
+   - Dynamic route context: routes with `[id]` segments must type params as `Promise<{ id: string }>` and `await context.params` before use — violation → `[nit]` (not `[blocking]` unless it causes a type error).
    - Database access must use `getDb()` called inside the handler; a module-level imported `sql` singleton is non-conformant → `[nit]`.
-7. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
-8. Post a **single** comment on the PR using this exact format:
+7. Check photo-related changes: new photos must be stored as base64 data URLs in the `storage_url` column of the `photos` table. Any diff that writes a file path or external URL to `storage_url` (or introduces an external storage dependency not in scope) → `[blocking]`.
+8. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
+9. Post a **single** comment on the PR using this exact format:
 
 ```
 Verdict: APPROVE

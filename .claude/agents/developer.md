@@ -28,9 +28,9 @@ Implement a single sub-ticket completely — no stubs, no hardcoded return value
 - Always use `Response.json(data, { status })` — never `NextResponse.json()`. `NextResponse` is for `src/middleware.ts` only.
 - Error response shape: `{ error: 'message' }` with the correct HTTP status code.
 
-**Auth guards — two distinct patterns, do not mix them**
+**Auth guards — three distinct tiers, do not mix them**
 
-Admin routes:
+Admin routes (`src/app/api/admin/`):
 ```ts
 import { requireAdmin } from '@/lib/admin-auth';
 
@@ -41,7 +41,7 @@ export async function GET() {
 }
 ```
 
-Guest routes (there is **no** `requireGuest()` — always use `getGuestSession()`):
+Guest routes (`src/app/api/guest/`) — there is **no** `requireGuest()`, always use `getGuestSession()`:
 ```ts
 import { getGuestSession } from '@/lib/guest-auth';
 
@@ -52,9 +52,35 @@ export async function GET() {
 }
 ```
 
+Public routes (`src/app/api/public/`): **no auth guard** — these serve unauthenticated data by design. Do not add one.
+
+**Dynamic route parameters**
+
+Routes with `[id]` segments must type `params` as a `Promise` and `await` it:
+```ts
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(_request: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
+  // ...
+}
+```
+
 **Database**
 - `import { getDb } from '@/lib/db'` — call `getDb()` inside each handler to obtain the tagged-template `sql` client.
 - Do not import a module-level `sql` singleton.
+- Typed result rows: `const rows = await sql<{ id: string; name: string }[]>\`SELECT ...\``.
+- Dynamic partial updates — pass a `Record<string, unknown>` directly into the template:
+  ```ts
+  const updates: Record<string, unknown> = {};
+  if (caption !== undefined) updates.caption = caption;
+  // ...
+  await sql`UPDATE photos SET ${sql(updates)} WHERE id = ${id}`;
+  ```
+
+**Photo storage**
+- Photos are stored as base64 data URLs (`data:<mime>;base64,...`) in the `storage_url` column of the `photos` table.
+- There is no external file storage service (no S3, no Vercel Blob). Read/write `storage_url` directly.
 
 **Styling**
 - Tailwind utility classes only; no inline `style=` props.
@@ -81,6 +107,7 @@ Use these instead of reimplementing equivalent logic.
 **Migrations**
 - Name new files with a sequential 3-digit prefix: `NNN_description.sql`. The current highest is `007`, so the next must be `008_description.sql`.
 - Never alter or delete an existing migration file.
+- Note: files 004–006 are intentionally absent from `migrations/` — do not attempt to fill that gap.
 
 **TypeScript**
 - Strict mode — no `any` casts or `@ts-ignore` without an explanatory comment.

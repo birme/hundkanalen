@@ -42,11 +42,20 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
 - API routes live under `src/app/api/`. Each route file exports named HTTP-method handlers (`GET`, `POST`, etc.) and must begin with `export const dynamic = 'force-dynamic'`.
 - Response shape: use `Response.json(data, { status })` in all API routes — never `NextResponse.json()`. `NextResponse` is reserved for `src/middleware.ts` only (redirects and pass-through via `NextResponse.next()`).
 - Error responses always have the shape `{ error: 'message' }` with an appropriate HTTP status code.
-- Auth guards differ by route type:
-  - Admin routes: `import { requireAdmin } from '@/lib/admin-auth'` → `const session = await requireAdmin(); if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });`
-  - Guest routes: `import { getGuestSession } from '@/lib/guest-auth'` → `const session = await getGuestSession(); if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });`
+- Auth guards — three tiers, do not mix:
+  - **Admin routes** (`src/app/api/admin/`): `import { requireAdmin } from '@/lib/admin-auth'` → `const session = await requireAdmin(); if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });`
+  - **Guest routes** (`src/app/api/guest/`): `import { getGuestSession } from '@/lib/guest-auth'` → `const session = await getGuestSession(); if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });`
+  - **Public routes** (`src/app/api/public/`): no auth guard — these intentionally serve unauthenticated data (gallery photos, availability, site-access check). Do not add a guard here.
   - Note: there is **no** `requireGuest()` function — always use `getGuestSession()` for guest API routes.
-- Database access: call `getDb()` inside each handler to get the tagged-template `sql` client (`import { getDb } from '@/lib/db'`). Do not import a module-level `sql` singleton.
+- Dynamic route context: routes with `[id]` segments must type `params` as a Promise and await it:
+  ```ts
+  type RouteContext = { params: Promise<{ id: string }> };
+  export async function GET(_req: NextRequest, context: RouteContext) {
+    const { id } = await context.params;
+  }
+  ```
+- Database access: call `getDb()` inside each handler to get the tagged-template `sql` client (`import { getDb } from '@/lib/db'`). Do not import a module-level `sql` singleton. Typed result rows: `sql<{ id: string }[]>\`SELECT ...\``. Dynamic partial updates: pass a `Record<string, unknown>` directly — `sql\`UPDATE t SET ${sql(updates)} WHERE id = ${id}\``.
+- Photo storage: photos are stored as base64 data URLs (`data:<mime>;base64,...`) in the `storage_url` column of the `photos` table. There is no external file storage service.
 - Tailwind utility classes only — no inline `style=` props. Custom component classes from `src/app/globals.css`:
   - `.btn-primary` — forest-green filled button
   - `.btn-secondary` — wood-brown filled button
@@ -55,7 +64,7 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
   - `.container-narrow` — centered `max-w-4xl` container
   - `.container-wide` — centered `max-w-7xl` container
 - No test framework is present; PRs must pass `npm run lint` and `npx tsc --noEmit` cleanly.
-- Keep migrations additive; never alter or delete an existing migration file. Name new migrations with a sequential 3-digit prefix: `NNN_description.sql`. The current highest migration is `007`, so the next file must be `008_description.sql`.
+- Keep migrations additive; never alter or delete an existing migration file. Name new migrations with a sequential 3-digit prefix: `NNN_description.sql`. The current highest migration is `007`, so the next file must be `008_description.sql`. Note: migration files 004–006 are absent from the `migrations/` directory (the sequence jumps from `003` to `007`) — this is intentional, do not attempt to fill the gap.
 
 ## Shared utilities
 
