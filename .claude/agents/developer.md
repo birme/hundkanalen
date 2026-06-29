@@ -26,9 +26,10 @@ Implement a single sub-ticket completely — no stubs, no hardcoded return value
 - File lives under `src/app/api/`; export named HTTP-method handlers (`GET`, `POST`, etc.).
 - First line of every route file: `export const dynamic = 'force-dynamic'`.
 - Always use `Response.json(data, { status })` — never `NextResponse.json()`. `NextResponse` is for `src/middleware.ts` only.
+- Exception: routes serving binary data (e.g. images) return `new Response(buffer, { headers })` instead of `Response.json()`.
 - Error response shape: `{ error: 'message' }` with the correct HTTP status code.
 
-**Auth guards — three distinct tiers, do not mix them**
+**Auth guards — four patterns, choose by route location**
 
 Admin routes (`src/app/api/admin/`):
 ```ts
@@ -52,7 +53,30 @@ export async function GET() {
 }
 ```
 
-Public routes (`src/app/api/public/`): **no auth guard** — these serve unauthenticated data by design. Do not add one.
+Public routes (`src/app/api/public/`, `src/app/api/contact/`, `src/app/api/availability/`): **no auth guard** — these serve unauthenticated data by design. Do not add one.
+
+Cross-role routes (e.g. `src/app/api/bookings/`) — use only when a single endpoint must serve both admin and authenticated users with different payloads:
+```ts
+import { auth } from '@/lib/auth';
+
+export async function GET() {
+  const session = await auth();
+  if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (session.user.role === 'admin') {
+    // return full data
+  } else {
+    // return user-scoped data
+  }
+}
+```
+
+**Page-level auth (server components, not API routes)**
+- Admin pages: auth is enforced once in `src/app/admin/layout.tsx` — individual admin page files do not need their own guard.
+- Guest portal pages (`src/app/stay/portal/`): each page calls `getGuestSession()` at the top and redirects if null. Add the same guard to every new guest portal page:
+  ```ts
+  const session = await getGuestSession();
+  if (!session) redirect('/stay');
+  ```
 
 **Dynamic route parameters**
 
@@ -81,6 +105,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 **Photo storage**
 - Photos are stored as base64 data URLs (`data:<mime>;base64,...`) in the `storage_url` column of the `photos` table.
 - There is no external file storage service (no S3, no Vercel Blob). Read/write `storage_url` directly.
+- Serving a photo as raw bytes: decode the data URL, return `new Response(buffer, { headers: { 'Content-Type': mimeType, ... } })`.
 
 **Styling**
 - Tailwind utility classes only; no inline `style=` props.
