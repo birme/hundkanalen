@@ -70,13 +70,19 @@ export async function GET() {
 }
 ```
 
+**Middleware (`src/middleware.ts`)**
+- The middleware performs a lightweight cookie-presence check before any page or layout runs. It redirects unauthenticated `/admin/*` to `/login?callbackUrl=…` and unauthenticated `/stay/portal/*` to `/stay`.
+- Do not add new route matchers without updating both the middleware logic and the `config.matcher` array.
+- Middleware must only use `NextResponse`; it must not call `getGuestSession()` or `auth()` (those require Node.js APIs unavailable in the Edge runtime).
+
 **Page-level auth (server components, not API routes)**
 - Admin pages: auth is enforced once in `src/app/admin/layout.tsx` — individual admin page files do not need their own guard.
-- Guest portal pages (`src/app/stay/portal/`): each page calls `getGuestSession()` at the top and redirects if null. Add the same guard to every new guest portal page:
+- Guest portal pages (`src/app/stay/portal/`): auth is enforced by the layout (`src/app/stay/portal/layout.tsx`). Individual pages must also call `getGuestSession()` to obtain `stayId` for their data queries, and redirect if null:
   ```ts
   const session = await getGuestSession();
   if (!session) redirect('/stay');
   ```
+  This dual pattern (layout + page) is intentional — the layout provides the header and belt-and-suspenders auth; the page needs `stayId` for its own queries.
 
 **Dynamic route parameters**
 

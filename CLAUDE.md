@@ -58,9 +58,10 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
   - **Public routes** (`src/app/api/public/` and any root-level public route such as `contact/` or `availability/`): no auth guard — these intentionally serve unauthenticated data. Do not add a guard here.
   - **Cross-role routes** (e.g. `src/app/api/bookings/`): use `import { auth } from '@/lib/auth'` directly, then branch on `session.user.role` to return role-appropriate data — only use this pattern when a single endpoint must serve both admin and authenticated users with different payloads.
   - Note: there is **no** `requireGuest()` function — always use `getGuestSession()` for guest API routes.
+- Middleware (`src/middleware.ts`): performs a lightweight cookie-presence check at request time before any page or layout runs. It redirects unauthenticated `/admin/*` requests to `/login?callbackUrl=…` and unauthenticated `/stay/portal/*` requests to `/stay`. This is a fast gate only — it does not verify JWT signatures. Full verification happens in the layout/page.
 - Page-level auth (server components, not API routes):
   - **Admin pages**: auth is enforced once in `src/app/admin/layout.tsx` via `auth()` + `redirect()`. Individual admin page components do not need their own guard.
-  - **Guest portal pages**: each page in `src/app/stay/portal/` calls `getGuestSession()` at the top and redirects if null (there is no guest layout wrapper). Add the same guard to any new guest portal page.
+  - **Guest portal pages**: auth is enforced by `src/app/stay/portal/layout.tsx` via `getGuestSession()` + `redirect()`. Individual pages under `src/app/stay/portal/` also call `getGuestSession()` to obtain `stayId` for their own data queries — this is necessary for data access, not redundant auth. Always call `getGuestSession()` at the top of any new guest portal page and redirect if null.
 - Binary responses: routes that serve raw binary data (e.g. `src/app/api/photos/[id]/route.ts`) return `new Response(buffer, { headers })` instead of `Response.json()`. This is the only valid exception to the `Response.json()` rule — use it only when returning non-JSON content such as image bytes.
 - Dynamic route context: routes with `[id]` segments must type `params` as a Promise and await it:
   ```ts

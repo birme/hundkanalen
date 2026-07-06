@@ -38,10 +38,11 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
    - Database access must use `getDb()` called inside the handler; a module-level imported `sql` singleton is non-conformant → `[nit]`.
 7. Check page-level auth for new server component pages:
    - New pages under `src/app/admin/`: auth is enforced by `src/app/admin/layout.tsx` — individual admin pages do not need their own guard. Do not flag a missing guard in admin page files.
-   - New pages under `src/app/stay/portal/`: each page must call `getGuestSession()` at the top and redirect if null — missing → `[blocking]`.
-8. Check photo-related changes: new photos must be stored as base64 data URLs in the `storage_url` column of the `photos` table. Any diff that writes a file path or external URL to `storage_url` (or introduces an external storage dependency not in scope) → `[blocking]`.
-9. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
-10. Post a **single** comment on the PR using this exact format:
+   - New pages under `src/app/stay/portal/`: auth is enforced by the shared layout (`src/app/stay/portal/layout.tsx`). Individual pages **must also** call `getGuestSession()` to obtain `stayId` for their data queries, and redirect if null — this is intentional belt-and-suspenders plus data access. A missing `getGuestSession()` call in a portal page that fetches stay-specific data → `[blocking]`.
+8. Check middleware changes (`src/middleware.ts`): the middleware must only use `NextResponse` and must not call `getGuestSession()` or `auth()` (those require Node.js APIs unavailable in the Edge runtime). Any new route pattern added must appear in both the middleware logic and the `config.matcher` array — mismatch → `[blocking]`.
+9. Check photo-related changes: new photos must be stored as base64 data URLs in the `storage_url` column of the `photos` table. Any diff that writes a file path or external URL to `storage_url` (or introduces an external storage dependency not in scope) → `[blocking]`.
+10. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
+11. Post a **single** comment on the PR using this exact format:
 
 ```
 Verdict: APPROVE
