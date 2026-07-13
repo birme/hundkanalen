@@ -50,14 +50,16 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
 
 - TypeScript strict mode is on — no `any` casts, no `@ts-ignore` without an explanatory comment.
 - API routes live under `src/app/api/`. Each route file exports named HTTP-method handlers (`GET`, `POST`, etc.) and must begin with `export const dynamic = 'force-dynamic'`.
+- Server-side portal pages (`src/app/stay/portal/**/*.tsx`) also require `export const dynamic = 'force-dynamic'` as the first export since they perform per-request data fetching.
 - Response shape: use `Response.json(data, { status })` in all API routes — never `NextResponse.json()`. `NextResponse` is reserved for `src/middleware.ts` only (redirects and pass-through via `NextResponse.next()`).
 - Error responses always have the shape `{ error: 'message' }` with an appropriate HTTP status code.
 - Auth guards — three API tiers plus a cross-role pattern, do not mix them arbitrarily:
   - **Admin routes** (`src/app/api/admin/`): `import { requireAdmin } from '@/lib/admin-auth'` → `const session = await requireAdmin(); if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });`
   - **Guest routes** (`src/app/api/guest/`): `import { getGuestSession } from '@/lib/guest-auth'` → `const session = await getGuestSession(); if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });`
-  - **Public routes** (`src/app/api/public/` and any root-level public route such as `contact/` or `availability/`): no auth guard — these intentionally serve unauthenticated data. Do not add a guard here.
+  - **Public routes** (`src/app/api/public/` and any root-level public route such as `contact/` or `availability/`): most serve truly unauthenticated data with no guard. Exception: gallery-content routes (`public/full-gallery`, `public/check-access`) check the `hk-site-access` cookie OR a valid guest session — this is the **site-access gate** (see below), not a session-based auth guard. Do not add a session guard here.
   - **Cross-role routes** (e.g. `src/app/api/bookings/`): use `import { auth } from '@/lib/auth'` directly, then branch on `session.user.role` to return role-appropriate data — only use this pattern when a single endpoint must serve both admin and authenticated users with different payloads.
   - Note: there is **no** `requireGuest()` function — always use `getGuestSession()` for guest API routes.
+- **Site-access gate** (`hk-site-access` cookie): a separate, lightweight gate for the landing/gallery experience — distinct from admin and guest session auth. Set by `POST /api/public/verify-code` when the visitor supplies the correct global access code (stored as `site_settings.global_access_code`). The cookie (`httpOnly`, `sameSite: lax`, 30-day expiry) is checked by `GET /api/public/check-access` and `GET /api/public/full-gallery`. A valid guest session is also accepted in lieu of the cookie. Do not conflate this with admin/guest session auth.
 - Middleware (`src/middleware.ts`): performs a lightweight cookie-presence check at request time before any page or layout runs. It redirects unauthenticated `/admin/*` requests to `/login?callbackUrl=…` and unauthenticated `/stay/portal/*` requests to `/stay`. This is a fast gate only — it does not verify JWT signatures. Full verification happens in the layout/page.
 - Page-level auth (server components, not API routes):
   - **Admin pages**: auth is enforced once in `src/app/admin/layout.tsx` via `auth()` + `redirect()`. Individual admin page components do not need their own guard.
@@ -71,7 +73,10 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
   }
   ```
 - Database access: call `getDb()` inside each handler to get the tagged-template `sql` client (`import { getDb } from '@/lib/db'`). Do not import a module-level `sql` singleton. Typed result rows: `sql<{ id: string }[]>\`SELECT ...\``. Dynamic partial updates: pass a `Record<string, unknown>` directly — `sql\`UPDATE t SET ${sql(updates)} WHERE id = ${id}\``.
-- Photo storage: photos are stored as base64 data URLs (`data:<mime>;base64,...`) in the `storage_url` column of the `photos` table. There is no external file storage service.
+- Photo storage: photos are stored as base64 data URLs (`data:<mime>;base64,...`) in the `storage_url` column of the `photos` table. There is no external file storage service. The `is_public` boolean column controls whether a photo appears in the public landing gallery. Photos referenced by `checklist_items.photo_id` or `property_info.photo_id` are considered owned by that content item and **must be excluded** from gallery listing queries (see `public/photos` and `public/full-gallery` for the exclusion pattern).
+- Photo embedding in pages: render photos served via `/api/photos/[id]` with a plain `<img>` tag preceded by `// eslint-disable-next-line @next/next/no-img-element`. Do **not** use Next.js `<Image>` for these — the binary API route is not a static asset and does not benefit from Next.js image optimisation.
+- Orderable tables (`checklist_items`, `property_info`): use a `sort_order INTEGER` column. Dedicated `POST /reorder` endpoints accept `{ orderedIds: string[] }` and write sequential integers (0-indexed) back to `sort_order`. Always `ORDER BY sort_order ASC` when listing these rows.
+- `checklist_property_info` join table: links `checklist_items.id` → `property_info.id`. Managed by `GET/PUT /api/admin/checklists/[id]/links`. Use `ON CONFLICT DO NOTHING` when inserting links.
 - Tailwind utility classes only — no inline `style=` props. Custom component classes from `src/app/globals.css`:
   - `.btn-primary` — forest-green filled button
   - `.btn-secondary` — wood-brown filled button
@@ -80,7 +85,7 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
   - `.container-narrow` — centered `max-w-4xl` container
   - `.container-wide` — centered `max-w-7xl` container
 - No test framework is present; PRs must pass `npm run lint` and `npx tsc --noEmit` cleanly.
-- Keep migrations additive; never alter or delete an existing migration file. Name new migrations with a sequential 3-digit prefix: `NNN_description.sql`. The current highest migration is `007`, so the next file must be `008_description.sql`. Note: migration files 004–006 are absent from the `migrations/` directory (the sequence jumps from `003` to `007`) — this is intentional, do not attempt to fill the gap.
+- Keep migrations additive; never alter or delete an existing migration file. Name new migrations with a sequential 3-digit prefix: `NNN_description.sql`. The current highest migration is `007`, so the next file must be `008_description.sql`. Note: migration files 004–006 are absent from the `migrations/` directory (the sequence jumps from `003` to `007`) — this is intentional, do not attempt to fill the gap. Tables and columns introduced by those absent migrations (`guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`) exist in the live database schema and are safe to query.
 
 ## Shared utilities
 

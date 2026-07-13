@@ -32,17 +32,26 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
    - **Auth tier must match the route's location and purpose** — apply the correct check per pattern:
      - Routes under `src/app/api/admin/` must use `requireAdmin()` from `@/lib/admin-auth` with an immediate null-check returning 401 — missing → `[blocking]`.
      - Routes under `src/app/api/guest/` must use `getGuestSession()` from `@/lib/guest-auth` with an immediate null-check returning 401 — missing → `[blocking]`. Note: there is **no** `requireGuest()` function; any diff that calls `requireGuest()` is a fabricated reference → `[blocking]`.
-     - Routes under `src/app/api/public/` and known public root routes (`contact/`, `availability/`, `photos/`) intentionally have **no** auth guard — do not flag this as missing.
+     - Routes under `src/app/api/public/` and known public root routes (`contact/`, `availability/`, `photos/`) fall into two sub-patterns:
+       - Truly public (e.g. `public/photos`, `public/favorites`): **no** session auth guard. Do not flag.
+       - Site-access-gated gallery routes (e.g. `public/full-gallery`, `public/check-access`): check `hk-site-access` cookie OR guest session — this is the site-access gate, **not** a session auth guard. This pattern is correct; do not flag it as missing auth.
      - Cross-role routes (those that must serve both admin and authenticated users with different payloads, e.g. `src/app/api/bookings/`) may use `auth()` from `@/lib/auth` directly with role branching on `session.user.role` — this is a valid fourth pattern; do not flag it as a missing guard.
    - Dynamic route context: routes with `[id]` segments must type params as `Promise<{ id: string }>` and `await context.params` before use — violation → `[nit]` (not `[blocking]` unless it causes a type error).
    - Database access must use `getDb()` called inside the handler; a module-level imported `sql` singleton is non-conformant → `[nit]`.
 7. Check page-level auth for new server component pages:
    - New pages under `src/app/admin/`: auth is enforced by `src/app/admin/layout.tsx` — individual admin pages do not need their own guard. Do not flag a missing guard in admin page files.
-   - New pages under `src/app/stay/portal/`: auth is enforced by the shared layout (`src/app/stay/portal/layout.tsx`). Individual pages **must also** call `getGuestSession()` to obtain `stayId` for their data queries, and redirect if null — this is intentional belt-and-suspenders plus data access. A missing `getGuestSession()` call in a portal page that fetches stay-specific data → `[blocking]`.
+   - New pages under `src/app/stay/portal/`:
+     - Must include `export const dynamic = 'force-dynamic'` as the first export — missing → `[blocking]`.
+     - Auth is enforced by the shared layout (`src/app/stay/portal/layout.tsx`). Individual pages **must also** call `getGuestSession()` to obtain `stayId` for their data queries, and redirect if null — a missing `getGuestSession()` call in a portal page that fetches stay-specific data → `[blocking]`.
 8. Check middleware changes (`src/middleware.ts`): the middleware must only use `NextResponse` and must not call `getGuestSession()` or `auth()` (those require Node.js APIs unavailable in the Edge runtime). Any new route pattern added must appear in both the middleware logic and the `config.matcher` array — mismatch → `[blocking]`.
-9. Check photo-related changes: new photos must be stored as base64 data URLs in the `storage_url` column of the `photos` table. Any diff that writes a file path or external URL to `storage_url` (or introduces an external storage dependency not in scope) → `[blocking]`.
-10. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
-11. Post a **single** comment on the PR using this exact format:
+9. Check photo-related changes:
+   - New photos must be stored as base64 data URLs in the `storage_url` column of the `photos` table. Any diff that writes a file path or external URL to `storage_url` → `[blocking]`.
+   - Gallery listing queries must exclude photos owned by content items using the established exclusion pattern (`id NOT IN (SELECT photo_id FROM checklist_items ...)` and `id NOT IN (SELECT photo_id FROM property_info ...)`). Missing exclusion in a gallery route → `[blocking]`.
+   - Photo embedding in portal/admin pages must use a plain `<img>` tag with `// eslint-disable-next-line @next/next/no-img-element`. Using Next.js `<Image>` for `/api/photos/[id]` URLs without proper domain config → `[nit]`.
+10. Check orderable-content changes (`checklist_items`, `property_info`): queries returning these rows must include `ORDER BY sort_order ASC`. Missing `ORDER BY sort_order` → `[nit]`.
+11. Check `guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`: these columns/tables exist in the live schema even though their migration files (004–006) are absent from the repo. Querying them is valid; do not flag as missing schema. A migration that re-creates these tables would be incorrect → `[blocking]`.
+12. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
+13. Post a **single** comment on the PR using this exact format:
 
 ```
 Verdict: APPROVE

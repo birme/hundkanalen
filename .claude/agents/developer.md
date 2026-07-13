@@ -29,6 +29,9 @@ Implement a single sub-ticket completely — no stubs, no hardcoded return value
 - Exception: routes serving binary data (e.g. images) return `new Response(buffer, { headers })` instead of `Response.json()`.
 - Error response shape: `{ error: 'message' }` with the correct HTTP status code.
 
+**Portal pages**
+- Server-side pages under `src/app/stay/portal/` also require `export const dynamic = 'force-dynamic'` as the first export.
+
 **Auth guards — four patterns, choose by route location**
 
 Admin routes (`src/app/api/admin/`):
@@ -53,7 +56,9 @@ export async function GET() {
 }
 ```
 
-Public routes (`src/app/api/public/`, `src/app/api/contact/`, `src/app/api/availability/`): **no auth guard** — these serve unauthenticated data by design. Do not add one.
+Public routes (`src/app/api/public/`, `src/app/api/contact/`, `src/app/api/availability/`): most have **no auth guard** — they serve unauthenticated data by design.
+
+Site-access-gated routes (gallery content under `src/app/api/public/`): some routes check the `hk-site-access` cookie OR a valid guest session — this is the site-access gate, not session auth. Reuse the pattern from `public/full-gallery/route.ts` when a public endpoint should be restricted to verified site visitors.
 
 Cross-role routes (e.g. `src/app/api/bookings/`) — use only when a single endpoint must serve both admin and authenticated users with different payloads:
 ```ts
@@ -77,7 +82,7 @@ export async function GET() {
 
 **Page-level auth (server components, not API routes)**
 - Admin pages: auth is enforced once in `src/app/admin/layout.tsx` — individual admin page files do not need their own guard.
-- Guest portal pages (`src/app/stay/portal/`): auth is enforced by the layout (`src/app/stay/portal/layout.tsx`). Individual pages must also call `getGuestSession()` to obtain `stayId` for their data queries, and redirect if null:
+- Guest portal pages (`src/app/stay/portal/`): auth is enforced by the layout (`src/app/stay/portal/layout.tsx`). Individual pages **must also** call `getGuestSession()` to obtain `stayId` for their data queries, and redirect if null:
   ```ts
   const session = await getGuestSession();
   if (!session) redirect('/stay');
@@ -108,10 +113,37 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   await sql`UPDATE photos SET ${sql(updates)} WHERE id = ${id}`;
   ```
 
+**Database schema (key tables)**
+- `users`: NextAuth users with `role` (`admin` | `guest`).
+- `stays`: guest stays with `access_code`, `check_in`, `check_out`, `status`, `packing_notes`, `keybox_code`.
+- `checklist_items`: type `checkin` | `checkout`, ordered by `sort_order`.
+- `checklist_property_info`: join table linking `checklist_items.id` → `property_info.id`.
+- `property_info`: categories include `packing`, `location`, `general`; ordered by `sort_order`.
+- `photos`: `storage_url` (base64 data URL), `is_public` bool, `sort_order`. Photos attached to content items via `photo_id` FK are excluded from gallery listings.
+- `site_settings`: key-value config; `global_access_code` key holds the site access code.
+- `favorite_places`: admin-curated recommendations with `category`, `sort_order`.
+- `guest_reviews`: one review per stay (`stay_id` FK), `rating` (1–5), optional `message`.
+- Tables from absent migrations 004–006 (`guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`) exist in the live schema — safe to query without adding a migration.
+
 **Photo storage**
 - Photos are stored as base64 data URLs (`data:<mime>;base64,...`) in the `storage_url` column of the `photos` table.
 - There is no external file storage service (no S3, no Vercel Blob). Read/write `storage_url` directly.
 - Serving a photo as raw bytes: decode the data URL, return `new Response(buffer, { headers: { 'Content-Type': mimeType, ... } })`.
+- Embedding photos in portal/admin pages: use a plain `<img>` tag with an ESLint disable comment — do **not** use Next.js `<Image>`:
+  ```tsx
+  {/* eslint-disable-next-line @next/next/no-img-element */}
+  <img src={`/api/photos/${item.photo_id}`} alt="" className="..." />
+  ```
+- When listing gallery photos, always exclude photos owned by content items:
+  ```sql
+  WHERE id NOT IN (SELECT photo_id FROM checklist_items WHERE photo_id IS NOT NULL)
+    AND id NOT IN (SELECT photo_id FROM property_info WHERE photo_id IS NOT NULL)
+  ```
+
+**Orderable content**
+- Tables `checklist_items` and `property_info` have a `sort_order INTEGER` column.
+- Always `ORDER BY sort_order ASC` when listing these rows.
+- Reorder via dedicated `POST /reorder` endpoints that accept `{ orderedIds: string[] }` and write sequential 0-indexed integers back to `sort_order`.
 
 **Styling**
 - Tailwind utility classes only; no inline `style=` props.
