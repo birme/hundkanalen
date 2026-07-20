@@ -32,6 +32,10 @@ Implement a single sub-ticket completely — no stubs, no hardcoded return value
 **Portal pages**
 - Server-side pages under `src/app/stay/portal/` also require `export const dynamic = 'force-dynamic'` as the first export.
 
+**Admin pages**
+- Auth is enforced once in `src/app/admin/layout.tsx` — individual admin page files do not need their own guard and do not need `export const dynamic`.
+- Admin pages with interactive UIs (inline editing, stateful forms) are written as `'use client'` components that fetch data via `/api/admin/` routes. This is the established pattern — do not server-render admin pages that need heavy interactivity.
+
 **Auth guards — four patterns, choose by route location**
 
 Admin routes (`src/app/api/admin/`):
@@ -118,22 +122,30 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 - `stays`: guest stays with `access_code`, `check_in`, `check_out`, `status`, `packing_notes`, `keybox_code`.
 - `checklist_items`: type `checkin` | `checkout`, ordered by `sort_order`.
 - `checklist_property_info`: join table linking `checklist_items.id` → `property_info.id`.
-- `property_info`: categories include `packing`, `location`, `general`; ordered by `sort_order`.
-- `photos`: `storage_url` (base64 data URL), `is_public` bool, `sort_order`. Photos attached to content items via `photo_id` FK are excluded from gallery listings.
+- `property_info`: categories include `rules`, `practical`, `emergency`, `location`, `packing`, `general`; ordered by `sort_order`.
+- `photos`: `storage_url` (base64 data URL), `is_public` bool, `category` (text, default `'general'`; `'keybox'` excludes photos from portal display), `sort_order`. Photos attached to content items via `photo_id` FK are excluded from gallery listings.
 - `site_settings`: key-value config; `global_access_code` key holds the site access code.
-- `favorite_places`: admin-curated recommendations with `category`, `sort_order`.
+- `favorite_places`: admin-curated recommendations with `category`, `sort_order`, `icon`, `url`, `distance`, `owner_tips`.
+- `stay_favorites`: join table linking `stays.id` → `favorite_places.id`. Used to assign specific favorite places to a guest's stay. Managed by `GET/PUT /api/admin/stays/[id]/favorites` (PUT replaces all favorites for a stay in one operation).
 - `guest_reviews`: one review per stay (`stay_id` FK), `rating` (1–5), optional `message`.
-- Tables from absent migrations 004–006 (`guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`) exist in the live schema — safe to query without adding a migration.
+- Tables from absent migrations 004–006 (`guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`, `stay_favorites`, `favorite_places.owner_tips`) exist in the live schema — safe to query without adding a migration.
 
 **Photo storage**
 - Photos are stored as base64 data URLs (`data:<mime>;base64,...`) in the `storage_url` column of the `photos` table.
 - There is no external file storage service (no S3, no Vercel Blob). Read/write `storage_url` directly.
 - Serving a photo as raw bytes: decode the data URL, return `new Response(buffer, { headers: { 'Content-Type': mimeType, ... } })`.
-- Embedding photos in portal/admin pages: use a plain `<img>` tag with an ESLint disable comment — do **not** use Next.js `<Image>`:
-  ```tsx
-  {/* eslint-disable-next-line @next/next/no-img-element */}
-  <img src={`/api/photos/${item.photo_id}`} alt="" className="..." />
-  ```
+- **Two distinct embedding patterns — do not mix them:**
+  - **Via `/api/photos/[id]`** (binary API route): use a plain `<img>` tag with the ESLint disable comment — do **not** use Next.js `<Image>`:
+    ```tsx
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src={`/api/photos/${item.photo_id}`} alt="" className="..." />
+    ```
+  - **Via `storage_url` data URL directly** (server component with DB-fetched photo): use Next.js `<Image fill sizes="...">` — data URIs require no hostname config:
+    ```tsx
+    <div className="relative aspect-[4/3]">
+      <Image src={photo.storage_url} alt={photo.caption || ''} fill className="object-cover" sizes="..." />
+    </div>
+    ```
 - When listing gallery photos, always exclude photos owned by content items:
   ```sql
   WHERE id NOT IN (SELECT photo_id FROM checklist_items WHERE photo_id IS NOT NULL)

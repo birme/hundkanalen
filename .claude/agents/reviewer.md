@@ -40,6 +40,7 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
    - Database access must use `getDb()` called inside the handler; a module-level imported `sql` singleton is non-conformant → `[nit]`.
 7. Check page-level auth for new server component pages:
    - New pages under `src/app/admin/`: auth is enforced by `src/app/admin/layout.tsx` — individual admin pages do not need their own guard. Do not flag a missing guard in admin page files.
+   - Admin pages written as `'use client'` components that fetch data via API routes are valid — do not flag them for lacking `export const dynamic` or a session guard. Auth is handled at the layout.
    - New pages under `src/app/stay/portal/`:
      - Must include `export const dynamic = 'force-dynamic'` as the first export — missing → `[blocking]`.
      - Auth is enforced by the shared layout (`src/app/stay/portal/layout.tsx`). Individual pages **must also** call `getGuestSession()` to obtain `stayId` for their data queries, and redirect if null — a missing `getGuestSession()` call in a portal page that fetches stay-specific data → `[blocking]`.
@@ -47,11 +48,16 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
 9. Check photo-related changes:
    - New photos must be stored as base64 data URLs in the `storage_url` column of the `photos` table. Any diff that writes a file path or external URL to `storage_url` → `[blocking]`.
    - Gallery listing queries must exclude photos owned by content items using the established exclusion pattern (`id NOT IN (SELECT photo_id FROM checklist_items ...)` and `id NOT IN (SELECT photo_id FROM property_info ...)`). Missing exclusion in a gallery route → `[blocking]`.
-   - Photo embedding in portal/admin pages must use a plain `<img>` tag with `// eslint-disable-next-line @next/next/no-img-element`. Using Next.js `<Image>` for `/api/photos/[id]` URLs without proper domain config → `[nit]`.
+   - **Two valid photo embedding patterns — do not flag either as incorrect:**
+     - Serving via `/api/photos/[id]` (binary API route): must use a plain `<img>` tag with `// eslint-disable-next-line @next/next/no-img-element`. Using Next.js `<Image>` here → `[nit]`.
+     - Rendering `storage_url` data URL directly in a server component: using Next.js `<Image fill sizes="...">` is correct — data URIs require no hostname config. Do not flag.
 10. Check orderable-content changes (`checklist_items`, `property_info`): queries returning these rows must include `ORDER BY sort_order ASC`. Missing `ORDER BY sort_order` → `[nit]`.
-11. Check `guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`: these columns/tables exist in the live schema even though their migration files (004–006) are absent from the repo. Querying them is valid; do not flag as missing schema. A migration that re-creates these tables would be incorrect → `[blocking]`.
-12. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
-13. Post a **single** comment on the PR using this exact format:
+11. Check `guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`, `stay_favorites`, `favorite_places.owner_tips`: these columns/tables exist in the live schema even though their migration files (004–006) are absent from the repo. Querying them is valid; do not flag as missing schema. A migration that re-creates these tables would be incorrect → `[blocking]`.
+12. Check `property_info` category values: valid categories are `rules`, `practical`, `emergency`, `location`, `packing`, `general`. A diff that uses only a subset is fine; a diff that introduces a new category not in this list → `[nit]` (admin is free to extend, but flag for awareness).
+13. Check `photos.category` usage: the `category` column (text, default `'general'`) is valid on the `photos` table. Known special value `'keybox'` is used to exclude keybox photos from portal display. Do not flag category usage as a schema error.
+14. Check `stay_favorites` usage: this is a valid join table linking `stays.id` → `favorite_places.id`. The `GET/PUT /api/admin/stays/[id]/favorites` endpoint manages it; PUT replaces all favorites for a stay in one operation. Do not flag as missing schema.
+15. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
+16. Post a **single** comment on the PR using this exact format:
 
 ```
 Verdict: APPROVE
