@@ -72,12 +72,12 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
     const { id } = await context.params;
   }
   ```
-- Database access: call `getDb()` inside each handler to get the tagged-template `sql` client (`import { getDb } from '@/lib/db'`). Do not import a module-level `sql` singleton. Typed result rows: `sql<{ id: string }[]>\`SELECT ...\``. Dynamic partial updates: pass a `Record<string, unknown>` directly — `sql\`UPDATE t SET ${sql(updates)} WHERE id = ${id}\``.
+- Database access: call `getDb()` inside each handler to get the tagged-template `sql` client (`import { getDb } from '@/lib/db'`). Do not import a module-level `sql` singleton. Typed result rows: `sql<{ id: string }[]>\`SELECT ...\``. Dynamic partial updates: pass a `Record<string, unknown>` directly — `sql\`UPDATE t SET ${sql(updates)} WHERE id = ${id}\``. Array membership: use `= ANY(${ids})` (passing a JS array) instead of `IN (...)` — the postgres client serialises it as a PostgreSQL array parameter. Upsert for key-value stores: `INSERT INTO site_settings (key, value, updated_at) VALUES (${key}, ${value}, NOW()) ON CONFLICT (key) DO UPDATE SET value = ${value}, updated_at = NOW()`.
 - Photo storage: photos are stored as base64 data URLs (`data:<mime>;base64,...`) in the `storage_url` column of the `photos` table. There is no external file storage service. The `is_public` boolean column controls whether a photo appears in the public landing gallery. The `category` column (text, default `'general'`) categorises photos; `'keybox'` is a known special value used to exclude keybox photos from portal display. Photos referenced by `checklist_items.photo_id` or `property_info.photo_id` are considered owned by that content item and **must be excluded** from gallery listing queries (see `public/photos` and `public/full-gallery` for the exclusion pattern).
 - Photo embedding in pages — two distinct patterns, never mix them:
   - **Via `/api/photos/[id]`** (binary API route): use a plain `<img>` tag with `// eslint-disable-next-line @next/next/no-img-element`. Do **not** use Next.js `<Image>` here — the binary route is not a static asset.
   - **Via `storage_url` data URL directly** (e.g. rendering a photo fetched from the DB in a server component): use Next.js `<Image fill sizes="...">` — data URIs do not require hostname config and benefit from layout-fill rendering.
-- Orderable tables (`checklist_items`, `property_info`): use a `sort_order INTEGER` column. Dedicated `POST /reorder` endpoints accept `{ orderedIds: string[] }` and write sequential integers (0-indexed) back to `sort_order`. Always `ORDER BY sort_order ASC` when listing these rows.
+- Orderable tables (`checklist_items`, `property_info`): use a `sort_order INTEGER` column. Dedicated `POST /reorder` endpoints accept `{ orderedIds: string[] }` and write sequential integers (0-indexed) back to `sort_order`. Always `ORDER BY sort_order ASC` when listing these rows. When inserting a new row, compute the next position with `SELECT COALESCE(MAX(sort_order), -1)::int AS max_order FROM <table>` and assign `max_order + 1`.
 - `checklist_property_info` join table: links `checklist_items.id` → `property_info.id`. Managed by `GET/PUT /api/admin/checklists/[id]/links`. Use `ON CONFLICT DO NOTHING` when inserting links.
 - Tailwind utility classes only — no inline `style=` props. Custom component classes from `src/app/globals.css`:
   - `.btn-primary` — forest-green filled button
@@ -122,6 +122,20 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
 | `sendContactEmail(params)` | Sends a contact/inquiry email via Nodemailer SMTP; params: `{ name, email, checkin?, checkout?, guests?, message? }` |
 
 Use these instead of reimplementing equivalent logic.
+
+## Client-side fetch conventions
+
+In `'use client'` components that call API routes, always guard against non-JSON error bodies when throwing:
+
+```ts
+const res = await fetch('/api/...', { method: 'POST', body: JSON.stringify(payload) });
+if (!res.ok) {
+  const body = await res.json().catch(() => ({}));
+  throw new Error((body as { error?: string }).error ?? `Server error (${res.status})`);
+}
+```
+
+After a successful mutation, call `router.refresh()` (from `useRouter`) to revalidate server-rendered data without a full navigation.
 
 ## Deployment
 

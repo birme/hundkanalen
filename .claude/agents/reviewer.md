@@ -51,7 +51,9 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
    - **Two valid photo embedding patterns — do not flag either as incorrect:**
      - Serving via `/api/photos/[id]` (binary API route): must use a plain `<img>` tag with `// eslint-disable-next-line @next/next/no-img-element`. Using Next.js `<Image>` here → `[nit]`.
      - Rendering `storage_url` data URL directly in a server component: using Next.js `<Image fill sizes="...">` is correct — data URIs require no hostname config. Do not flag.
-10. Check orderable-content changes (`checklist_items`, `property_info`): queries returning these rows must include `ORDER BY sort_order ASC`. Missing `ORDER BY sort_order` → `[nit]`.
+10. Check orderable-content changes (`checklist_items`, `property_info`):
+    - Queries returning these rows must include `ORDER BY sort_order ASC`. Missing `ORDER BY sort_order` → `[nit]`.
+    - New POST handlers that insert rows into orderable tables must compute the next `sort_order` as `COALESCE(MAX(sort_order), -1) + 1`. A hardcoded `sort_order = 0` or a missing sort_order assignment → `[nit]`.
 11. Check `guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`, `stay_favorites`, `favorite_places.owner_tips`: these columns/tables exist in the live schema even though their migration files (004–006) are absent from the repo. Querying them is valid; do not flag as missing schema. A migration that re-creates these tables would be incorrect → `[blocking]`.
 12. Check `property_info` category values: valid categories are `rules`, `practical`, `emergency`, `location`, `packing`, `general`. A diff that uses only a subset is fine; a diff that introduces a new category not in this list → `[nit]` (admin is free to extend, but flag for awareness).
 13. Check `photos.category` usage: the `category` column (text, default `'general'`) is valid on the `photos` table. Known special value `'keybox'` is used to exclude keybox photos from portal display. Do not flag category usage as a schema error.

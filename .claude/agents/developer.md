@@ -116,6 +116,11 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   // ...
   await sql`UPDATE photos SET ${sql(updates)} WHERE id = ${id}`;
   ```
+- Array membership: use `= ANY(${ids})` (passing a JS array) instead of `IN (...)` — the postgres client serialises it as a PostgreSQL array parameter:
+  ```ts
+  const rows = await sql<{ id: string }[]>`SELECT id FROM checklist_items WHERE id = ANY(${orderedIds})`;
+  ```
+- Upsert for key-value stores: `INSERT ... ON CONFLICT (key) DO UPDATE SET value = ${value}, updated_at = NOW()`.
 
 **Database schema (key tables)**
 - `users`: NextAuth users with `role` (`admin` | `guest`).
@@ -156,6 +161,23 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 - Tables `checklist_items` and `property_info` have a `sort_order INTEGER` column.
 - Always `ORDER BY sort_order ASC` when listing these rows.
 - Reorder via dedicated `POST /reorder` endpoints that accept `{ orderedIds: string[] }` and write sequential 0-indexed integers back to `sort_order`.
+- When **inserting** a new row into an orderable table, compute the next position:
+  ```ts
+  const [{ max_order }] = await sql<{ max_order: number }[]>`
+    SELECT COALESCE(MAX(sort_order), -1)::int AS max_order FROM <table>
+  `;
+  // then insert with sort_order = max_order + 1
+  ```
+
+**Client-side fetch conventions**
+- In `'use client'` components, guard against non-JSON error bodies when throwing:
+  ```ts
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error((body as { error?: string }).error ?? `Server error (${res.status})`);
+  }
+  ```
+- After a successful mutation, call `router.refresh()` (from `useRouter`) to revalidate server-rendered data without a full navigation.
 
 **Styling**
 - Tailwind utility classes only; no inline `style=` props.
