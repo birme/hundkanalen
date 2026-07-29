@@ -364,11 +364,11 @@ export async function POST(request: NextRequest) {
         (
           'Paint rear facade',
           'Exterior / Facade',
-          'Owner update: rear facade has been painted after the 2025 inspection.',
+          'Owner update: rear facade was painted in 2026 after the 2025 inspection.',
           'Owner note after Anticimex inspection 2025-01-16',
           'medium',
           'done',
-          2025,
+          2026,
           NULL,
           NULL,
           NULL,
@@ -381,7 +381,7 @@ export async function POST(request: NextRequest) {
           'Anticimex inspection 2025-01-16, exterior facade',
           'high',
           'planned',
-          2026,
+          2027,
           NULL,
           NULL,
           NULL,
@@ -394,7 +394,7 @@ export async function POST(request: NextRequest) {
           'Anticimex inspection 2025-01-16, exterior doors',
           'medium',
           'planned',
-          2026,
+          2027,
           NULL,
           NULL,
           NULL,
@@ -407,7 +407,7 @@ export async function POST(request: NextRequest) {
           'Anticimex inspection 2025-01-16, exterior windows',
           'medium',
           'planned',
-          2026,
+          2027,
           NULL,
           NULL,
           NULL,
@@ -420,7 +420,7 @@ export async function POST(request: NextRequest) {
           'Anticimex inspection 2025-01-16, balcony',
           'urgent',
           'planned',
-          2026,
+          2027,
           NULL,
           NULL,
           NULL,
@@ -429,11 +429,11 @@ export async function POST(request: NextRequest) {
         (
           'Repair minor rot damage in deck railing',
           'Exterior / Deck',
-          'Inspection noted minor rot damage in the deck railing.',
+          'Owner update: deck railings were maintained in 2026 after the inspection noted minor rot damage.',
           'Anticimex inspection 2025-01-16, deck',
           'medium',
-          'planned',
-          2027,
+          'done',
+          2026,
           NULL,
           NULL,
           NULL,
@@ -446,7 +446,7 @@ export async function POST(request: NextRequest) {
           'Anticimex inspection 2025-01-16, roof',
           'high',
           'planned',
-          2026,
+          2027,
           NULL,
           NULL,
           NULL,
@@ -459,7 +459,7 @@ export async function POST(request: NextRequest) {
           'Anticimex inspection 2025-01-16, basement general',
           'low',
           'deferred',
-          2028,
+          2029,
           NULL,
           NULL,
           NULL,
@@ -467,6 +467,49 @@ export async function POST(request: NextRequest) {
         )
     `;
   }
+
+  // Keep the initially seeded maintenance timeline aligned with owner updates.
+  // These statements intentionally avoid changing estimated_cost and actual_cost.
+  await sql`
+    UPDATE maintenance_items
+    SET
+      description = 'Owner update: rear facade was painted in 2026 after the 2025 inspection.',
+      status = 'done',
+      target_year = 2026,
+      updated_at = NOW()
+    WHERE title = 'Paint rear facade'
+      AND source = 'Owner note after Anticimex inspection 2025-01-16'
+  `;
+  await sql`
+    UPDATE maintenance_items
+    SET target_year = 2027, updated_at = NOW()
+    WHERE title IN (
+      'Paint and maintain remaining facade sections',
+      'Paint and maintain exterior doors',
+      'Paint and maintain windows',
+      'Repair rot-damaged balcony railing and door connection',
+      'Assess and install chimney weather protection'
+    )
+      AND status <> 'done'
+      AND source LIKE 'Anticimex inspection 2025-01-16%'
+  `;
+  await sql`
+    UPDATE maintenance_items
+    SET
+      description = 'Owner update: deck railings were maintained in 2026 after the inspection noted minor rot damage.',
+      status = 'done',
+      target_year = 2026,
+      updated_at = NOW()
+    WHERE title = 'Repair minor rot damage in deck railing'
+      AND source = 'Anticimex inspection 2025-01-16, deck'
+  `;
+  await sql`
+    UPDATE maintenance_items
+    SET target_year = 2029, updated_at = NOW()
+    WHERE title = 'Refresh basement surface finishes'
+      AND source = 'Anticimex inspection 2025-01-16, basement general'
+      AND status <> 'done'
+  `;
 
   return Response.json({
     success: true,
