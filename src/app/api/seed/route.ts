@@ -232,6 +232,31 @@ export async function POST(request: NextRequest) {
   await sql`ALTER TABLE checklist_items ADD COLUMN IF NOT EXISTS photo_id UUID REFERENCES photos(id) ON DELETE SET NULL`;
   await sql`ALTER TABLE property_info ADD COLUMN IF NOT EXISTS photo_id UUID REFERENCES photos(id) ON DELETE SET NULL`;
 
+  // === Migration 008: Owner maintenance finance plan ===
+  await sql`
+    CREATE TABLE IF NOT EXISTS maintenance_items (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      title TEXT NOT NULL,
+      area TEXT NOT NULL DEFAULT 'general',
+      description TEXT,
+      source TEXT,
+      priority TEXT NOT NULL DEFAULT 'medium'
+        CHECK (priority IN ('low', 'medium', 'high', 'urgent')),
+      status TEXT NOT NULL DEFAULT 'planned'
+        CHECK (status IN ('planned', 'in_progress', 'done', 'deferred')),
+      target_year INTEGER,
+      estimated_cost INTEGER,
+      actual_cost INTEGER,
+      completed_at DATE,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_maintenance_items_status ON maintenance_items(status)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_maintenance_items_target_year ON maintenance_items(target_year)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_maintenance_items_priority ON maintenance_items(priority)`;
+
   // Seed default site settings
   await sql`
     INSERT INTO site_settings (key, value) VALUES
@@ -328,13 +353,128 @@ export async function POST(request: NextRequest) {
     `;
   }
 
+  // Seed owner maintenance plan from Anticimex inspection notes and later owner updates.
+  const existingMaintenance = await sql`SELECT id FROM maintenance_items LIMIT 1`;
+  if (existingMaintenance.length === 0) {
+    await sql`
+      INSERT INTO maintenance_items (
+        title, area, description, source, priority, status, target_year,
+        estimated_cost, actual_cost, completed_at, sort_order
+      ) VALUES
+        (
+          'Paint rear facade',
+          'Exterior / Facade',
+          'Owner update: rear facade has been painted after the 2025 inspection.',
+          'Owner note after Anticimex inspection 2025-01-16',
+          'medium',
+          'done',
+          2025,
+          NULL,
+          NULL,
+          NULL,
+          0
+        ),
+        (
+          'Paint and maintain remaining facade sections',
+          'Exterior / Facade',
+          'Inspection noted that parts of the wood facade need painting and maintenance to extend service life.',
+          'Anticimex inspection 2025-01-16, exterior facade',
+          'high',
+          'planned',
+          2026,
+          NULL,
+          NULL,
+          NULL,
+          1
+        ),
+        (
+          'Paint and maintain exterior doors',
+          'Exterior / Doors',
+          'Inspection noted that an exterior door needs painting and maintenance.',
+          'Anticimex inspection 2025-01-16, exterior doors',
+          'medium',
+          'planned',
+          2026,
+          NULL,
+          NULL,
+          NULL,
+          2
+        ),
+        (
+          'Paint and maintain windows',
+          'Exterior / Windows',
+          'Inspection noted that several windows need painting and maintenance to extend service life.',
+          'Anticimex inspection 2025-01-16, exterior windows',
+          'medium',
+          'planned',
+          2026,
+          NULL,
+          NULL,
+          NULL,
+          3
+        ),
+        (
+          'Repair rot-damaged balcony railing and door connection',
+          'Exterior / Balcony',
+          'Inspection noted rot damage in the balcony railing and a deficient connection between balcony and door, with risk of rainwater entering wall and roof structures.',
+          'Anticimex inspection 2025-01-16, balcony',
+          'urgent',
+          'planned',
+          2026,
+          NULL,
+          NULL,
+          NULL,
+          4
+        ),
+        (
+          'Repair minor rot damage in deck railing',
+          'Exterior / Deck',
+          'Inspection noted minor rot damage in the deck railing.',
+          'Anticimex inspection 2025-01-16, deck',
+          'medium',
+          'planned',
+          2027,
+          NULL,
+          NULL,
+          NULL,
+          5
+        ),
+        (
+          'Assess and install chimney weather protection',
+          'Roof / Chimney',
+          'Inspection noted that the chimney lacks weather protection. A professional should assess whether and how protection should be installed.',
+          'Anticimex inspection 2025-01-16, roof',
+          'high',
+          'planned',
+          2026,
+          NULL,
+          NULL,
+          NULL,
+          6
+        ),
+        (
+          'Refresh basement surface finishes',
+          'Basement',
+          'Inspection noted older surface finishes with minor paint flaking in parts of the basement.',
+          'Anticimex inspection 2025-01-16, basement general',
+          'low',
+          'deferred',
+          2028,
+          NULL,
+          NULL,
+          NULL,
+          7
+        )
+    `;
+  }
+
   return Response.json({
     success: true,
     message: 'Database seeded successfully',
     tables: [
       'users', 'bookings', 'blocked_dates', 'pricing_defaults', 'pricing_seasons', 'inquiries',
       'stays', 'checklist_items', 'property_info', 'photos', 'site_settings', 'favorite_places', 'stay_favorites',
-      'guest_reviews', 'checklist_property_info',
+      'guest_reviews', 'checklist_property_info', 'maintenance_items',
     ],
   });
 }
