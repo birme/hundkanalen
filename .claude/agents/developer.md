@@ -133,6 +133,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 - `favorite_places`: admin-curated recommendations with `category`, `sort_order`, `icon`, `url`, `distance`, `owner_tips`.
 - `stay_favorites`: join table linking `stays.id` → `favorite_places.id`. Used to assign specific favorite places to a guest's stay. Managed by `GET/PUT /api/admin/stays/[id]/favorites` (PUT replaces all favorites for a stay in one operation).
 - `guest_reviews`: one review per stay (`stay_id` FK), `rating` (1–5), optional `message`.
+- `maintenance_items` (added in migration `008`): admin-managed property maintenance records. Columns: `title` (required), `area` (text, default `'general'`), `description`, `source`, `priority` (CHECK: `low` | `medium` | `high` | `urgent`, default `medium`), `status` (CHECK: `planned` | `in_progress` | `done` | `deferred`, default `planned`), `target_year` (integer), `estimated_cost` (integer, SEK), `actual_cost` (integer, SEK), `completed_at` (date), `sort_order`. Always use the exact CHECK-constraint values for `priority` and `status` — the database will reject others.
 - Tables from absent migrations 004–006 (`guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`, `stay_favorites`, `favorite_places.owner_tips`) exist in the live schema — safe to query without adding a migration.
 
 **Photo storage**
@@ -158,7 +159,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   ```
 
 **Orderable content**
-- Tables `checklist_items` and `property_info` have a `sort_order INTEGER` column.
+- Tables `checklist_items`, `property_info`, and `maintenance_items` have a `sort_order INTEGER` column.
 - Always `ORDER BY sort_order ASC` when listing these rows.
 - Reorder via dedicated `POST /reorder` endpoints that accept `{ orderedIds: string[] }` and write sequential 0-indexed integers back to `sort_order`.
 - When **inserting** a new row into an orderable table, compute the next position:
@@ -202,7 +203,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 Use these instead of reimplementing equivalent logic.
 
 **Migrations**
-- Name new files with a sequential 3-digit prefix: `NNN_description.sql`. The current highest is `007`, so the next must be `008_description.sql`.
+- Name new files with a sequential 3-digit prefix: `NNN_description.sql`. The current highest is `008`, so the next must be `009_description.sql`.
 - Never alter or delete an existing migration file.
 - Note: files 004–006 are intentionally absent from `migrations/` — do not attempt to fill that gap.
 

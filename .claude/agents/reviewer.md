@@ -51,15 +51,21 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
    - **Two valid photo embedding patterns — do not flag either as incorrect:**
      - Serving via `/api/photos/[id]` (binary API route): must use a plain `<img>` tag with `// eslint-disable-next-line @next/next/no-img-element`. Using Next.js `<Image>` here → `[nit]`.
      - Rendering `storage_url` data URL directly in a server component: using Next.js `<Image fill sizes="...">` is correct — data URIs require no hostname config. Do not flag.
-10. Check orderable-content changes (`checklist_items`, `property_info`):
+10. Check orderable-content changes (`checklist_items`, `property_info`, `maintenance_items`):
     - Queries returning these rows must include `ORDER BY sort_order ASC`. Missing `ORDER BY sort_order` → `[nit]`.
     - New POST handlers that insert rows into orderable tables must compute the next `sort_order` as `COALESCE(MAX(sort_order), -1) + 1`. A hardcoded `sort_order = 0` or a missing sort_order assignment → `[nit]`.
 11. Check `guest_reviews`, `checklist_property_info`, `stays.packing_notes`, `stays.keybox_code`, `stay_favorites`, `favorite_places.owner_tips`: these columns/tables exist in the live schema even though their migration files (004–006) are absent from the repo. Querying them is valid; do not flag as missing schema. A migration that re-creates these tables would be incorrect → `[blocking]`.
-12. Check `property_info` category values: valid categories are `rules`, `practical`, `emergency`, `location`, `packing`, `general`. A diff that uses only a subset is fine; a diff that introduces a new category not in this list → `[nit]` (admin is free to extend, but flag for awareness).
-13. Check `photos.category` usage: the `category` column (text, default `'general'`) is valid on the `photos` table. Known special value `'keybox'` is used to exclude keybox photos from portal display. Do not flag category usage as a schema error.
-14. Check `stay_favorites` usage: this is a valid join table linking `stays.id` → `favorite_places.id`. The `GET/PUT /api/admin/stays/[id]/favorites` endpoint manages it; PUT replaces all favorites for a stay in one operation. Do not flag as missing schema.
-15. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
-16. Post a **single** comment on the PR using this exact format:
+12. Check `maintenance_items` schema usage (added in migration `008`):
+    - Valid `priority` values are `low`, `medium`, `high`, `urgent` — enforced by a CHECK constraint. Any diff inserting another string → `[blocking]`.
+    - Valid `status` values are `planned`, `in_progress`, `done`, `deferred` — enforced by a CHECK constraint. Any diff inserting another string → `[blocking]`.
+    - The table has `sort_order` — orderable-content rules from step 10 apply.
+    - A migration that re-creates `maintenance_items` would be a duplicate → `[blocking]`.
+13. Check `property_info` category values: valid categories are `rules`, `practical`, `emergency`, `location`, `packing`, `general`. A diff that uses only a subset is fine; a diff that introduces a new category not in this list → `[nit]` (admin is free to extend, but flag for awareness).
+14. Check `photos.category` usage: the `category` column (text, default `'general'`) is valid on the `photos` table. Known special value `'keybox'` is used to exclude keybox photos from portal display. Do not flag category usage as a schema error.
+15. Check `stay_favorites` usage: this is a valid join table linking `stays.id` → `favorite_places.id`. The `GET/PUT /api/admin/stays/[id]/favorites` endpoint manages it; PUT replaces all favorites for a stay in one operation. Do not flag as missing schema.
+16. Check migration files: the current highest migration is `008`. Any new migration must be named `009_description.sql` or higher. A new migration that re-creates a table already defined in migrations 001–008 → `[blocking]`.
+17. Verify lint and type-check would pass (reason about the diff; you cannot run the CI yourself — note this in "Risks not tested").
+18. Post a **single** comment on the PR using this exact format:
 
 ```
 Verdict: APPROVE
