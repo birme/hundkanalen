@@ -29,6 +29,39 @@ Implement a single sub-ticket completely — no stubs, no hardcoded return value
 - Exception: routes serving binary data (e.g. images) return `new Response(buffer, { headers })` instead of `Response.json()`.
 - Error response shape: `{ error: 'message' }` with the correct HTTP status code.
 
+**Request body handling**
+
+For routes that parse a JSON body, always wrap `request.json()` in a try/catch to handle malformed input:
+```ts
+let body: unknown;
+try {
+  body = await request.json();
+} catch {
+  return Response.json({ error: 'Invalid JSON' }, { status: 400 });
+}
+const { field1, field2 } = body as { field1: string; field2?: string };
+if (!field1) return Response.json({ error: 'field1 is required' }, { status: 400 });
+```
+
+**404 handling in single-resource GET routes**
+
+Always fetch the record first and return 404 if it does not exist:
+```ts
+const [row] = await sql<{ id: string }[]>`SELECT id FROM table WHERE id = ${id}`;
+if (!row) return Response.json({ error: 'Not found' }, { status: 404 });
+```
+
+**Partial updates (PUT endpoints)**
+
+Build an `updates` object conditionally and reject empty payloads:
+```ts
+const updates: Record<string, unknown> = {};
+if (field !== undefined) updates.field = field;
+if (Object.keys(updates).length === 0)
+  return Response.json({ error: 'No fields provided' }, { status: 400 });
+await sql`UPDATE table SET ${sql(updates)}, updated_at = NOW() WHERE id = ${id}`;
+```
+
 **Portal pages**
 - Server-side pages under `src/app/stay/portal/` also require `export const dynamic = 'force-dynamic'` as the first export.
 
@@ -121,6 +154,21 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   const rows = await sql<{ id: string }[]>`SELECT id FROM checklist_items WHERE id = ANY(${orderedIds})`;
   ```
 - Upsert for key-value stores: `INSERT ... ON CONFLICT (key) DO UPDATE SET value = ${value}, updated_at = NOW()`.
+- **Nested JSON aggregation**: when returning related rows in a single query, use `json_agg` / `json_build_object` and wrap with `COALESCE` to avoid nulls on empty sets:
+  ```ts
+  const rows = await sql<{ id: string; items: { id: string; title: string }[] }[]>`
+    SELECT
+      p.id,
+      COALESCE(
+        json_agg(json_build_object('id', ci.id, 'title', ci.title))
+          FILTER (WHERE ci.id IS NOT NULL),
+        '[]'::json
+      ) AS items
+    FROM parent p
+    LEFT JOIN child ci ON ci.parent_id = p.id
+    GROUP BY p.id
+  `;
+  ```
 
 **Database schema (key tables)**
 - `users`: NextAuth users with `role` (`admin` | `guest`).
@@ -180,6 +228,16 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   ```
 - After a successful mutation, call `router.refresh()` (from `useRouter`) to revalidate server-rendered data without a full navigation.
 
+**Client component state conventions**
+
+For forms and data-fetching client components, use these standard state variables:
+- `[form, setForm]` — controlled form field values
+- `[loading, setLoading]` — request in-flight flag; disable submit button while true
+- `[error, setError]` — error message string; clear on each new attempt
+- `[success, setSuccess]` — boolean or message shown after a successful mutation
+
+Use `useCallback` to memoize data-fetching functions so they are stable across renders.
+
 **Styling**
 - Tailwind utility classes only; no inline `style=` props.
 - Use existing custom classes from `src/app/globals.css`:
@@ -189,6 +247,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   - `.section-padding` — standard page-section padding
   - `.container-narrow` — centered `max-w-4xl` container
   - `.container-wide` — centered `max-w-7xl` container
+- Custom color palette: `forest` (green), `wood` (brown), `cream` (background), `falu` (red/danger). Use these Tailwind color names (e.g. `bg-forest-600`, `text-falu-700`) rather than arbitrary hex values.
 
 **Shared utilities**
 

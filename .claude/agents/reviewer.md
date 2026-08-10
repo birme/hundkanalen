@@ -29,6 +29,8 @@ Review a PR thoroughly — fetching the diff, cloning the branch, grepping the a
    - Responses must use `Response.json()`, never `NextResponse.json()` — violation → `[blocking]`.
      - **Exception**: routes serving binary data (images, files) may return `new Response(buffer, { headers })` — this is valid for non-JSON content. Do not flag it.
    - Error responses must have shape `{ error: 'message' }` — deviation → `[blocking]`.
+   - **Request body parsing**: new POST/PUT/PATCH route handlers that call `request.json()` must wrap it in a try/catch to handle malformed input. Missing try/catch around `request.json()` in a new handler → `[nit]`.
+   - **404 handling**: new GET handlers that retrieve a single resource by ID must return 404 when the record does not exist. A handler that returns an empty object or undefined result without a 404 guard → `[blocking]`.
    - **Auth tier must match the route's location and purpose** — apply the correct check per pattern:
      - Routes under `src/app/api/admin/` must use `requireAdmin()` from `@/lib/admin-auth` with an immediate null-check returning 401 — missing → `[blocking]`.
      - Routes under `src/app/api/guest/` must use `getGuestSession()` from `@/lib/guest-auth` with an immediate null-check returning 401 — missing → `[blocking]`. Note: there is **no** `requireGuest()` function; any diff that calls `requireGuest()` is a fabricated reference → `[blocking]`.
