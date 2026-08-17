@@ -15,7 +15,7 @@ Property rental management app (vacation property, Hälsingland, Sweden) with ad
 ```
 src/
   app/          Next.js App Router pages and API routes
-    admin/      Admin dashboard (stays, checklists, photos, users, settings)
+    admin/      Admin dashboard (stays, checklists, photos, users, settings, finance/maintenance)
     api/        REST endpoints
       admin/    Admin-only endpoints (requireAdmin guard)
       auth/     NextAuth handler
@@ -77,7 +77,7 @@ No test runner is configured. Type-check with `npx tsc --noEmit`.
 - Photo embedding in pages — two distinct patterns, never mix them:
   - **Via `/api/photos/[id]`** (binary API route): use a plain `<img>` tag with `// eslint-disable-next-line @next/next/no-img-element`. Do **not** use Next.js `<Image>` here — the binary route is not a static asset.
   - **Via `storage_url` data URL directly** (e.g. rendering a photo fetched from the DB in a server component): use Next.js `<Image fill sizes="...">` — data URIs do not require hostname config and benefit from layout-fill rendering.
-- Orderable tables (`checklist_items`, `property_info`, `maintenance_items`): use a `sort_order INTEGER` column. Dedicated `POST /reorder` endpoints accept `{ orderedIds: string[] }` and write sequential integers (0-indexed) back to `sort_order`. Always `ORDER BY sort_order ASC` when listing these rows. When inserting a new row, compute the next position with `SELECT COALESCE(MAX(sort_order), -1)::int AS max_order FROM <table>` and assign `max_order + 1`.
+- Orderable tables (`checklist_items`, `property_info`, `maintenance_items`, `favorite_places`): use a `sort_order INTEGER` column. Always `ORDER BY sort_order ASC` when listing these rows. When inserting a new row, compute the next position with `SELECT COALESCE(MAX(sort_order), -1)::int AS max_order FROM <table>` and assign `max_order + 1`. Tables `checklist_items` and `property_info` have dedicated `POST /reorder` endpoints that accept `{ orderedIds: string[] }` and write sequential 0-indexed integers; `maintenance_items` and `favorite_places` do not have reorder endpoints. **Exception**: `maintenance_items` GET uses a multi-column status-priority ordering (`CASE status WHEN 'in_progress' THEN 0 WHEN 'planned' THEN 1 WHEN 'deferred' THEN 2 WHEN 'done' THEN 3 END, target_year NULLS LAST, sort_order ASC, created_at ASC`) rather than `sort_order ASC` alone — this is intentional and correct for that table.
 - `maintenance_items` table (added in migration `008`): admin-managed property maintenance records. Columns: `id` (UUID PK), `title` (text, required), `area` (text, default `'general'`), `description` (text), `source` (text), `priority` (enum: `low` | `medium` | `high` | `urgent`, default `medium`), `status` (enum: `planned` | `in_progress` | `done` | `deferred`, default `planned`), `target_year` (integer), `estimated_cost` (integer, SEK), `actual_cost` (integer, SEK), `completed_at` (date), `sort_order` (integer). The `priority` and `status` values are enforced by CHECK constraints in the database — do not insert other values.
 - `checklist_property_info` join table: links `checklist_items.id` → `property_info.id`. Managed by `GET/PUT /api/admin/checklists/[id]/links`. Use `ON CONFLICT DO NOTHING` when inserting links.
 - Tailwind utility classes only — no inline `style=` props. Custom component classes from `src/app/globals.css`:
