@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from 'crypto';
 import { getDb } from './db';
+import { getPublicAppUrl } from './public-url';
 
 export function createContractorAccessToken() {
   const token = randomBytes(32).toString('base64url');
@@ -49,10 +50,5 @@ export async function ensureContractorAccessTables() {
 }
 
 export function getBaseUrlFromRequest(request: Request) {
-  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, '');
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
-
-  const host = request.headers.get('host');
-  const proto = request.headers.get('x-forwarded-proto') || 'https';
-  return host ? `${proto}://${host}` : '';
+  return getPublicAppUrl(request);
 }

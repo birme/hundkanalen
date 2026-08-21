@@ -9,17 +9,9 @@ import {
   createPasswordResetToken,
   ensurePasswordResetTable,
 } from '@/lib/admin-password-reset';
+import { getPublicAppUrl } from '@/lib/public-url';
 
 type RouteContext = { params: Promise<{ id: string }> };
-
-function getBaseUrl(request: NextRequest) {
-  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, '');
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
-
-  const host = request.headers.get('host');
-  const proto = request.headers.get('x-forwarded-proto') || 'https';
-  return host ? `${proto}://${host}` : '';
-}
 
 export async function POST(request: NextRequest, context: RouteContext) {
   const session = await requireAdmin();
@@ -67,7 +59,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     VALUES (${user.id}, ${tokenHash}, ${expiresAt})
   `;
 
-  const resetUrl = `${getBaseUrl(request)}/reset-password?token=${encodeURIComponent(token)}`;
+  const resetUrl = `${getPublicAppUrl(request)}/reset-password?token=${encodeURIComponent(token)}`;
 
   try {
     await sendAdminPasswordResetEmail({

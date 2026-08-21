@@ -108,11 +108,11 @@ export async function sendAdminPasswordResetEmail(params: AdminPasswordResetEmai
 export async function sendContractorAccessEmail(params: ContractorAccessEmailParams) {
   const { email, name, accessUrl, validFrom, validUntil } = params;
   const from = process.env.SMTP_USER || 'jonas@birme.se';
-  const subject = 'Tillträde till Färila anno 1923';
+  const subject = 'Tillträde till Hundkanalen 3, Färila';
   const text = [
     `Hej ${name},`,
     '',
-    'Här kommer en personlig länk med instruktioner för tillträde till Färila anno 1923.',
+    'Här kommer en personlig länk med instruktioner för tillträde till Hundkanalen 3, Färila.',
     '',
     `Länken är giltig från ${formatSwedishDateTime(validFrom)} till ${formatSwedishDateTime(validUntil)}.`,
     '',
@@ -123,11 +123,11 @@ export async function sendContractorAccessEmail(params: ContractorAccessEmailPar
     'Dela inte länken vidare. Om tiden inte stämmer, kontakta oss så skickar vi en ny länk.',
     '',
     'Vänliga hälsningar,',
-    'Färila anno 1923',
+    'Hundkanalen 3, Färila',
   ].join('\n');
 
   await transporter.sendMail({
-    from: `"Färila anno 1923" <${from}>`,
+    from: `"Hundkanalen 3, Färila" <${from}>`,
     to: email,
     subject,
     text,

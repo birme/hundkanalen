@@ -8,15 +8,7 @@ import {
   createPasswordResetToken,
   ensurePasswordResetTable,
 } from '@/lib/admin-password-reset';
-
-function getBaseUrl(request: NextRequest) {
-  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, '');
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
-
-  const host = request.headers.get('host');
-  const proto = request.headers.get('x-forwarded-proto') || 'https';
-  return host ? `${proto}://${host}` : '';
-}
+import { getPublicAppUrl } from '@/lib/public-url';
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
@@ -51,7 +43,7 @@ export async function POST(request: NextRequest) {
       VALUES (${user.id}, ${tokenHash}, ${expiresAt})
     `;
 
-    const baseUrl = getBaseUrl(request);
+    const baseUrl = getPublicAppUrl(request);
     const resetUrl = `${baseUrl}/reset-password?token=${encodeURIComponent(token)}`;
 
     try {
