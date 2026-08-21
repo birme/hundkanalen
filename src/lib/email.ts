@@ -9,6 +9,7 @@ function getSmtpPassword() {
 }
 
 const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
+const senderName = 'Birmé & Claise';
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'send.one.com',
@@ -74,7 +75,7 @@ export async function sendContactEmail(params: ContactEmailParams) {
   const subject = `Färila anno 1923 – Inquiry from ${name}`;
 
   await transporter.sendMail({
-    from: `"Färila anno 1923" <${from}>`,
+    from: `"${senderName}" <${from}>`,
     to,
     replyTo: email,
     subject,
@@ -98,7 +99,7 @@ export async function sendAdminPasswordResetEmail(params: AdminPasswordResetEmai
   ].join('\n');
 
   await transporter.sendMail({
-    from: `"Färila anno 1923" <${from}>`,
+    from: `"${senderName}" <${from}>`,
     to: email,
     subject,
     text,
@@ -127,7 +128,7 @@ export async function sendContractorAccessEmail(params: ContractorAccessEmailPar
   ].join('\n');
 
   await transporter.sendMail({
-    from: `"Hundkanalen 3, Färila" <${from}>`,
+    from: `"${senderName}" <${from}>`,
     to: email,
     subject,
     text,
