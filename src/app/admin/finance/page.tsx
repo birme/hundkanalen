@@ -136,6 +136,121 @@ function payloadFromForm(form: MaintenanceForm) {
   };
 }
 
+function FormFields({ form, onChange }: { form: MaintenanceForm; onChange: (form: MaintenanceForm) => void }) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="sm:col-span-2">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+        <input
+          type="text"
+          required
+          value={form.title}
+          onChange={(event) => onChange({ ...form, title: event.target.value })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+          placeholder="e.g. Paint windows"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Area</label>
+        <input
+          type="text"
+          value={form.area}
+          onChange={(event) => onChange({ ...form, area: event.target.value })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Target year</label>
+        <input
+          type="number"
+          inputMode="numeric"
+          min="2025"
+          max="2100"
+          value={form.target_year}
+          onChange={(event) => onChange({ ...form, target_year: event.target.value })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+        <select
+          value={form.priority}
+          onChange={(event) => onChange({ ...form, priority: event.target.value as MaintenancePriority })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+        >
+          {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <select
+          value={form.status}
+          onChange={(event) => onChange({ ...form, status: event.target.value as MaintenanceStatus })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+        >
+          {Object.entries(STATUS_LABELS).map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Estimated cost</label>
+        <input
+          type="number"
+          inputMode="numeric"
+          min="0"
+          value={form.estimated_cost}
+          onChange={(event) => onChange({ ...form, estimated_cost: event.target.value })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+          placeholder="SEK"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Actual cost</label>
+        <input
+          type="number"
+          inputMode="numeric"
+          min="0"
+          value={form.actual_cost}
+          onChange={(event) => onChange({ ...form, actual_cost: event.target.value })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+          placeholder="SEK"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Completed date</label>
+        <input
+          type="date"
+          value={form.completed_at}
+          onChange={(event) => onChange({ ...form, completed_at: event.target.value })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+        />
+      </div>
+      <div className="sm:col-span-2">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <textarea
+          rows={3}
+          value={form.description}
+          onChange={(event) => onChange({ ...form, description: event.target.value })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-y"
+        />
+      </div>
+      <div className="sm:col-span-2">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Source</label>
+        <input
+          type="text"
+          value={form.source}
+          onChange={(event) => onChange({ ...form, source: event.target.value })}
+          className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+          placeholder="e.g. Anticimex inspection 2025-01-16"
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function AdminFinancePage() {
   const [items, setItems] = useState<MaintenanceItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -270,121 +385,6 @@ export default function AdminFinancePage() {
     } finally {
       setDeleting(null);
     }
-  }
-
-  function FormFields({ form, onChange }: { form: MaintenanceForm; onChange: (form: MaintenanceForm) => void }) {
-    return (
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-          <input
-            type="text"
-            required
-            value={form.title}
-            onChange={(event) => onChange({ ...form, title: event.target.value })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-            placeholder="e.g. Paint windows"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Area</label>
-          <input
-            type="text"
-            value={form.area}
-            onChange={(event) => onChange({ ...form, area: event.target.value })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Target year</label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="2025"
-            max="2100"
-            value={form.target_year}
-            onChange={(event) => onChange({ ...form, target_year: event.target.value })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-          <select
-            value={form.priority}
-            onChange={(event) => onChange({ ...form, priority: event.target.value as MaintenancePriority })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-          >
-            {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-          <select
-            value={form.status}
-            onChange={(event) => onChange({ ...form, status: event.target.value as MaintenanceStatus })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-          >
-            {Object.entries(STATUS_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Estimated cost</label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="0"
-            value={form.estimated_cost}
-            onChange={(event) => onChange({ ...form, estimated_cost: event.target.value })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-            placeholder="SEK"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Actual cost</label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="0"
-            value={form.actual_cost}
-            onChange={(event) => onChange({ ...form, actual_cost: event.target.value })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-            placeholder="SEK"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Completed date</label>
-          <input
-            type="date"
-            value={form.completed_at}
-            onChange={(event) => onChange({ ...form, completed_at: event.target.value })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-          />
-        </div>
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea
-            rows={3}
-            value={form.description}
-            onChange={(event) => onChange({ ...form, description: event.target.value })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-y"
-          />
-        </div>
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Source</label>
-          <input
-            type="text"
-            value={form.source}
-            onChange={(event) => onChange({ ...form, source: event.target.value })}
-            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-            placeholder="e.g. Anticimex inspection 2025-01-16"
-          />
-        </div>
-      </div>
-    );
   }
 
   return (
