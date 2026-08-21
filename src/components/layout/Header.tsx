@@ -12,7 +12,7 @@ export default function Header() {
 
   // Hide site header on admin pages — admin has its own sidebar navigation
   // Hide on portal paths — portal has its own minimal header
-  if (pathname.startsWith('/admin') || pathname.startsWith('/stay/portal')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/stay/portal') || pathname.startsWith('/contractor-access')) {
     return null;
   }
 

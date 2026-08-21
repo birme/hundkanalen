@@ -8,7 +8,7 @@ export default function Footer() {
 
   // Hide site footer on admin pages — admin has its own layout
   // Hide on portal paths — portal has its own minimal layout
-  if (pathname.startsWith('/admin') || pathname.startsWith('/stay/portal')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/stay/portal') || pathname.startsWith('/contractor-access')) {
     return null;
   }
 
