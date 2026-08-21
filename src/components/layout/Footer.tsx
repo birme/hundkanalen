@@ -13,38 +13,59 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-forest-900 text-forest-100">
-      <div className="container-wide section-padding">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <h3 className="font-semibold text-white text-lg mb-3">Färila anno 1923</h3>
-            <p className="text-sm text-forest-300">
-              A countryside retreat in the heart of Hälsingland, Sweden.
-              Perfect for families, nature lovers, and those seeking tranquility.
-            </p>
+    <footer className="bg-[#17123b] px-4 pb-28 pt-8 text-white sm:px-6 sm:pb-10 sm:pt-12 lg:px-8">
+      <div className="container-wide">
+        <div className="rounded-[2rem] border border-white/10 bg-white/10 p-5 shadow-2xl shadow-black/20 backdrop-blur md:p-8">
+          <div className="grid grid-cols-1 gap-7 md:grid-cols-3 md:gap-10">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-sm font-semibold">
+                <span className="grid size-7 place-items-center rounded-full bg-white/15">⌂</span>
+                Färila anno 1923
+              </div>
+              <p className="text-sm leading-6 text-white/60">
+                A countryside retreat in the heart of Hälsingland, Sweden.
+                Perfect for families, nature lovers, and those seeking tranquility.
+              </p>
+            </div>
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-white/90">Quick Links</h3>
+              <ul className="grid grid-cols-2 gap-2 text-sm md:grid-cols-1">
+                <li>
+                  <Link href="/gallery" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
+                    Gallery
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/area-guide" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
+                    Area Guide
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
+                    Contact
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/stay" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
+                    Guest Access
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-white/90">Region</h3>
+              <p className="text-sm text-white/70">
+                Hälsingland, Sweden
+              </p>
+              <p className="mt-2 text-sm leading-6 text-white/60">
+                A UNESCO World Heritage region known for its decorated farmhouses,
+                vast forests, and the majestic Ljusnan river.
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-white mb-3">Quick Links</h3>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/gallery" className="text-forest-300 hover:text-white transition-colors">Gallery</Link></li>
-              <li><Link href="/area-guide" className="text-forest-300 hover:text-white transition-colors">Area Guide</Link></li>
-              <li><Link href="/contact" className="text-forest-300 hover:text-white transition-colors">Contact</Link></li>
-              <li><Link href="/stay" className="text-forest-300 hover:text-white transition-colors">Guest Access</Link></li>
-            </ul>
+          <div className="mt-7 border-t border-white/10 pt-5 text-center text-xs text-white/40 md:mt-8 md:pt-6">
+            <p>&copy; {new Date().getFullYear()} Birmé &amp; Claise. All rights reserved.</p>
           </div>
-          <div>
-            <h3 className="font-semibold text-white mb-3">Region</h3>
-            <p className="text-sm text-forest-300">
-              Hälsingland, Sweden
-            </p>
-            <p className="text-sm text-forest-300 mt-2">
-              A UNESCO World Heritage region known for its decorated farmhouses,
-              vast forests, and the majestic Ljusnan river.
-            </p>
-          </div>
-        </div>
-        <div className="border-t border-forest-700 mt-8 pt-8 text-center text-sm text-forest-400">
-          <p>&copy; {new Date().getFullYear()} Birmé &amp; Claise. All rights reserved.</p>
         </div>
       </div>
     </footer>
