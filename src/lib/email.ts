@@ -1,12 +1,22 @@
 import nodemailer from 'nodemailer';
 
+function getSmtpPassword() {
+  if (process.env.SMTP_PASS_B64) {
+    return Buffer.from(process.env.SMTP_PASS_B64, 'base64').toString('utf8');
+  }
+
+  return process.env.SMTP_PASS || process.env.SMTP_PASSWORD;
+}
+
+const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'send.one.com',
-  port: parseInt(process.env.SMTP_PORT || '465', 10),
-  secure: true,
+  port: smtpPort,
+  secure: smtpPort === 465,
   auth: {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
+    pass: getSmtpPassword(),
   },
 });
 
