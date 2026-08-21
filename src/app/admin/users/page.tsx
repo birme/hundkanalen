@@ -102,6 +102,7 @@ export default function AdminUsersPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [resetting, setResetting] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -178,6 +179,27 @@ export default function AdminUsersPage() {
       setPageError(err instanceof Error ? err.message : 'Failed to delete user.');
     } finally {
       setDeleting(null);
+    }
+  }
+
+  async function handlePasswordReset(user: AdminUser) {
+    if (!confirm(`Send a password reset email to "${user.name}" (${user.email})?`)) return;
+
+    setResetting(user.id);
+    setPageError(null);
+    setSuccessMessage(null);
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}/password-reset`, { method: 'POST' });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(body.error ?? `Server error (${res.status})`);
+      }
+      setSuccessMessage(body.message ?? `Password reset email sent to ${user.email}.`);
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch (err) {
+      setPageError(err instanceof Error ? err.message : 'Failed to send password reset email.');
+    } finally {
+      setResetting(null);
     }
   }
 
@@ -370,24 +392,43 @@ export default function AdminUsersPage() {
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                         {formatDate(user.created_at)}
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4">
                         {isSelf ? (
-                          <span
-                            title="Cannot delete yourself"
-                            className="text-xs text-gray-300 cursor-not-allowed select-none"
-                          >
-                            Delete
-                          </span>
+                          <div className="flex justify-end gap-3">
+                            <span
+                              title="Cannot reset your own password here"
+                              className="text-xs text-gray-300 cursor-not-allowed select-none"
+                            >
+                              Reset Password
+                            </span>
+                            <span
+                              title="Cannot delete yourself"
+                              className="text-xs text-gray-300 cursor-not-allowed select-none"
+                            >
+                              Delete
+                            </span>
+                          </div>
                         ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(user)}
-                            disabled={deleting === user.id}
-                            className="text-xs font-medium text-falu-600 hover:text-falu-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-1"
-                          >
-                            {deleting === user.id && <SpinnerIcon />}
-                            {deleting === user.id ? 'Deleting...' : 'Delete'}
-                          </button>
+                          <div className="flex justify-end gap-3">
+                            <button
+                              type="button"
+                              onClick={() => handlePasswordReset(user)}
+                              disabled={resetting === user.id || deleting === user.id}
+                              className="inline-flex items-center gap-1 text-xs font-medium text-forest-600 transition-colors hover:text-forest-800 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {resetting === user.id && <SpinnerIcon />}
+                              {resetting === user.id ? 'Sending...' : 'Reset Password'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(user)}
+                              disabled={deleting === user.id || resetting === user.id}
+                              className="text-xs font-medium text-falu-600 hover:text-falu-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                            >
+                              {deleting === user.id && <SpinnerIcon />}
+                              {deleting === user.id ? 'Deleting...' : 'Delete'}
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
