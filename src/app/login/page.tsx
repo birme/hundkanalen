@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import Link from 'next/link';
 
 function LoginForm() {
   const [error, setError] = useState('');
@@ -71,9 +72,14 @@ function LoginForm() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
+            <div className="mb-1 flex items-center justify-between gap-3">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <Link href="/forgot-password" className="text-xs font-medium text-forest-600 hover:text-forest-800">
+                Forgot password?
+              </Link>
+            </div>
             <input
               type="password"
               id="password"

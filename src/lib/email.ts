@@ -29,6 +29,13 @@ type ContactEmailParams = {
   message?: string | null;
 };
 
+type AdminPasswordResetEmailParams = {
+  email: string;
+  name: string;
+  resetUrl: string;
+  expiresMinutes: number;
+};
+
 export async function sendContactEmail(params: ContactEmailParams) {
   const { name, email, checkin, checkout, guests, message } = params;
   const to = process.env.CONTACT_EMAIL || 'hundkanalen@birme.se';
@@ -56,5 +63,28 @@ export async function sendContactEmail(params: ContactEmailParams) {
     replyTo: email,
     subject,
     text: lines.join('\n'),
+  });
+}
+
+export async function sendAdminPasswordResetEmail(params: AdminPasswordResetEmailParams) {
+  const { email, name, resetUrl, expiresMinutes } = params;
+  const from = process.env.SMTP_USER || 'jonas@birme.se';
+  const subject = 'Reset your Färila anno 1923 admin password';
+  const text = [
+    `Hi ${name},`,
+    '',
+    'We received a request to reset your admin password for Färila anno 1923.',
+    `Use this link within ${expiresMinutes} minutes:`,
+    '',
+    resetUrl,
+    '',
+    'If you did not request this, you can ignore this email.',
+  ].join('\n');
+
+  await transporter.sendMail({
+    from: `"Färila anno 1923" <${from}>`,
+    to: email,
+    subject,
+    text,
   });
 }
