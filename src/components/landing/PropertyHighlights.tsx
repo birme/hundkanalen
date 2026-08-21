@@ -33,21 +33,30 @@ const highlights = [
 
 export default function PropertyHighlights() {
   return (
-    <section className="section-padding bg-white">
+    <section className="bg-[#f6f0e4] px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
       <div className="container-wide">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-forest-800 mb-4">The Property</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+        <div className="mb-6 flex items-end justify-between gap-4 md:mb-12 md:text-center">
+          <div className="md:mx-auto">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-falu-700">The Property</p>
+            <h2 className="text-3xl font-bold leading-tight text-[#17123b] md:text-4xl">Built for slow days</h2>
+          </div>
+          <span className="shrink-0 rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#17123b] shadow-sm md:hidden">
+            160 m²
+          </span>
+        </div>
+        <p className="mb-6 max-w-2xl text-sm leading-6 text-gray-600 md:mx-auto md:mb-12 md:text-center md:text-base">
             A lovingly renovated 1920s villa that blends authentic Swedish character
             with modern comfort, set in the peaceful countryside of Hälsingland.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        </p>
+        <div className="flex snap-x gap-4 overflow-x-auto pb-3 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible lg:grid-cols-3">
           {highlights.map((item) => (
-            <div key={item.title} className="text-center p-6 rounded-xl bg-cream-50 border border-cream-200">
-              <span className="text-4xl mb-4 block">{item.icon}</span>
-              <h3 className="font-semibold text-forest-800 text-lg mb-2">{item.title}</h3>
-              <p className="text-gray-600 text-sm">{item.description}</p>
+            <div
+              key={item.title}
+              className="min-w-[78%] snap-start rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur md:min-w-0 md:p-6"
+            >
+              <span className="mb-5 grid size-12 place-items-center rounded-2xl bg-[#17123b] text-2xl text-white">{item.icon}</span>
+              <h3 className="mb-2 text-lg font-semibold text-[#17123b]">{item.title}</h3>
+              <p className="text-sm leading-6 text-gray-600">{item.description}</p>
             </div>
           ))}
         </div>
