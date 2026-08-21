@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import PublicImageHero from '@/components/layout/PublicImageHero';
 
 export default function ContactPage() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -38,15 +39,14 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="section-padding">
-      <div className="container-narrow">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-forest-800 mb-4">Contact & Booking</h1>
-          <p className="text-gray-600 max-w-xl mx-auto">
-            Interested in staying with us? Fill out the form below and we will
-            get back to you with availability and pricing.
-          </p>
-        </div>
+    <>
+      <PublicImageHero
+        eyebrow="Contact & Booking"
+        title="Plan your stay at Färila anno 1923"
+        description="Send an inquiry with your dates and group size, and we will get back to you with availability and pricing."
+      />
+      <div className="section-padding">
+        <div className="container-narrow">
 
         <div className="grid md:grid-cols-5 gap-8">
           <div className="md:col-span-3">
@@ -173,7 +173,8 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

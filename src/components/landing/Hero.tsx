@@ -34,8 +34,8 @@ export default function Hero() {
       <div className="absolute inset-x-0 top-0 h-44 bg-white/5" />
 
       <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-24 sm:px-6 md:pb-20 md:pt-28 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-          <div className="order-1">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div className="order-2 min-w-0 lg:order-1">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/85 shadow-sm backdrop-blur-md">
               <span className="grid size-6 place-items-center rounded-full bg-white/15">⌂</span>
               Färila, Hälsingland
@@ -83,8 +83,8 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="order-2">
-            <div className="relative mx-auto max-w-[430px] lg:max-w-[520px]">
+          <div className="order-1 min-w-0 lg:order-2">
+            <div className="relative mx-auto w-full max-w-[430px] lg:max-w-[520px]">
               <div className="relative aspect-[4/5] overflow-hidden rounded-[2.4rem] border border-white/15 bg-[#251d4f] shadow-2xl shadow-black/30 sm:aspect-[4/5]">
                 {heroPhoto ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -112,7 +112,7 @@ export default function Hero() {
                 <div className="absolute bottom-4 left-4 right-4 rounded-[2rem] border border-white/15 bg-[#17123b]/75 p-5 shadow-xl backdrop-blur-xl">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-2xl font-bold leading-tight">Stay close to forest and river</h2>
+                      <h2 className="text-2xl font-bold leading-tight">Färila anno 1923</h2>
                       <p className="mt-1 text-sm text-white/65">Hundkanalen 3, Färila</p>
                     </div>
                     <div className="rounded-full bg-violet-500 px-3 py-2 text-sm font-semibold shadow-lg shadow-violet-950/40">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import PublicImageHero from '@/components/layout/PublicImageHero';
 
 type FavoritePlace = {
   id: string;
@@ -75,8 +76,8 @@ const seasons = [
     name: 'Spring',
     period: 'Mar–May',
     icon: '🌸',
-    color: 'bg-green-50 border-green-200',
-    headingColor: 'text-green-800',
+    color: 'bg-forest-50 border-forest-200',
+    headingColor: 'text-forest-800',
     activities: [
       'Bird watching — cranes and migratory birds',
       'Early hiking as snow melts',
@@ -197,16 +198,14 @@ export default function AreaGuidePage() {
   }
 
   return (
-    <div className="section-padding">
-      <div className="container-wide">
-        {/* Page header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-forest-800 mb-4">Area Guide</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Hälsingland is a region of vast forests, the majestic Ljusnan river, and a living
-            cultural heritage. Here is your guide to making the most of your stay.
-          </p>
-        </div>
+    <>
+      <PublicImageHero
+        eyebrow="Area Guide"
+        title="Forests, river days and Hälsingland culture"
+        description="A guide to the local places, seasons and small discoveries that make the stay feel rooted in Färila."
+      />
+      <div className="section-padding">
+        <div className="container-wide">
 
         {/* UNESCO Section */}
         <section className="mb-16">
@@ -295,7 +294,8 @@ export default function AreaGuidePage() {
             ))}
           </div>
         </section>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

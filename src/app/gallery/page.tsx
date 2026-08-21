@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import PublicImageHero from '@/components/layout/PublicImageHero';
 
 type Photo = {
   id: string;
@@ -158,16 +159,14 @@ export default function GalleryPage() {
   const isLoading = isVerified ? loadingFull : loadingPublic;
 
   return (
-    <div className="section-padding">
-      <div className="container-wide">
-        {/* Page header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-forest-800 mb-4">Gallery</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Explore Färila anno 1923 through photos of the interior, exterior, garden, and the
-            surrounding Hälsingland landscape.
-          </p>
-        </div>
+    <>
+      <PublicImageHero
+        eyebrow="Photo Gallery"
+        title="See the house before you arrive"
+        description="Explore Färila anno 1923 through photos of the interior, exterior, garden, and the surrounding Hälsingland landscape."
+      />
+      <div className="section-padding">
+        <div className="container-wide">
 
         {/* Access status banner */}
         {!checkingAccess && isVerified && (
@@ -234,7 +233,8 @@ export default function GalleryPage() {
             </div>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import PublicImageHero from '@/components/layout/PublicImageHero';
 
 export default function StayAccessPage() {
   const [code, setCode] = useState('');
@@ -36,8 +37,14 @@ export default function StayAccessPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center section-padding">
-      <div className="w-full max-w-md mx-auto">
+    <>
+      <PublicImageHero
+        eyebrow="Guest Portal"
+        title="Access your stay"
+        description="Enter the stay code from your hosts to open check-in details, house information and check-out steps."
+      />
+      <div className="flex items-center justify-center px-4 pb-28 pt-10 sm:px-6 sm:pb-16 lg:px-8">
+        <div className="w-full max-w-md mx-auto">
         {/* Card */}
         <div className="bg-white rounded-2xl border border-forest-100 shadow-lg overflow-hidden">
           {/* Card header */}
@@ -111,7 +118,8 @@ export default function StayAccessPage() {
             Contact us
           </a>
         </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

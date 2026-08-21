@@ -31,7 +31,7 @@ export default function PhotoGrid() {
             <h2 className="text-3xl font-bold">Gallery</h2>
             <p className="text-white/60">A glimpse of what awaits you</p>
           </div>
-          <div className="flex gap-4 overflow-hidden">
+          <div className="flex min-w-0 gap-4 overflow-hidden">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="h-64 min-w-[72%] animate-pulse rounded-[2rem] bg-white/10 md:min-w-0 md:flex-1" />
             ))}
@@ -66,7 +66,7 @@ export default function PhotoGrid() {
             All photos
           </Link>
         </div>
-        <div className="flex snap-x gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-visible">
+        <div className="flex min-w-0 snap-x gap-4 overflow-x-auto pb-4 overscroll-x-contain md:grid md:grid-cols-3 md:overflow-visible">
           {photos.map((photo, i) => (
             <div
               key={photo.id}

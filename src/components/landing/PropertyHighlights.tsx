@@ -33,7 +33,7 @@ const highlights = [
 
 export default function PropertyHighlights() {
   return (
-    <section className="bg-[#f6f0e4] px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
+    <section className="bg-cream-50 px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
       <div className="container-wide">
         <div className="mb-6 flex items-end justify-between gap-4 md:mb-12 md:text-center">
           <div className="md:mx-auto">
@@ -48,7 +48,7 @@ export default function PropertyHighlights() {
             A lovingly renovated 1920s villa that blends authentic Swedish character
             with modern comfort, set in the peaceful countryside of Hälsingland.
         </p>
-        <div className="flex snap-x gap-4 overflow-x-auto pb-3 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible lg:grid-cols-3">
+        <div className="flex min-w-0 snap-x gap-4 overflow-x-auto pb-3 overscroll-x-contain md:grid md:grid-cols-2 md:gap-6 md:overflow-visible lg:grid-cols-3">
           {highlights.map((item) => (
             <div
               key={item.title}

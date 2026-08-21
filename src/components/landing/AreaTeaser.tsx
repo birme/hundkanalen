@@ -25,9 +25,9 @@ const activities = [
 
 export default function AreaTeaser() {
   return (
-    <section className="bg-[#f6f0e4] px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
+    <section className="bg-cream-50 px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
       <div className="container-wide">
-        <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-2 lg:items-center">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-falu-700">
               Discover Hälsingland

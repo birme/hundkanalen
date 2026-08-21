@@ -4,18 +4,23 @@
 
 @layer base {
   :root {
-    --color-forest: #438a43;
-    --color-wood: #b07d3e;
-    --color-cream: #fdf9ed;
-    --color-falu: #a72d2d;
+    --color-forest: #17123b;
+    --color-wood: #df8510;
+    --color-cream: #f7f7fb;
+    --color-falu: #d91f61;
   }
 
   html {
+    overflow-x: hidden;
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-cream-50 text-gray-800 antialiased;
+    @apply overflow-x-hidden bg-cream-50 text-gray-800 antialiased;
+  }
+
+  * {
+    box-sizing: border-box;
   }
 }
 
@@ -41,6 +46,6 @@
   }
 
   .container-wide {
-    @apply mx-auto max-w-7xl;
+    @apply mx-auto w-full max-w-7xl min-w-0;
   }
 }
