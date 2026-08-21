@@ -338,7 +338,7 @@ export async function POST(request: NextRequest) {
         ('Check-in Time', 'Check-in from 15:00. If you need early check-in, please contact us in advance.', 'practical', 3),
         ('Check-out Time', 'Check-out by 11:00. Please follow the check-out checklist before leaving.', 'practical', 4),
         ('Parking', 'Free parking is available directly outside the house. There is space for 2-3 cars.', 'practical', 5),
-        ('Getting Here', 'Hundkanalen 3 is located in Farila, Halsingland. From Stockholm, take E4 north to Gavle, then Route 83 west towards Ljusdal/Farila. The drive takes approximately 3.5-4 hours.', 'location', 0)
+        ('Getting Here', 'The house is located in Farila, Halsingland. From Stockholm, take E4 north to Gavle, then Route 83 west towards Ljusdal/Farila. The drive takes approximately 3.5-4 hours.', 'location', 0)
     `;
   }
 

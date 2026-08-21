@@ -38,7 +38,7 @@ function StatusPage({ title, message }: { title: string; message: string }) {
     <main className="min-h-screen bg-[#17123b] px-4 py-10 text-white sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-xl items-center">
         <div className="w-full rounded-[2rem] border border-white/10 bg-white/10 p-6 text-center shadow-2xl shadow-black/20 backdrop-blur sm:p-8">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/50">Hundkanalen 3, Färila</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/50">Färila, Hälsingland</p>
           <h1 className="text-3xl font-bold">{title}</h1>
           <p className="mt-4 text-sm leading-6 text-white/65">{message}</p>
         </div>
@@ -110,7 +110,7 @@ export default async function ContractorAccessPage({ params }: PageProps) {
     <main className="min-h-screen bg-[#17123b] px-4 py-6 text-white sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto max-w-2xl">
         <div className="mb-6">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/45">Hundkanalen 3, Färila</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/45">Färila, Hälsingland</p>
           <h1 className="text-3xl font-bold leading-tight">Tillträde för hantverkare</h1>
           <p className="mt-2 text-sm text-white/65">
             Hej {access.contractor_name}. Den här länken gäller från {formatDateTime(access.valid_from)} till {formatDateTime(access.valid_until)}.

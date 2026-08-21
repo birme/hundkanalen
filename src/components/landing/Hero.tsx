@@ -113,7 +113,7 @@ export default function Hero() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h2 className="text-2xl font-bold leading-tight">Färila anno 1923</h2>
-                      <p className="mt-1 text-sm text-white/65">Hundkanalen 3, Färila</p>
+                      <p className="mt-1 text-sm text-white/65">Färila, Hälsingland</p>
                     </div>
                     <div className="rounded-full bg-violet-500 px-3 py-2 text-sm font-semibold shadow-lg shadow-violet-950/40">
                       4.9
