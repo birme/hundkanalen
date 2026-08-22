@@ -41,27 +41,36 @@ export default function Hero() {
         ) : (
           <div className="h-full w-full bg-[linear-gradient(145deg,#243c2d,#7c2d45_58%,#c58b4a)]" />
         )}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.48)_0%,rgba(13,10,36,0.32)_34%,rgba(13,10,36,0.92)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_12%,rgba(255,255,255,0.18),transparent_30%),linear-gradient(115deg,rgba(255,255,255,0.08),transparent_38%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.22)_0%,rgba(13,10,36,0.10)_36%,rgba(13,10,36,0.74)_100%)] md:bg-[linear-gradient(180deg,rgba(13,10,36,0.38)_0%,rgba(13,10,36,0.22)_34%,rgba(13,10,36,0.86)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_12%,rgba(255,255,255,0.20),transparent_30%),linear-gradient(115deg,rgba(255,255,255,0.08),transparent_38%)]" />
       </div>
 
       <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-24 pt-24 sm:px-6 md:min-h-[42rem] md:pb-14 md:pt-28 lg:px-8">
         <div className="grid min-w-0 gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
-          <div className="min-w-0 rounded-[2rem] border border-white/15 bg-[#0f0b2b]/48 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-5 lg:bg-[#0f0b2b]/36">
+          <div className="min-w-0 md:rounded-[2rem] md:border md:border-white/15 md:bg-[#0f0b2b]/36 md:p-5 md:shadow-2xl md:shadow-black/25 md:backdrop-blur-xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-2 text-xs font-medium text-white/90 shadow-sm backdrop-blur-xl">
               <span className="grid size-6 place-items-center rounded-full bg-white/15">⌂</span>
               Färila, Hälsingland
             </div>
 
-            <h1 className="max-w-xl text-[3rem] font-bold leading-[0.94] tracking-normal drop-shadow-2xl [text-shadow:0_3px_24px_rgba(0,0,0,0.65)] sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-xl text-[3.15rem] font-bold leading-[0.92] tracking-normal drop-shadow-2xl [text-shadow:0_4px_28px_rgba(0,0,0,0.82)] sm:text-6xl lg:text-7xl">
               Färila anno 1923
             </h1>
-            <p className="mt-4 max-w-lg text-base leading-7 text-white/90 drop-shadow [text-shadow:0_2px_14px_rgba(0,0,0,0.65)] sm:text-lg">
+            <p className="mt-4 hidden max-w-lg text-base leading-7 text-white/90 drop-shadow [text-shadow:0_2px_14px_rgba(0,0,0,0.65)] sm:block sm:text-lg">
               A warm countryside villa with old-house character, modern comfort and quiet access to forest,
               river and UNESCO heritage.
             </p>
 
-            <div className="mt-6 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="mt-5 grid max-w-xs grid-cols-2 gap-3 sm:hidden">
+              <Link href="/contact" className="btn-primary !rounded-full !bg-white !px-5 !text-[#17123b] hover:!bg-cream-100">
+                Inquiry
+              </Link>
+              <Link href="/gallery" className="btn-outline !rounded-full !border-white/25 !bg-black/20 !px-5 !text-white backdrop-blur-xl hover:!bg-black/30">
+                Photos
+              </Link>
+            </div>
+
+            <div className="mt-6 hidden gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
               {['Villa', 'Families', 'Nature', 'Winter', 'Heritage'].map((chip, index) => (
                 <span
                   key={chip}
@@ -77,7 +86,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="min-w-0">
+          <div className="hidden min-w-0 sm:block">
             <div className="rounded-[2rem] border border-white/20 bg-[#17123b]/50 p-4 shadow-2xl shadow-black/25 backdrop-blur-2xl sm:p-5 lg:ml-auto lg:max-w-[30rem]">
               <div className="flex items-start justify-between gap-4">
                 <div>
