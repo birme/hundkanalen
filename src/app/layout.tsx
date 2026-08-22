@@ -1,17 +1,72 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SessionWrapper from '@/components/layout/SessionWrapper';
 import { LanguageProvider } from '@/components/i18n/LanguageProvider';
+import SiteAnalytics from '@/components/analytics/SiteAnalytics';
+import JsonLd from '@/components/seo/JsonLd';
+import { absoluteUrl, faqJsonLd, lodgingJsonLd, seo, siteName, siteUrl, websiteJsonLd } from '@/lib/seo';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Färila anno 1923 | Countryside Retreat in Hälsingland, Sweden',
-  description:
-    'A renovated 1920s villa in Hälsingland, Sweden. Spacious living with 4-5 bedrooms, modern kitchen, terrace, and fireplace. Perfect for families and nature lovers.',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: seo.title,
+    template: `%s | ${siteName}`,
+  },
+  description: seo.description,
+  applicationName: siteName,
+  authors: [{ name: 'Birmé & Claise' }],
+  creator: 'Birmé & Claise',
+  publisher: 'Birmé & Claise',
+  keywords: seo.keywords,
+  category: 'travel',
+  alternates: {
+    canonical: siteUrl,
+    languages: {
+      en: siteUrl,
+      sv: siteUrl,
+      'x-default': siteUrl,
+    },
+  },
+  openGraph: {
+    title: seo.title,
+    description: seo.description,
+    url: siteUrl,
+    siteName,
+    type: 'website',
+    locale: 'en_US',
+    alternateLocale: ['sv_SE'],
+    images: [
+      {
+        url: absoluteUrl('/opengraph-image'),
+        width: 1200,
+        height: 630,
+        alt: `${siteName} in Hälsingland, Sweden`,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: seo.title,
+    description: seo.description,
+    images: [absoluteUrl('/opengraph-image')],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -24,6 +79,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <SessionWrapper>
           <LanguageProvider>
+            <Suspense fallback={null}>
+              <SiteAnalytics />
+            </Suspense>
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-1">{children}</main>
@@ -31,6 +89,9 @@ export default function RootLayout({
             </div>
           </LanguageProvider>
         </SessionWrapper>
+        <JsonLd data={websiteJsonLd()} />
+        <JsonLd data={lodgingJsonLd()} />
+        <JsonLd data={faqJsonLd()} />
       </body>
     </html>
   );

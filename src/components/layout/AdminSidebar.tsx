@@ -9,6 +9,7 @@ const navItems = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/stays', label: 'Stays' },
   { href: '/admin/finance', label: 'Finance' },
+  { href: '/admin/analytics', label: 'Analytics' },
   { href: '/admin/contractors', label: 'Contractors' },
   { href: '/admin/checklists', label: 'Checklists' },
   { href: '/admin/property-info', label: 'Property Info' },

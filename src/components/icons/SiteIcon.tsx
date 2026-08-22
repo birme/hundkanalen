@@ -1,4 +1,5 @@
 import {
+  BarChart3,
   BedDouble,
   Camera,
   ChefHat,
@@ -31,6 +32,7 @@ import {
 
 export type SiteIconName =
   | 'activity'
+  | 'analytics'
   | 'bed'
   | 'camera'
   | 'check'
@@ -60,6 +62,7 @@ export type SiteIconName =
 
 const iconMap: Record<SiteIconName, LucideIcon> = {
   activity: Target,
+  analytics: BarChart3,
   bed: BedDouble,
   camera: Camera,
   check: CircleCheck,
@@ -152,6 +155,8 @@ export function adminIconForHref(href: string): SiteIconName {
       return 'home';
     case '/admin/finance':
       return 'finance';
+    case '/admin/analytics':
+      return 'analytics';
     case '/admin/contractors':
       return 'wrench';
     case '/admin/checklists':

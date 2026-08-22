@@ -630,13 +630,29 @@ Fastighetsägare: Jonas - kontaktuppgifter finns i bokningsbekräftelsen.'
       AND status <> 'done'
   `;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS site_pageviews (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      path TEXT NOT NULL,
+      referrer TEXT,
+      locale TEXT CHECK (locale IN ('en', 'sv')),
+      viewport_width INTEGER,
+      visitor_hash TEXT NOT NULL,
+      user_agent_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_site_pageviews_created_at ON site_pageviews(created_at DESC)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_site_pageviews_path ON site_pageviews(path)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_site_pageviews_visitor_created ON site_pageviews(visitor_hash, created_at DESC)`;
+
   return Response.json({
     success: true,
     message: 'Database seeded successfully',
     tables: [
       'users', 'bookings', 'blocked_dates', 'pricing_defaults', 'pricing_seasons', 'inquiries',
       'stays', 'checklist_items', 'property_info', 'photos', 'site_settings', 'favorite_places', 'stay_favorites',
-      'guest_reviews', 'checklist_property_info', 'maintenance_items',
+      'guest_reviews', 'checklist_property_info', 'maintenance_items', 'site_pageviews',
     ],
   });
 }
