@@ -6,12 +6,13 @@ const AUTH_COOKIE_DEV = 'authjs.session-token';
 const GUEST_COOKIE = 'hundkanalen-guest-session';
 const OLD_PUBLIC_HOST = 'hundkanalen.apps.osaas.io';
 const NEW_PUBLIC_ORIGIN = 'https://fritidshuset.birme.se';
+const REDIRECT_OLD_DOMAIN = process.env.REDIRECT_OLD_DOMAIN === 'true';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get('host')?.toLowerCase();
 
-  if (host === OLD_PUBLIC_HOST) {
+  if (REDIRECT_OLD_DOMAIN && host === OLD_PUBLIC_HOST && pathname !== '/health' && pathname !== '/healthz') {
     const redirectUrl = new URL(request.nextUrl.pathname + request.nextUrl.search, NEW_PUBLIC_ORIGIN);
     return NextResponse.redirect(redirectUrl, 308);
   }
