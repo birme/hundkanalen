@@ -16,9 +16,31 @@ export async function GET() {
 
   const sql = getDb();
   const photos = await sql`
-    SELECT id, filename, caption, category, sort_order, storage_url, is_public, created_at
-    FROM photos
-    ORDER BY sort_order ASC, created_at ASC
+    SELECT
+      p.id,
+      p.filename,
+      p.caption,
+      p.category,
+      p.sort_order,
+      p.storage_url,
+      p.is_public,
+      p.created_at,
+      COALESCE(ci.usage_count, 0)::int AS checklist_usage_count,
+      COALESCE(pi.usage_count, 0)::int AS property_info_usage_count
+    FROM photos p
+    LEFT JOIN (
+      SELECT photo_id, COUNT(*)::int AS usage_count
+      FROM checklist_items
+      WHERE photo_id IS NOT NULL
+      GROUP BY photo_id
+    ) ci ON ci.photo_id = p.id
+    LEFT JOIN (
+      SELECT photo_id, COUNT(*)::int AS usage_count
+      FROM property_info
+      WHERE photo_id IS NOT NULL
+      GROUP BY photo_id
+    ) pi ON pi.photo_id = p.id
+    ORDER BY p.sort_order ASC, p.created_at ASC
   `;
 
   return Response.json(photos);
@@ -89,8 +111,12 @@ export async function POST(request: NextRequest) {
       ${nextOrder},
       ${storageUrl}
     )
-    RETURNING id, filename, caption, category, sort_order, storage_url, created_at
+    RETURNING id, filename, caption, category, sort_order, storage_url, is_public, created_at
   `;
 
-  return Response.json(photo, { status: 201 });
+  return Response.json({
+    ...photo,
+    checklist_usage_count: 0,
+    property_info_usage_count: 0,
+  }, { status: 201 });
 }

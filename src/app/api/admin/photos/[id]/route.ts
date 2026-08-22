@@ -41,7 +41,13 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     RETURNING id, filename, caption, category, sort_order, storage_url, is_public, created_at
   `;
 
-  return Response.json(updated);
+  const [usage] = await sql`
+    SELECT
+      (SELECT COUNT(*)::int FROM checklist_items WHERE photo_id = ${id}) AS checklist_usage_count,
+      (SELECT COUNT(*)::int FROM property_info WHERE photo_id = ${id}) AS property_info_usage_count
+  `;
+
+  return Response.json({ ...updated, ...usage });
 }
 
 export async function DELETE(_request: NextRequest, context: RouteContext) {

@@ -11,6 +11,8 @@ type Photo = {
   storage_url: string;
   created_at: string;
   is_public: boolean;
+  checklist_usage_count: number;
+  property_info_usage_count: number;
 };
 
 const CATEGORY_OPTIONS = [
@@ -87,6 +89,22 @@ function PhotoCard({
   const [deleting, setDeleting] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const internalUsageCount = photo.checklist_usage_count + photo.property_info_usage_count;
+  const isInternalOnly = internalUsageCount > 0;
+  const galleryStatus = isInternalOnly ? 'Hidden from galleries' : isPublic ? 'Public gallery' : 'Full gallery only';
+  const galleryStatusClass = isInternalOnly
+    ? 'bg-amber-600 text-white'
+    : isPublic
+      ? 'bg-forest-600 text-white'
+      : 'bg-[#17123b] text-white';
+  const usageParts = [
+    photo.checklist_usage_count > 0
+      ? `${photo.checklist_usage_count} checklist ${photo.checklist_usage_count === 1 ? 'item' : 'items'}`
+      : null,
+    photo.property_info_usage_count > 0
+      ? `${photo.property_info_usage_count} property info ${photo.property_info_usage_count === 1 ? 'item' : 'items'}`
+      : null,
+  ].filter(Boolean);
 
   function handleCaptionChange(e: React.ChangeEvent<HTMLInputElement>) {
     setCaption(e.target.value);
@@ -150,22 +168,33 @@ function PhotoCard({
           className="w-full h-full object-cover"
           loading="lazy"
         />
-        {/* Public badge overlay */}
+        {/* Gallery visibility badge overlay */}
         <div className="absolute top-2 left-2">
-          {isPublic ? (
-            <span className="inline-flex items-center gap-1 bg-forest-600 text-white text-xs font-medium px-2 py-0.5 rounded-full shadow-sm">
-              <span aria-hidden="true">&#9679;</span> Public
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 bg-gray-500 text-white text-xs font-medium px-2 py-0.5 rounded-full shadow-sm">
-              <span aria-hidden="true">&#9675;</span> Private
-            </span>
-          )}
+          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium shadow-sm ${galleryStatusClass}`}>
+            <span aria-hidden="true">{isInternalOnly ? '!' : isPublic ? '\u25cf' : '\u25cb'}</span>
+            {galleryStatus}
+          </span>
         </div>
       </div>
 
       {/* Metadata */}
       <div className="p-4 flex flex-col gap-3 flex-1">
+        {isInternalOnly && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+            <p className="font-semibold">Not shown in public or unlocked gallery</p>
+            <p className="mt-0.5 text-amber-800">
+              Used by {usageParts.join(' and ')}. It will stay hidden from galleries while linked there.
+            </p>
+          </div>
+        )}
+
+        {!isInternalOnly && !isPublic && (
+          <div className="rounded-lg border border-[#d8d2ef] bg-[#f3f0ff] px-3 py-2 text-xs text-[#34235f]">
+            <p className="font-semibold">Visible after gallery code</p>
+            <p className="mt-0.5">Private visitors do not see this, but guests with access code do.</p>
+          </div>
+        )}
+
         {/* Public toggle */}
         <button
           type="button"
@@ -177,7 +206,7 @@ function PhotoCard({
               : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
           }`}
         >
-          <span>Show on public site</span>
+          <span>{isInternalOnly ? 'Mark public after unlinking' : 'Show on public site'}</span>
           <span className="flex items-center gap-1.5">
             {togglingPublic && <SpinnerIcon className="size-3" />}
             {/* Toggle pill */}
