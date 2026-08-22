@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const umamiDashboardUrl = 'https://birme-hundkanalenanalytics.umami-software-umami.auto.prod-se.osaas.io';
+const umamiDashboardUrl = 'https://birme-hundkanalenstats.umami-software-umami.auto.prod-se.osaas.io';
 
 export default function AdminAnalyticsPage() {
   return (
@@ -15,7 +15,7 @@ export default function AdminAnalyticsPage() {
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="max-w-2xl">
           <p className="text-sm leading-6 text-gray-600">
-            Appen är bunden till OSC analytics-instansen <strong>hundkanalenanalytics</strong>.
+            Appen är bunden till OSC analytics-instansen <strong>hundkanalenstats</strong>.
             Dashboard, webbplatsregistrering och statistik bor därför i Umami i stället för i
             applikationens egen databas.
           </p>
