@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SessionWrapper from '@/components/layout/SessionWrapper';
 import { LanguageProvider } from '@/components/i18n/LanguageProvider';
+import UmamiAnalytics from '@/components/analytics/UmamiAnalytics';
 import JsonLd from '@/components/seo/JsonLd';
 import { absoluteUrl, faqJsonLd, lodgingJsonLd, seo, siteName, siteUrl, websiteJsonLd } from '@/lib/seo';
 
@@ -87,6 +88,7 @@ export default function RootLayout({
         <JsonLd data={websiteJsonLd()} />
         <JsonLd data={lodgingJsonLd()} />
         <JsonLd data={faqJsonLd()} />
+        <UmamiAnalytics />
       </body>
     </html>
   );
