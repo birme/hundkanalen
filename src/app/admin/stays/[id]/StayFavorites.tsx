@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { SiteIcon, iconForCategory } from '@/components/icons/SiteIcon';
 
 type FavoritePlace = {
   id: string;
@@ -261,8 +262,8 @@ export default function StayFavorites({ stayId }: { stayId: string }) {
                               onChange={() => togglePlace(place.id)}
                               className="rounded border-gray-300 text-forest-600 focus:ring-forest-500"
                             />
-                            <span className="text-lg flex-shrink-0" aria-hidden="true">
-                              {place.icon || '📍'}
+                            <span className="grid size-9 flex-shrink-0 place-items-center rounded-xl bg-[#17123b] text-white">
+                              <SiteIcon name={iconForCategory(place.category)} className="size-4" />
                             </span>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">

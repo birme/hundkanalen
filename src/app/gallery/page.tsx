@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import PublicImageHero from '@/components/layout/PublicImageHero';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { SiteIcon } from '@/components/icons/SiteIcon';
 
 type Photo = {
   id: string;
@@ -236,7 +237,9 @@ export default function GalleryPage() {
         {!checkingAccess && !isVerified && (
           <div className="mt-16 max-w-lg mx-auto">
             <div className="bg-cream-50 border border-cream-200 rounded-2xl p-8 text-center">
-              <div className="text-4xl mb-4" aria-hidden="true">&#128274;</div>
+              <span className="mx-auto mb-4 grid size-12 place-items-center rounded-2xl bg-[#17123b] text-white">
+                <SiteIcon name="key" className="size-6" />
+              </span>
               <h2 className="text-xl font-bold text-forest-800 mb-2">{t.unlockTitle}</h2>
               <p className="text-sm text-gray-600 mb-6">
                 {t.unlockText}

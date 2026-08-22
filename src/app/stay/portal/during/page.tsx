@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { getGuestSession } from '@/lib/guest-auth';
 import { getDb } from '@/lib/db';
 import StepNavigation from '@/components/portal/StepNavigation';
+import { SiteIcon, iconForCategory } from '@/components/icons/SiteIcon';
 
 type FeaturedPlace = {
   id: string;
@@ -95,7 +96,7 @@ export default async function DuringYourStayPage() {
       {featured.length > 0 && (
         <section>
           <h2 className="text-lg font-semibold text-forest-800 mb-3 flex items-center gap-2">
-            <span aria-hidden="true">⭐</span> Our Picks for You
+            <SiteIcon name="star" className="size-5" /> Our Picks for You
           </h2>
           <div className="space-y-3">
             {featured.map((place) => (
@@ -105,8 +106,8 @@ export default async function DuringYourStayPage() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xl flex-shrink-0" aria-hidden="true">
-                      {place.icon || '📍'}
+                    <span className="grid size-9 flex-shrink-0 place-items-center rounded-xl bg-[#17123b] text-white">
+                      <SiteIcon name={iconForCategory(place.category)} className="size-4" />
                     </span>
                     <h3 className="font-semibold text-forest-800 text-sm leading-tight">
                       {place.name}
@@ -148,7 +149,7 @@ export default async function DuringYourStayPage() {
       {orderedCategories.length > 0 && (
         <section>
           <h2 className="text-lg font-semibold text-forest-800 mb-3 flex items-center gap-2">
-            <span aria-hidden="true">ℹ️</span> Property Information
+            <SiteIcon name="info" className="size-5" /> Property Information
           </h2>
           <div className="space-y-3">
             {orderedCategories.map((cat) => {
@@ -191,7 +192,7 @@ export default async function DuringYourStayPage() {
       {photos.length > 0 && (
         <section>
           <h2 className="text-lg font-semibold text-forest-800 mb-3 flex items-center gap-2">
-            <span aria-hidden="true">📸</span> The Property
+            <SiteIcon name="camera" className="size-5" /> The Property
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {photos.map((photo) => (

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { getGuestSession } from '@/lib/guest-auth';
 import { getDb } from '@/lib/db';
 import StepNavigation from '@/components/portal/StepNavigation';
+import { SiteIcon } from '@/components/icons/SiteIcon';
 
 type PropertyInfoItem = {
   id: string;
@@ -46,7 +47,7 @@ export default async function BeforeYourStayPage() {
       {/* What to Pack */}
       <section>
         <h2 className="text-lg font-semibold text-forest-800 mb-3 flex items-center gap-2">
-          <span aria-hidden="true">🧳</span> What to Pack
+          <SiteIcon name="luggage" className="size-5" /> What to Pack
         </h2>
         {hasPackingNotes ? (
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4">
@@ -87,7 +88,7 @@ export default async function BeforeYourStayPage() {
       {locationItems.length > 0 && (
         <section>
           <h2 className="text-lg font-semibold text-forest-800 mb-3 flex items-center gap-2">
-            <span aria-hidden="true">📍</span> How to Get Here
+            <SiteIcon name="mapPin" className="size-5" /> How to Get Here
           </h2>
           <div className="space-y-3">
             {locationItems.map((item) => (

@@ -1,6 +1,13 @@
 'use client';
 
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { IconBadge, type SiteIconName } from '@/components/icons/SiteIcon';
+
+type Highlight = {
+  icon: SiteIconName;
+  title: string;
+  description: string;
+};
 
 const copy = {
   en: {
@@ -10,36 +17,36 @@ const copy = {
       'A lovingly renovated 1920s villa that blends authentic Swedish character with modern comfort, set in the peaceful countryside of Hälsingland.',
     highlights: [
       {
-        icon: '🏠',
+        icon: 'home',
         title: '160 m² Living Space',
         description: 'A spacious 6-room renovated villa from the 1920s with generous room for the whole family.',
       },
       {
-        icon: '🛏️',
+        icon: 'bed',
         title: '4-5 Bedrooms',
         description: 'Flexible sleeping arrangements for up to 10 guests, ideal for families or groups of friends.',
       },
       {
-        icon: '🍳',
+        icon: 'kitchen',
         title: 'Modern Kitchen',
         description: 'Fully equipped kitchen for preparing meals together, with modern appliances and ample counter space.',
       },
       {
-        icon: '🔥',
+        icon: 'fireplace',
         title: 'Fireplace',
         description: 'Cozy up by the fireplace on chilly evenings, the heart of the home for warm gatherings.',
       },
       {
-        icon: '☀️',
+        icon: 'sun',
         title: 'Spacious Terrace',
         description: 'Enjoy outdoor dining and evening relaxation on the terrace overlooking the garden.',
       },
       {
-        icon: '❄️',
+        icon: 'snow',
         title: 'Air Conditioning',
         description: 'Stay comfortable year-round with modern climate control throughout the house.',
       },
-    ],
+    ] satisfies Highlight[],
   },
   sv: {
     eyebrow: 'Huset',
@@ -48,36 +55,36 @@ const copy = {
       'En varsamt renoverad 1920-talsvilla som kombinerar svensk huskänsla med modern komfort i den stilla hälsingemiljön.',
     highlights: [
       {
-        icon: '🏠',
+        icon: 'home',
         title: '160 m² boyta',
         description: 'En rymlig renoverad sexrumsvilla från 1920-talet med gott om plats för hela familjen.',
       },
       {
-        icon: '🛏️',
+        icon: 'bed',
         title: '4-5 sovrum',
         description: 'Flexibla sovplatser för upp till 10 gäster, perfekt för familjer eller kompisgäng.',
       },
       {
-        icon: '🍳',
+        icon: 'kitchen',
         title: 'Modernt kök',
         description: 'Fullt utrustat kök för gemensam matlagning, med moderna vitvaror och bra arbetsytor.',
       },
       {
-        icon: '🔥',
+        icon: 'fireplace',
         title: 'Eldstad',
         description: 'Samlas vid eldstaden under kyliga kvällar, ett varmt hjärta i huset.',
       },
       {
-        icon: '☀️',
+        icon: 'sun',
         title: 'Rymlig altan',
         description: 'Njut av måltider utomhus och lugna kvällar på altanen mot trädgården.',
       },
       {
-        icon: '❄️',
+        icon: 'snow',
         title: 'Luftkonditionering',
         description: 'Modern klimatkontroll gör huset bekvämt året runt.',
       },
-    ],
+    ] satisfies Highlight[],
   },
 };
 
@@ -106,7 +113,7 @@ export default function PropertyHighlights() {
               key={item.title}
               className="min-w-[78%] snap-start rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur md:min-w-0 md:p-6"
             >
-              <span className="mb-5 grid size-12 place-items-center rounded-2xl bg-[#17123b] text-2xl text-white">{item.icon}</span>
+              <IconBadge name={item.icon} className="mb-5" />
               <h3 className="mb-2 text-lg font-semibold text-[#17123b]">{item.title}</h3>
               <p className="text-sm leading-6 text-gray-600">{item.description}</p>
             </div>

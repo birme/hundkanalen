@@ -2,6 +2,13 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { IconBadge, type SiteIconName } from '@/components/icons/SiteIcon';
+
+type Activity = {
+  icon: SiteIconName;
+  title: string;
+  description: string;
+};
 
 const copy = {
   en: {
@@ -12,26 +19,26 @@ const copy = {
     cta: 'Explore the Area Guide',
     activities: [
       {
-        icon: '🏔️',
+        icon: 'mountain',
         title: 'Hiking & Nature',
         description: 'Explore pristine forests, trails along the Ljusnan river, and scenic mountain paths.',
       },
       {
-        icon: '🎣',
+        icon: 'outdoor',
         title: 'Fishing',
         description: 'World-class fishing in the Ljusnan river and surrounding lakes, grayling, trout, and pike.',
       },
       {
-        icon: '⛷️',
+        icon: 'snow',
         title: 'Winter Sports',
         description: 'Cross-country skiing, snowmobiling, and downhill slopes within easy reach.',
       },
       {
-        icon: '🏛️',
+        icon: 'heritage',
         title: 'UNESCO Heritage',
         description: "Hälsingland's decorated farmhouses are a UNESCO World Heritage Site and a must-see.",
       },
-    ],
+    ] satisfies Activity[],
   },
   sv: {
     eyebrow: 'Upptäck Hälsingland',
@@ -41,26 +48,26 @@ const copy = {
     cta: 'Utforska området',
     activities: [
       {
-        icon: '🏔️',
+        icon: 'mountain',
         title: 'Vandring och natur',
         description: 'Utforska skogar, leder längs Ljusnan och vackra stigar i närområdet.',
       },
       {
-        icon: '🎣',
+        icon: 'outdoor',
         title: 'Fiske',
         description: 'Fina fiskemöjligheter i Ljusnan och sjöarna runt omkring med harr, öring och gädda.',
       },
       {
-        icon: '⛷️',
+        icon: 'snow',
         title: 'Vinteraktiviteter',
         description: 'Längdskidor, skoterleder och utförsåkning finns inom räckhåll.',
       },
       {
-        icon: '🏛️',
+        icon: 'heritage',
         title: 'UNESCO-världsarv',
         description: 'Hälsinglands dekorerade gårdar är ett världsarv och väl värda ett besök.',
       },
-    ],
+    ] satisfies Activity[],
   },
 };
 
@@ -89,7 +96,7 @@ export default function AreaTeaser() {
           <div className="grid grid-cols-2 gap-3 md:gap-4">
             {t.activities.map((activity) => (
               <div key={activity.title} className="rounded-[1.75rem] border border-white/70 bg-white/80 p-4 shadow-sm md:p-5">
-                <span className="mb-4 grid size-11 place-items-center rounded-2xl bg-[#17123b] text-2xl text-white">{activity.icon}</span>
+                <IconBadge name={activity.icon} className="mb-4 size-11" iconClassName="size-5" />
                 <h3 className="mb-1 text-sm font-semibold text-[#17123b] md:text-base">{activity.title}</h3>
                 <p className="text-xs leading-5 text-gray-600 md:text-sm">{activity.description}</p>
               </div>

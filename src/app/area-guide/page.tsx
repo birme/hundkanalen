@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import PublicImageHero from '@/components/layout/PublicImageHero';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { SiteIcon, iconForCategory, type SiteIconName } from '@/components/icons/SiteIcon';
 
 type FavoritePlace = {
   id: string;
@@ -17,14 +18,14 @@ type FavoritePlace = {
 
 type GroupedPlaces = Record<string, FavoritePlace[]>;
 
-const CATEGORY_CONFIG: Record<string, { label: { en: string; sv: string }; icon: string; color: string }> = {
-  culture:  { label: { en: 'Culture & Heritage', sv: 'Kultur och arv' }, icon: '🏛️', color: 'bg-falu-50 border-falu-200 text-falu-800' },
-  family:   { label: { en: 'Family Activities', sv: 'Familjeaktiviteter' }, icon: '👨‍👩‍👧', color: 'bg-wood-50 border-wood-200 text-wood-800' },
-  winter:   { label: { en: 'Winter Activities', sv: 'Vinteraktiviteter' }, icon: '⛷️', color: 'bg-blue-50 border-blue-200 text-blue-800' },
-  nature:   { label: { en: 'Nature & Wildlife', sv: 'Natur och djurliv' }, icon: '🌿', color: 'bg-forest-50 border-forest-200 text-forest-800' },
-  outdoor:  { label: { en: 'Outdoor & Adventure', sv: 'Friluftsliv och äventyr' }, icon: '🥾', color: 'bg-forest-50 border-forest-200 text-forest-800' },
-  dining:   { label: { en: 'Dining & Cafés', sv: 'Mat och caféer' }, icon: '☕', color: 'bg-cream-100 border-cream-300 text-cream-900' },
-  activity: { label: { en: 'Activities', sv: 'Aktiviteter' }, icon: '🎯', color: 'bg-wood-50 border-wood-200 text-wood-800' },
+const CATEGORY_CONFIG: Record<string, { label: { en: string; sv: string }; icon: SiteIconName; color: string }> = {
+  culture:  { label: { en: 'Culture & Heritage', sv: 'Kultur och arv' }, icon: 'heritage', color: 'bg-falu-50 border-falu-200 text-falu-800' },
+  family:   { label: { en: 'Family Activities', sv: 'Familjeaktiviteter' }, icon: 'users', color: 'bg-wood-50 border-wood-200 text-wood-800' },
+  winter:   { label: { en: 'Winter Activities', sv: 'Vinteraktiviteter' }, icon: 'snow', color: 'bg-blue-50 border-blue-200 text-blue-800' },
+  nature:   { label: { en: 'Nature & Wildlife', sv: 'Natur och djurliv' }, icon: 'nature', color: 'bg-forest-50 border-forest-200 text-forest-800' },
+  outdoor:  { label: { en: 'Outdoor & Adventure', sv: 'Friluftsliv och äventyr' }, icon: 'outdoor', color: 'bg-forest-50 border-forest-200 text-forest-800' },
+  dining:   { label: { en: 'Dining & Cafés', sv: 'Mat och caféer' }, icon: 'coffee', color: 'bg-cream-100 border-cream-300 text-cream-900' },
+  activity: { label: { en: 'Activities', sv: 'Aktiviteter' }, icon: 'activity', color: 'bg-wood-50 border-wood-200 text-wood-800' },
 };
 
 const pageCopy = {
@@ -48,7 +49,7 @@ const pageCopy = {
       {
         name: 'Summer',
         period: 'Jun-Aug',
-        icon: '☀️',
+        icon: 'sun' as SiteIconName,
         color: 'bg-amber-50 border-amber-200',
         headingColor: 'text-amber-800',
         activities: [
@@ -64,7 +65,7 @@ const pageCopy = {
       {
         name: 'Autumn',
         period: 'Sep-Nov',
-        icon: '🍂',
+        icon: 'nature' as SiteIconName,
         color: 'bg-orange-50 border-orange-200',
         headingColor: 'text-orange-800',
         activities: [
@@ -78,7 +79,7 @@ const pageCopy = {
       {
         name: 'Winter',
         period: 'Dec-Feb',
-        icon: '❄️',
+        icon: 'snow' as SiteIconName,
         color: 'bg-blue-50 border-blue-200',
         headingColor: 'text-blue-800',
         activities: [
@@ -93,7 +94,7 @@ const pageCopy = {
       {
         name: 'Spring',
         period: 'Mar-May',
-        icon: '🌸',
+        icon: 'sun' as SiteIconName,
         color: 'bg-forest-50 border-forest-200',
         headingColor: 'text-forest-800',
         activities: [
@@ -144,7 +145,7 @@ const pageCopy = {
       {
         name: 'Sommar',
         period: 'Jun-aug',
-        icon: '☀️',
+        icon: 'sun' as SiteIconName,
         color: 'bg-amber-50 border-amber-200',
         headingColor: 'text-amber-800',
         activities: [
@@ -160,7 +161,7 @@ const pageCopy = {
       {
         name: 'Höst',
         period: 'Sep-nov',
-        icon: '🍂',
+        icon: 'nature' as SiteIconName,
         color: 'bg-orange-50 border-orange-200',
         headingColor: 'text-orange-800',
         activities: [
@@ -174,7 +175,7 @@ const pageCopy = {
       {
         name: 'Vinter',
         period: 'Dec-feb',
-        icon: '❄️',
+        icon: 'snow' as SiteIconName,
         color: 'bg-blue-50 border-blue-200',
         headingColor: 'text-blue-800',
         activities: [
@@ -189,7 +190,7 @@ const pageCopy = {
       {
         name: 'Vår',
         period: 'Mar-maj',
-        icon: '🌸',
+        icon: 'sun' as SiteIconName,
         color: 'bg-forest-50 border-forest-200',
         headingColor: 'text-forest-800',
         activities: [
@@ -246,13 +247,15 @@ function FavoritePlaceCard({
   ownersTip: string;
   visitWebsite: string;
 }) {
-  const config = CATEGORY_CONFIG[place.category] ?? { label: { en: place.category, sv: place.category }, icon: '📍', color: 'bg-gray-50 border-gray-200 text-gray-800' };
+  const config = CATEGORY_CONFIG[place.category] ?? { label: { en: place.category, sv: place.category }, icon: iconForCategory(place.category), color: 'bg-gray-50 border-gray-200 text-gray-800' };
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col gap-3 hover:border-forest-300 transition-colors">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-2xl" aria-hidden="true">{place.icon || config.icon}</span>
+          <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-[#17123b] text-white">
+            <SiteIcon name={config.icon} className="size-5" />
+          </span>
           <h3 className="font-semibold text-forest-800 leading-tight">{place.name}</h3>
         </div>
         {place.distance && (
@@ -358,11 +361,13 @@ export default function AreaGuidePage() {
             <h2 className="text-2xl font-bold text-forest-800 mb-8 text-center">{t.localRecommendations}</h2>
             <div className="space-y-10">
               {Object.entries(grouped).map(([cat, places]) => {
-                const config = CATEGORY_CONFIG[cat] ?? { label: { en: cat, sv: cat }, icon: '📍', color: '' };
+                const config = CATEGORY_CONFIG[cat] ?? { label: { en: cat, sv: cat }, icon: iconForCategory(cat), color: '' };
                 return (
                   <div key={cat}>
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-xl" aria-hidden="true">{config.icon}</span>
+                      <span className="grid size-9 place-items-center rounded-xl bg-[#17123b] text-white">
+                        <SiteIcon name={config.icon} className="size-4" />
+                      </span>
                       <h3 className="text-lg font-semibold text-forest-800">{config.label[locale]}</h3>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -384,7 +389,9 @@ export default function AreaGuidePage() {
             {t.seasons.map((season) => (
               <div key={season.name} className={`rounded-xl border p-6 ${season.color}`}>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xl" aria-hidden="true">{season.icon}</span>
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white/70">
+                    <SiteIcon name={season.icon} className="size-5" />
+                  </span>
                   <div>
                     <h3 className={`font-semibold text-lg leading-tight ${season.headingColor}`}>{season.name}</h3>
                     <p className="text-xs text-gray-500">{season.period}</p>

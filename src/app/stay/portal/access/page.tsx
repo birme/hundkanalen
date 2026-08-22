@@ -6,6 +6,7 @@ import { getGuestSession } from '@/lib/guest-auth';
 import { getDb } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
 import StepNavigation from '@/components/portal/StepNavigation';
+import { SiteIcon } from '@/components/icons/SiteIcon';
 
 type Stay = {
   keybox_code: string | null;
@@ -73,7 +74,10 @@ export default async function AccessPage() {
           showKeybox ? 'border-forest-600' : 'border-gray-100'
         }`}>
           <h2 className={`font-semibold text-sm ${showKeybox ? 'text-white' : 'text-forest-800'}`}>
-            🔑 Key Box Code
+            <span className="inline-flex items-center gap-2">
+              <SiteIcon name="key" className="size-4" />
+              Key Box Code
+            </span>
           </h2>
         </div>
         <div className="px-5 py-6 text-center">

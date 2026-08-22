@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { SiteIcon, iconForCategory } from '@/components/icons/SiteIcon';
 
 type FavoritePlace = {
   id: string;
@@ -168,17 +169,6 @@ function FavoriteCard({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Icon (emoji)</label>
-              <input
-                name="icon"
-                type="text"
-                value={form.icon}
-                onChange={handleChange}
-                placeholder="e.g. 🏔️"
-                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-              />
-            </div>
-            <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Distance</label>
               <input
                 name="distance"
@@ -252,7 +242,9 @@ function FavoriteCard({
     <div className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col gap-3 hover:border-forest-300 transition-colors">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-2xl flex-shrink-0" aria-hidden="true">{place.icon || '📍'}</span>
+          <span className="grid size-10 flex-shrink-0 place-items-center rounded-2xl bg-[#17123b] text-white">
+            <SiteIcon name={iconForCategory(place.category)} className="size-5" />
+          </span>
           <div className="min-w-0">
             <h3 className="font-semibold text-forest-800 truncate">{place.name}</h3>
             <span className={`inline-block text-xs border rounded-full px-2 py-0.5 mt-0.5 ${badgeColor}`}>
@@ -450,17 +442,6 @@ export default function AdminFavoritesPage() {
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Icon (emoji)</label>
-              <input
-                name="icon"
-                type="text"
-                value={newForm.icon}
-                onChange={handleNewChange}
-                placeholder="e.g. ⛷️"
-                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
-              />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Distance</label>

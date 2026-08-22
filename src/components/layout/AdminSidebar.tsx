@@ -3,18 +3,19 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { SiteIcon, adminIconForHref } from '@/components/icons/SiteIcon';
 
 const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: '📊' },
-  { href: '/admin/stays', label: 'Stays', icon: '🏠' },
-  { href: '/admin/finance', label: 'Finance', icon: '💰' },
-  { href: '/admin/contractors', label: 'Contractors', icon: '🔧' },
-  { href: '/admin/checklists', label: 'Checklists', icon: '✅' },
-  { href: '/admin/property-info', label: 'Property Info', icon: '📋' },
-  { href: '/admin/photos', label: 'Photos', icon: '📷' },
-  { href: '/admin/favorites', label: 'Favorites', icon: '⭐' },
-  { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
-  { href: '/admin/users', label: 'Admin Users', icon: '👤' },
+  { href: '/admin', label: 'Dashboard' },
+  { href: '/admin/stays', label: 'Stays' },
+  { href: '/admin/finance', label: 'Finance' },
+  { href: '/admin/contractors', label: 'Contractors' },
+  { href: '/admin/checklists', label: 'Checklists' },
+  { href: '/admin/property-info', label: 'Property Info' },
+  { href: '/admin/photos', label: 'Photos' },
+  { href: '/admin/favorites', label: 'Favorites' },
+  { href: '/admin/settings', label: 'Settings' },
+  { href: '/admin/users', label: 'Admin Users' },
 ];
 
 export default function AdminSidebar() {
@@ -54,7 +55,7 @@ export default function AdminSidebar() {
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
-              <span>{item.icon}</span>
+              <SiteIcon name={adminIconForHref(item.href)} className="size-4 shrink-0" />
               {item.label}
             </Link>
           );

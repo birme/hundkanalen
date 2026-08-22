@@ -3,6 +3,7 @@
 import { useState, FormEvent } from 'react';
 import PublicImageHero from '@/components/layout/PublicImageHero';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { SiteIcon } from '@/components/icons/SiteIcon';
 
 const copy = {
   en: {
@@ -87,7 +88,9 @@ export default function StayAccessPage() {
         <div className="bg-white rounded-2xl border border-forest-100 shadow-lg overflow-hidden">
           {/* Card header */}
           <div className="bg-forest-700 px-8 py-8 text-center">
-            <div className="text-4xl mb-3">🏡</div>
+            <span className="mx-auto mb-3 grid size-12 place-items-center rounded-2xl bg-white/15 text-white">
+              <SiteIcon name="home" className="size-6" />
+            </span>
             <h1 className="text-2xl font-bold text-white">{t.cardTitle}</h1>
             <p className="text-forest-200 text-sm mt-1">{t.location}</p>
           </div>

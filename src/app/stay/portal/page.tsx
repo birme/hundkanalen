@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { getGuestSession } from '@/lib/guest-auth';
 import { getDb } from '@/lib/db';
 import { formatDate, daysBetween } from '@/lib/utils';
+import { SiteIcon, type SiteIconName } from '@/components/icons/SiteIcon';
 
 const JOURNEY_STEPS = [
   {
@@ -12,44 +13,50 @@ const JOURNEY_STEPS = [
     href: '/stay/portal/before',
     title: 'Before Your Stay',
     subtitle: 'What to pack and how to get here',
-    emoji: '🧳',
+    icon: 'luggage',
   },
   {
     number: 2,
     href: '/stay/portal/access',
     title: 'How to Get In',
     subtitle: 'Key box code and access details',
-    emoji: '🔑',
+    icon: 'key',
   },
   {
     number: 3,
     href: '/stay/portal/checkin',
     title: 'Check-in',
     subtitle: 'Arrival checklist',
-    emoji: '🏠',
+    icon: 'home',
   },
   {
     number: 4,
     href: '/stay/portal/during',
     title: 'During Your Stay',
     subtitle: 'Activities, property info, and photos',
-    emoji: '☀️',
+    icon: 'sun',
   },
   {
     number: 5,
     href: '/stay/portal/checkout',
     title: 'Check-out',
     subtitle: 'Departure checklist',
-    emoji: '👋',
+    icon: 'check',
   },
   {
     number: 6,
     href: '/stay/portal/farewell',
     title: 'See You Next Time',
     subtitle: 'Share your experience',
-    emoji: '⭐',
+    icon: 'star',
   },
-];
+] satisfies Array<{
+  number: number;
+  href: string;
+  title: string;
+  subtitle: string;
+  icon: SiteIconName;
+}>;
 
 export default async function GuestPortalPage() {
   const session = await getGuestSession();
@@ -98,7 +105,7 @@ export default async function GuestPortalPage() {
             >
               {/* Step circle */}
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-forest-100 text-forest-700 flex items-center justify-center text-lg z-10 group-hover:bg-forest-200 transition-colors">
-                {step.emoji}
+                <SiteIcon name={step.icon} className="size-5" />
               </div>
 
               {/* Content */}
