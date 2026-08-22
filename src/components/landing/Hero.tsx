@@ -86,8 +86,8 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="hidden min-w-0 sm:block">
-            <div className="rounded-[2rem] border border-white/20 bg-[#17123b]/50 p-4 shadow-2xl shadow-black/25 backdrop-blur-2xl sm:p-5 lg:ml-auto lg:max-w-[30rem]">
+          <div className="hidden min-w-0 sm:flex sm:flex-col sm:items-end sm:justify-end sm:gap-3">
+            <div className="w-full rounded-[2rem] border border-white/20 bg-[#17123b]/50 p-4 shadow-2xl shadow-black/25 backdrop-blur-2xl sm:p-5 lg:max-w-[28rem] xl:max-w-[30rem]">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-white/55">Countryside retreat</p>
@@ -133,10 +133,10 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="mt-3 hidden justify-end sm:flex">
-              <div className="rounded-[2rem] border border-white/15 bg-white/15 px-5 py-4 text-center text-sm shadow-2xl backdrop-blur-2xl">
+            <div className="hidden justify-end sm:flex lg:w-full lg:max-w-[28rem] xl:max-w-[30rem]">
+              <div className="w-full rounded-[1.5rem] border border-white/15 bg-white/15 px-5 py-3 text-center text-sm shadow-2xl backdrop-blur-2xl sm:max-w-[10rem]">
                 <p className="text-xs text-white/60">Drive from</p>
-                <p className="text-xl font-bold">Stockholm</p>
+                <p className="text-lg font-bold">Stockholm</p>
                 <p className="text-white/75">3.5-4 h</p>
               </div>
             </div>
