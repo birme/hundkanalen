@@ -1,12 +1,10 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { Suspense } from 'react';
 import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SessionWrapper from '@/components/layout/SessionWrapper';
 import { LanguageProvider } from '@/components/i18n/LanguageProvider';
-import SiteAnalytics from '@/components/analytics/SiteAnalytics';
 import JsonLd from '@/components/seo/JsonLd';
 import { absoluteUrl, faqJsonLd, lodgingJsonLd, seo, siteName, siteUrl, websiteJsonLd } from '@/lib/seo';
 
@@ -79,9 +77,6 @@ export default function RootLayout({
       <body className={inter.className}>
         <SessionWrapper>
           <LanguageProvider>
-            <Suspense fallback={null}>
-              <SiteAnalytics />
-            </Suspense>
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-1">{children}</main>
