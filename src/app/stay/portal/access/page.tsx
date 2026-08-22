@@ -16,7 +16,6 @@ type Stay = {
 
 type Photo = {
   id: string;
-  storage_url: string;
   caption: string | null;
 };
 
@@ -40,7 +39,7 @@ export default async function AccessPage() {
   let keyboxPhotos: Photo[] = [];
   try {
     keyboxPhotos = await sql<Photo[]>`
-      SELECT id, storage_url, caption FROM photos
+      SELECT id, caption FROM photos
       WHERE category = 'keybox'
       ORDER BY sort_order ASC
       LIMIT 1
@@ -117,7 +116,7 @@ export default async function AccessPage() {
           </div>
           <div className="relative aspect-[4/3]">
             <Image
-              src={keyboxPhoto.storage_url}
+              src={`/api/photos/${keyboxPhoto.id}`}
               alt={keyboxPhoto.caption || 'Key box location'}
               fill
               className="object-cover"

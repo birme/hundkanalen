@@ -29,7 +29,6 @@ type PropertyInfoItem = {
 
 type Photo = {
   id: string;
-  storage_url: string;
   caption: string | null;
 };
 
@@ -51,7 +50,7 @@ export default async function DuringYourStayPage() {
   let photos: Photo[] = [];
   try {
     photos = await sql<Photo[]>`
-      SELECT id, storage_url, caption FROM photos
+      SELECT id, caption FROM photos
       WHERE category != 'keybox'
       ORDER BY sort_order ASC
       LIMIT 9
@@ -201,7 +200,7 @@ export default async function DuringYourStayPage() {
                 className="relative aspect-[4/3] bg-cream-100 rounded-lg overflow-hidden"
               >
                 <Image
-                  src={photo.storage_url}
+                  src={`/api/photos/${photo.id}`}
                   alt={photo.caption || 'Property photo'}
                   fill
                   className="object-cover"

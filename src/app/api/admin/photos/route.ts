@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db';
 import { requireAdmin } from '@/lib/admin-auth';
+import { createPhotoObjectKey, createStorageUrl, isObjectStorageConfigured, putPhotoObject } from '@/lib/object-storage';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -59,8 +60,17 @@ export async function POST(request: NextRequest) {
   const category = (formData.get('category') as string | null) ?? null;
 
   const arrayBuffer = await file.arrayBuffer();
-  const base64 = Buffer.from(arrayBuffer).toString('base64');
-  const dataUrl = `data:${file.type};base64,${base64}`;
+  const buffer = Buffer.from(arrayBuffer);
+  let storageUrl: string;
+
+  if (isObjectStorageConfigured()) {
+    const key = createPhotoObjectKey(file.name);
+    await putPhotoObject(key, buffer, file.type);
+    storageUrl = createStorageUrl(key);
+  } else {
+    const base64 = buffer.toString('base64');
+    storageUrl = `data:${file.type};base64,${base64}`;
+  }
 
   const sql = getDb();
 
@@ -77,7 +87,7 @@ export async function POST(request: NextRequest) {
       ${caption},
       ${category},
       ${nextOrder},
-      ${dataUrl}
+      ${storageUrl}
     )
     RETURNING id, filename, caption, category, sort_order, storage_url, created_at
   `;

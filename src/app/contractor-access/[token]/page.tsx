@@ -21,7 +21,6 @@ type AccessLink = {
 
 type Photo = {
   id: string;
-  storage_url: string;
   caption: string | null;
 };
 
@@ -94,7 +93,7 @@ export default async function ContractorAccessPage({ params }: PageProps) {
   let keyboxPhotos: Photo[] = [];
   try {
     keyboxPhotos = await sql<Photo[]>`
-      SELECT id, storage_url, caption
+      SELECT id, caption
       FROM photos
       WHERE category = 'keybox'
       ORDER BY sort_order ASC
@@ -138,7 +137,7 @@ export default async function ContractorAccessPage({ params }: PageProps) {
             </div>
             <div className="relative aspect-[4/3]">
               <Image
-                src={keyboxPhoto.storage_url}
+                src={`/api/photos/${keyboxPhoto.id}`}
                 alt={keyboxPhoto.caption || 'Nyckelboxens placering'}
                 fill
                 className="object-cover"

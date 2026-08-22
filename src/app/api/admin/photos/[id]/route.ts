@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db';
 import { requireAdmin } from '@/lib/admin-auth';
+import { deletePhotoObject } from '@/lib/object-storage';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -52,9 +53,13 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
   const { id } = await context.params;
   const sql = getDb();
 
-  const [existing] = await sql`SELECT id FROM photos WHERE id = ${id}`;
+  const [existing] = await sql`SELECT id, storage_url FROM photos WHERE id = ${id}`;
   if (!existing) {
     return Response.json({ error: 'Photo not found' }, { status: 404 });
+  }
+
+  if (typeof existing.storage_url === 'string') {
+    await deletePhotoObject(existing.storage_url);
   }
 
   await sql`DELETE FROM photos WHERE id = ${id}`;
