@@ -41,22 +41,22 @@ export default function Hero() {
         ) : (
           <div className="h-full w-full bg-[linear-gradient(145deg,#243c2d,#7c2d45_58%,#c58b4a)]" />
         )}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.28)_0%,rgba(13,10,36,0.14)_34%,rgba(13,10,36,0.84)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_12%,rgba(255,255,255,0.24),transparent_30%),linear-gradient(115deg,rgba(255,255,255,0.10),transparent_38%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.48)_0%,rgba(13,10,36,0.32)_34%,rgba(13,10,36,0.92)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_12%,rgba(255,255,255,0.18),transparent_30%),linear-gradient(115deg,rgba(255,255,255,0.08),transparent_38%)]" />
       </div>
 
       <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-24 pt-24 sm:px-6 md:min-h-[42rem] md:pb-14 md:pt-28 lg:px-8">
         <div className="grid min-w-0 gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
-          <div className="min-w-0">
+          <div className="min-w-0 rounded-[2rem] border border-white/15 bg-[#0f0b2b]/48 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-5 lg:bg-[#0f0b2b]/36">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-2 text-xs font-medium text-white/90 shadow-sm backdrop-blur-xl">
               <span className="grid size-6 place-items-center rounded-full bg-white/15">⌂</span>
               Färila, Hälsingland
             </div>
 
-            <h1 className="max-w-xl text-[3rem] font-bold leading-[0.94] tracking-normal drop-shadow-2xl sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-xl text-[3rem] font-bold leading-[0.94] tracking-normal drop-shadow-2xl [text-shadow:0_3px_24px_rgba(0,0,0,0.65)] sm:text-6xl lg:text-7xl">
               Färila anno 1923
             </h1>
-            <p className="mt-4 max-w-lg text-base leading-7 text-white/80 drop-shadow sm:text-lg">
+            <p className="mt-4 max-w-lg text-base leading-7 text-white/90 drop-shadow [text-shadow:0_2px_14px_rgba(0,0,0,0.65)] sm:text-lg">
               A warm countryside villa with old-house character, modern comfort and quiet access to forest,
               river and UNESCO heritage.
             </p>
