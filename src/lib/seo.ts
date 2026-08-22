@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 export const siteUrl = 'https://fritidshuset.birme.se';
 export const siteName = 'Färila anno 1923';
 export const propertyLocation = 'Färila, Hälsingland, Sweden';
+export const ogImagePath = '/opengraph-image?v=20260822-2205';
 
 export const seo = {
   title: `${siteName} | Countryside Retreat in Hälsingland, Sweden`,
@@ -31,7 +32,7 @@ export function pageMetadata({
   title,
   description,
   path,
-  images = ['/opengraph-image'],
+  images = [ogImagePath],
 }: {
   title: string;
   description: string;

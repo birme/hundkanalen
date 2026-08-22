@@ -7,7 +7,7 @@ import SessionWrapper from '@/components/layout/SessionWrapper';
 import { LanguageProvider } from '@/components/i18n/LanguageProvider';
 import UmamiAnalytics from '@/components/analytics/UmamiAnalytics';
 import JsonLd from '@/components/seo/JsonLd';
-import { absoluteUrl, faqJsonLd, lodgingJsonLd, seo, siteName, siteUrl, websiteJsonLd } from '@/lib/seo';
+import { absoluteUrl, faqJsonLd, lodgingJsonLd, ogImagePath, seo, siteName, siteUrl, websiteJsonLd } from '@/lib/seo';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     alternateLocale: ['sv_SE'],
     images: [
       {
-        url: absoluteUrl('/opengraph-image'),
+        url: absoluteUrl(ogImagePath),
         width: 1200,
         height: 630,
         alt: `${siteName} in Hälsingland, Sweden`,
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: seo.title,
     description: seo.description,
-    images: [absoluteUrl('/opengraph-image')],
+    images: [absoluteUrl(ogImagePath)],
   },
   robots: {
     index: true,
