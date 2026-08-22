@@ -46,7 +46,7 @@ export default function Hero() {
       </div>
 
       <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-24 pt-24 sm:px-6 lg:min-h-[42rem] lg:px-8 lg:pb-14 lg:pt-28">
-        <div className="grid min-w-0 gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
           <div className="min-w-0 lg:rounded-[2rem] lg:border lg:border-white/15 lg:bg-[#0f0b2b]/36 lg:p-5 lg:shadow-2xl lg:shadow-black/25 lg:backdrop-blur-xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-2 text-xs font-medium text-white/90 shadow-sm backdrop-blur-xl">
               <span className="grid size-6 place-items-center rounded-full bg-white/15">⌂</span>
@@ -86,7 +86,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="hidden min-w-0 lg:flex lg:flex-col lg:items-end lg:justify-end lg:gap-3">
+          <div className="hidden min-w-0 lg:flex lg:flex-col lg:items-end lg:gap-3">
             <div className="w-full rounded-[2rem] border border-white/20 bg-[#17123b]/50 p-4 shadow-2xl shadow-black/25 backdrop-blur-2xl sm:p-5 lg:max-w-[28rem] xl:max-w-[30rem]">
               <div className="flex items-start justify-between gap-4">
                 <div>
