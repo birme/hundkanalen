@@ -21,11 +21,13 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   }
 
   const body = await request.json();
-  const { title, description, sort_order, type, photo_id } = body;
+  const { title, title_sv, description, description_sv, sort_order, type, photo_id } = body;
 
   const updates: Record<string, unknown> = {};
   if (title !== undefined) updates.title = title;
+  if (title_sv !== undefined) updates.title_sv = title_sv || null;
   if (description !== undefined) updates.description = description;
+  if (description_sv !== undefined) updates.description_sv = description_sv || null;
   if (sort_order !== undefined) updates.sort_order = sort_order;
   if (type !== undefined) {
     if (type !== 'checkin' && type !== 'checkout') {
@@ -46,7 +48,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     UPDATE checklist_items
     SET ${sql(updates)}, updated_at = NOW()
     WHERE id = ${id}
-    RETURNING id, type, title, description, sort_order, photo_id, created_at, updated_at
+    RETURNING id, type, title, title_sv, description, description_sv, sort_order, photo_id, created_at, updated_at
   `;
 
   return Response.json(updated);

@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { localizedNullableText } from '@/lib/localized-content';
 
 type Photo = {
   id: string;
   caption: string | null;
+  caption_sv: string | null;
   category: string | null;
 };
 
@@ -99,13 +101,13 @@ export default function PhotoGrid() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`/api/photos/${photo.id}`}
-                alt={photo.caption || t.propertyPhoto}
+                alt={localizedNullableText(locale, photo.caption, photo.caption_sv) || t.propertyPhoto}
                 className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.04),rgba(13,10,36,0.72))]" />
               <div className="absolute inset-x-3 bottom-3 rounded-[1.5rem] border border-white/15 bg-[#17123b]/55 p-4 shadow-2xl shadow-black/20 backdrop-blur-2xl">
-                <p className="text-sm font-semibold">{photo.caption || 'Färila anno 1923'}</p>
+                <p className="text-sm font-semibold">{localizedNullableText(locale, photo.caption, photo.caption_sv) || 'Färila anno 1923'}</p>
               </div>
             </div>
           ))}

@@ -4,11 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import PublicImageHero from '@/components/layout/PublicImageHero';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
 import { SiteIcon } from '@/components/icons/SiteIcon';
+import { localizedNullableText } from '@/lib/localized-content';
 
 type Photo = {
   id: string;
   filename: string;
   caption: string | null;
+  caption_sv: string | null;
   category: string | null;
   sort_order: number;
 };
@@ -73,7 +75,7 @@ function SpinnerIcon({ className = 'size-5' }: { className?: string }) {
   );
 }
 
-function PhotoGrid({ photos, emptyText }: { photos: Photo[]; emptyText: string }) {
+function PhotoGrid({ photos, emptyText, locale }: { photos: Photo[]; emptyText: string; locale: 'en' | 'sv' }) {
   if (photos.length === 0) {
     return (
       <div className="text-center py-20 text-gray-400">
@@ -89,13 +91,13 @@ function PhotoGrid({ photos, emptyText }: { photos: Photo[]; emptyText: string }
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`/api/photos/${photo.id}`}
-            alt={photo.caption || photo.filename}
+            alt={localizedNullableText(locale, photo.caption, photo.caption_sv) || photo.filename}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
           />
-          {photo.caption && (
+          {localizedNullableText(locale, photo.caption, photo.caption_sv) && (
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-4 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-              <p className="text-white text-sm font-medium">{photo.caption}</p>
+              <p className="text-white text-sm font-medium">{localizedNullableText(locale, photo.caption, photo.caption_sv)}</p>
             </div>
           )}
         </div>
@@ -230,7 +232,7 @@ export default function GalleryPage() {
             <span className="ml-3 text-sm">{t.loading}</span>
           </div>
         ) : (
-          <PhotoGrid photos={displayedPhotos} emptyText={t.noPhotos} />
+          <PhotoGrid photos={displayedPhotos} emptyText={t.noPhotos} locale={locale} />
         )}
 
         {/* Unlock section — only shown when not verified and not still checking */}

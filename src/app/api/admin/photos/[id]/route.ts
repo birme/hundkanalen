@@ -22,10 +22,11 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   }
 
   const body = await request.json();
-  const { caption, category, sort_order, is_public } = body;
+  const { caption, caption_sv, category, sort_order, is_public } = body;
 
   const updates: Record<string, unknown> = {};
   if (caption !== undefined) updates.caption = caption;
+  if (caption_sv !== undefined) updates.caption_sv = caption_sv || null;
   if (category !== undefined) updates.category = category;
   if (sort_order !== undefined) updates.sort_order = sort_order;
   if (is_public !== undefined) updates.is_public = is_public;
@@ -38,7 +39,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     UPDATE photos
     SET ${sql(updates)}
     WHERE id = ${id}
-    RETURNING id, filename, caption, category, sort_order, storage_url, is_public, created_at
+    RETURNING id, filename, caption, caption_sv, category, sort_order, storage_url, is_public, created_at
   `;
 
   const [usage] = await sql`

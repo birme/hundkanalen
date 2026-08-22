@@ -6,6 +6,7 @@ type Photo = {
   id: string;
   filename: string;
   caption: string | null;
+  caption_sv: string | null;
   category: string | null;
   sort_order: number;
   storage_url: string;
@@ -78,10 +79,11 @@ function PhotoCard({
   onDelete,
 }: {
   photo: Photo;
-  onUpdate: (id: string, data: { caption?: string; category?: string; is_public?: boolean }) => Promise<void>;
+  onUpdate: (id: string, data: { caption?: string; caption_sv?: string; category?: string; is_public?: boolean }) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }) {
   const [caption, setCaption] = useState(photo.caption ?? '');
+  const [captionSv, setCaptionSv] = useState(photo.caption_sv ?? photo.caption ?? '');
   const [category, setCategory] = useState(photo.category ?? '');
   const [isPublic, setIsPublic] = useState(photo.is_public);
   const [saving, setSaving] = useState(false);
@@ -111,6 +113,11 @@ function PhotoCard({
     setDirty(true);
   }
 
+  function handleCaptionSvChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setCaptionSv(e.target.value);
+    setDirty(true);
+  }
+
   function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setCategory(e.target.value);
     setDirty(true);
@@ -122,6 +129,7 @@ function PhotoCard({
     try {
       await onUpdate(photo.id, {
         caption: caption.trim() || undefined,
+        caption_sv: captionSv.trim() || caption.trim() || undefined,
         category: category || undefined,
       });
       setDirty(false);
@@ -226,12 +234,22 @@ function PhotoCard({
         </button>
 
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Caption</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Caption, English</label>
           <input
             type="text"
             value={caption}
             onChange={handleCaptionChange}
             placeholder="Add a caption..."
+            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Caption, Swedish</label>
+          <input
+            type="text"
+            value={captionSv}
+            onChange={handleCaptionSvChange}
+            placeholder="Lägg till en svensk bildtext..."
             className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
           />
         </div>
@@ -353,7 +371,7 @@ export default function AdminPhotosPage() {
     }
   }
 
-  async function handleUpdate(id: string, data: { caption?: string; category?: string; is_public?: boolean }) {
+  async function handleUpdate(id: string, data: { caption?: string; caption_sv?: string; category?: string; is_public?: boolean }) {
     const res = await fetch(`/api/admin/photos/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

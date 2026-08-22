@@ -7,20 +7,26 @@ type ChecklistItem = {
   id: string;
   type: 'checkin' | 'checkout';
   title: string;
+  title_sv: string | null;
   description: string | null;
+  description_sv: string | null;
   sort_order: number;
   photo_id: string | null;
 };
 
 type EditState = {
   title: string;
+  title_sv: string;
   description: string;
+  description_sv: string;
   photo_id: string | null;
 };
 
 type AddFormState = {
   title: string;
+  title_sv: string;
   description: string;
+  description_sv: string;
   sort_order: string;
   photo_id: string | null;
 };
@@ -31,7 +37,7 @@ type PropertyInfoItem = {
   category: string;
 };
 
-const EMPTY_ADD_FORM: AddFormState = { title: '', description: '', sort_order: '0', photo_id: null };
+const EMPTY_ADD_FORM: AddFormState = { title: '', title_sv: '', description: '', description_sv: '', sort_order: '0', photo_id: null };
 
 function SpinnerIcon() {
   return (
@@ -95,7 +101,7 @@ function ChecklistSection({
   onMoveDown: (id: string) => Promise<void>;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValues, setEditValues] = useState<EditState>({ title: '', description: '', photo_id: null });
+  const [editValues, setEditValues] = useState<EditState>({ title: '', title_sv: '', description: '', description_sv: '', photo_id: null });
   const [showAddForm, setShowAddForm] = useState(false);
   const [addForm, setAddForm] = useState<AddFormState>(EMPTY_ADD_FORM);
   const [saving, setSaving] = useState(false);
@@ -132,7 +138,13 @@ function ChecklistSection({
 
   function startEdit(item: ChecklistItem) {
     setEditingId(item.id);
-    setEditValues({ title: item.title, description: item.description ?? '', photo_id: item.photo_id ?? null });
+    setEditValues({
+      title: item.title,
+      title_sv: item.title_sv ?? item.title,
+      description: item.description ?? '',
+      description_sv: item.description_sv ?? item.description ?? '',
+      photo_id: item.photo_id ?? null,
+    });
     setError(null);
   }
 
@@ -185,7 +197,13 @@ function ChecklistSection({
     setSaving(true);
     setError(null);
     try {
-      await onUpdate(id, { title: editValues.title.trim(), description: editValues.description.trim(), photo_id: editValues.photo_id });
+      await onUpdate(id, {
+        title: editValues.title.trim(),
+        title_sv: editValues.title_sv.trim() || editValues.title.trim(),
+        description: editValues.description.trim(),
+        description_sv: editValues.description_sv.trim() || editValues.description.trim(),
+        photo_id: editValues.photo_id,
+      });
       setEditingId(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save.');
@@ -216,7 +234,14 @@ function ChecklistSection({
     setSaving(true);
     setError(null);
     try {
-      await onAdd(type, { ...addForm, title: addForm.title.trim(), description: addForm.description.trim(), photo_id: addForm.photo_id });
+      await onAdd(type, {
+        ...addForm,
+        title: addForm.title.trim(),
+        title_sv: addForm.title_sv.trim() || addForm.title.trim(),
+        description: addForm.description.trim(),
+        description_sv: addForm.description_sv.trim() || addForm.description.trim(),
+        photo_id: addForm.photo_id,
+      });
       setAddForm(EMPTY_ADD_FORM);
       setShowAddForm(false);
     } catch (err) {
@@ -270,7 +295,7 @@ function ChecklistSection({
               /* Inline edit form */
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Title</label>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Title, English</label>
                   <input
                     type="text"
                     value={editValues.title}
@@ -280,13 +305,32 @@ function ChecklistSection({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Title, Swedish</label>
+                  <input
+                    type="text"
+                    value={editValues.title_sv}
+                    onChange={(e) => setEditValues((v) => ({ ...v, title_sv: e.target.value }))}
+                    className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Description, English</label>
                   <textarea
                     value={editValues.description}
                     onChange={(e) => setEditValues((v) => ({ ...v, description: e.target.value }))}
                     rows={2}
                     className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
                     placeholder="Optional description..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Description, Swedish</label>
+                  <textarea
+                    value={editValues.description_sv}
+                    onChange={(e) => setEditValues((v) => ({ ...v, description_sv: e.target.value }))}
+                    rows={2}
+                    className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+                    placeholder="Valfri beskrivning..."
                   />
                 </div>
                 <div>
@@ -326,6 +370,15 @@ function ChecklistSection({
                       <p className="text-sm font-medium text-gray-900">{item.title}</p>
                       {item.description && (
                         <p className="text-sm text-gray-500 mt-0.5">{item.description}</p>
+                      )}
+                      {item.title_sv && (
+                        <div className="mt-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2">
+                          <p className="text-xs font-semibold text-blue-800">Swedish</p>
+                          <p className="mt-1 text-sm font-medium text-gray-900">{item.title_sv}</p>
+                          {item.description_sv && (
+                            <p className="text-sm text-gray-500 mt-0.5">{item.description_sv}</p>
+                          )}
+                        </div>
                       )}
                     </div>
                     {item.photo_id && (
@@ -448,7 +501,7 @@ function ChecklistSection({
             <form onSubmit={handleAdd} className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Title <span className="text-falu-600">*</span>
+                  Title, English <span className="text-falu-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -461,12 +514,32 @@ function ChecklistSection({
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Title, Swedish</label>
+                <input
+                  type="text"
+                  value={addForm.title_sv}
+                  onChange={(e) => setAddForm((v) => ({ ...v, title_sv: e.target.value }))}
+                  placeholder="t.ex. Lägg tillbaka nyckeln i nyckelboxen"
+                  className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Description, English</label>
                 <textarea
                   value={addForm.description}
                   onChange={(e) => setAddForm((v) => ({ ...v, description: e.target.value }))}
                   rows={2}
                   placeholder="Optional description..."
+                  className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Description, Swedish</label>
+                <textarea
+                  value={addForm.description_sv}
+                  onChange={(e) => setAddForm((v) => ({ ...v, description_sv: e.target.value }))}
+                  rows={2}
+                  placeholder="Valfri beskrivning..."
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
                 />
               </div>
@@ -619,7 +692,9 @@ export default function AdminChecklistsPage() {
       body: JSON.stringify({
         type,
         title: data.title,
+        title_sv: data.title_sv || data.title,
         description: data.description || undefined,
+        description_sv: data.description_sv || data.description || undefined,
         sort_order: maxOrder + 1,
         photo_id: data.photo_id || null,
       }),
@@ -638,7 +713,9 @@ export default function AdminChecklistsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: data.title,
+        title_sv: data.title_sv || data.title,
         description: data.description || null,
+        description_sv: data.description_sv || data.description || null,
         photo_id: data.photo_id || null,
       }),
     });

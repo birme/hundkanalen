@@ -4,16 +4,20 @@ import { useState, useEffect, useCallback } from 'react';
 import PublicImageHero from '@/components/layout/PublicImageHero';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
 import { SiteIcon, iconForCategory, type SiteIconName } from '@/components/icons/SiteIcon';
+import { localizedNullableText, localizedText } from '@/lib/localized-content';
 
 type FavoritePlace = {
   id: string;
   name: string;
+  name_sv: string | null;
   description: string | null;
+  description_sv: string | null;
   category: string;
   icon: string | null;
   url: string | null;
   distance: string | null;
   owner_tips: string | null;
+  owner_tips_sv: string | null;
 };
 
 type GroupedPlaces = Record<string, FavoritePlace[]>;
@@ -240,10 +244,12 @@ function SpinnerIcon({ className = 'size-5' }: { className?: string }) {
 
 function FavoritePlaceCard({
   place,
+  locale,
   ownersTip,
   visitWebsite,
 }: {
   place: FavoritePlace;
+  locale: 'en' | 'sv';
   ownersTip: string;
   visitWebsite: string;
 }) {
@@ -256,7 +262,7 @@ function FavoritePlaceCard({
           <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-[#17123b] text-white">
             <SiteIcon name={config.icon} className="size-5" />
           </span>
-          <h3 className="font-semibold text-forest-800 leading-tight">{place.name}</h3>
+          <h3 className="font-semibold text-forest-800 leading-tight">{localizedText(locale, place.name, place.name_sv)}</h3>
         </div>
         {place.distance && (
           <span className="text-xs bg-cream-100 text-cream-900 border border-cream-200 rounded-full px-2.5 py-0.5 whitespace-nowrap flex-shrink-0">
@@ -264,12 +270,12 @@ function FavoritePlaceCard({
           </span>
         )}
       </div>
-      {place.description && (
-        <p className="text-sm text-gray-600 leading-relaxed">{place.description}</p>
+      {localizedNullableText(locale, place.description, place.description_sv) && (
+        <p className="text-sm text-gray-600 leading-relaxed">{localizedNullableText(locale, place.description, place.description_sv)}</p>
       )}
-      {place.owner_tips && (
+      {localizedNullableText(locale, place.owner_tips, place.owner_tips_sv) && (
         <div className="bg-cream-50 border-l-4 border-wood-400 rounded-r-lg px-3 py-2">
-          <p className="text-sm text-wood-700 italic">{ownersTip} {place.owner_tips}</p>
+          <p className="text-sm text-wood-700 italic">{ownersTip} {localizedNullableText(locale, place.owner_tips, place.owner_tips_sv)}</p>
         </div>
       )}
       {place.url && (
@@ -372,7 +378,7 @@ export default function AreaGuidePage() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {places.map((place) => (
-                        <FavoritePlaceCard key={place.id} place={place} ownersTip={t.ownersTip} visitWebsite={t.visitWebsite} />
+                        <FavoritePlaceCard key={place.id} place={place} locale={locale} ownersTip={t.ownersTip} visitWebsite={t.visitWebsite} />
                       ))}
                     </div>
                   </div>

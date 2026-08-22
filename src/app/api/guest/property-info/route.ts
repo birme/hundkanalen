@@ -15,7 +15,9 @@ export async function GET() {
       id,
       category,
       title,
+      title_sv,
       content,
+      content_sv,
       sort_order,
       photo_id
     FROM property_info

@@ -16,7 +16,7 @@ export async function GET() {
 
   const sql = getDb();
   const photos = await sql`
-    SELECT id, filename, caption, category, sort_order
+    SELECT id, filename, caption, caption_sv, category, sort_order
     FROM photos
     WHERE id NOT IN (SELECT photo_id FROM checklist_items WHERE photo_id IS NOT NULL)
       AND id NOT IN (SELECT photo_id FROM property_info WHERE photo_id IS NOT NULL)

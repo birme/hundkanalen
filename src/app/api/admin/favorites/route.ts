@@ -12,7 +12,7 @@ export async function GET() {
 
   const sql = getDb();
   const places = await sql`
-    SELECT id, name, description, category, icon, url, distance, sort_order, owner_tips, created_at
+    SELECT id, name, name_sv, description, description_sv, category, icon, url, distance, sort_order, owner_tips, owner_tips_sv, created_at
     FROM favorite_places
     ORDER BY sort_order ASC, created_at ASC
   `;
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { name, description, category, icon, url, distance, owner_tips } = body;
+  const { name, name_sv, description, description_sv, category, icon, url, distance, owner_tips, owner_tips_sv } = body;
 
   if (!name || !description) {
     return Response.json({ error: 'Name and description are required' }, { status: 400 });
@@ -41,18 +41,21 @@ export async function POST(request: NextRequest) {
   const nextOrder = (maxResult.max_order as number) + 1;
 
   const [place] = await sql`
-    INSERT INTO favorite_places (name, description, category, icon, url, distance, sort_order, owner_tips)
+    INSERT INTO favorite_places (name, name_sv, description, description_sv, category, icon, url, distance, sort_order, owner_tips, owner_tips_sv)
     VALUES (
       ${name},
+      ${name_sv || name},
       ${description},
+      ${description_sv || description},
       ${category || 'activity'},
       ${icon || ''},
       ${url || null},
       ${distance || null},
       ${nextOrder},
-      ${owner_tips || null}
+      ${owner_tips || null},
+      ${owner_tips_sv || owner_tips || null}
     )
-    RETURNING id, name, description, category, icon, url, distance, sort_order, owner_tips, created_at
+    RETURNING id, name, name_sv, description, description_sv, category, icon, url, distance, sort_order, owner_tips, owner_tips_sv, created_at
   `;
 
   return Response.json(place, { status: 201 });

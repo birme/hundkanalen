@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { localizedNullableText } from '@/lib/localized-content';
 
 type Photo = {
   id: string;
   caption: string | null;
+  caption_sv: string | null;
 };
 
 const copy = {
@@ -73,7 +75,7 @@ export default function Hero() {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={`/api/photos/${heroPhoto.id}`}
-            alt={heroPhoto.caption || 'Färila anno 1923'}
+            alt={localizedNullableText(locale, heroPhoto.caption, heroPhoto.caption_sv) || 'Färila anno 1923'}
             className="h-full w-full object-cover"
           />
         ) : (

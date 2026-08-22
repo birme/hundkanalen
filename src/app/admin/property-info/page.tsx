@@ -6,7 +6,9 @@ import PhotoPicker from '@/components/admin/PhotoPicker';
 type PropertyInfoItem = {
   id: string;
   title: string;
+  title_sv: string | null;
   content: string;
+  content_sv: string | null;
   category: string;
   sort_order: number;
   photo_id: string | null;
@@ -14,21 +16,27 @@ type PropertyInfoItem = {
 
 type EditState = {
   title: string;
+  title_sv: string;
   content: string;
+  content_sv: string;
   category: string;
   photo_id: string | null;
 };
 
 type AddFormState = {
   title: string;
+  title_sv: string;
   content: string;
+  content_sv: string;
   category: string;
   photo_id: string | null;
 };
 
 const EMPTY_ADD_FORM: AddFormState = {
   title: '',
+  title_sv: '',
   content: '',
+  content_sv: '',
   category: 'general',
   photo_id: null,
 };
@@ -111,7 +119,14 @@ export default function AdminPropertyInfoPage() {
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValues, setEditValues] = useState<EditState>({ title: '', content: '', category: 'general', photo_id: null });
+  const [editValues, setEditValues] = useState<EditState>({
+    title: '',
+    title_sv: '',
+    content: '',
+    content_sv: '',
+    category: 'general',
+    photo_id: null,
+  });
   const [showAddForm, setShowAddForm] = useState(false);
   const [addForm, setAddForm] = useState<AddFormState>(EMPTY_ADD_FORM);
   const [saving, setSaving] = useState(false);
@@ -140,7 +155,14 @@ export default function AdminPropertyInfoPage() {
 
   function startEdit(item: PropertyInfoItem) {
     setEditingId(item.id);
-    setEditValues({ title: item.title, content: item.content, category: item.category, photo_id: item.photo_id ?? null });
+    setEditValues({
+      title: item.title,
+      title_sv: item.title_sv ?? item.title,
+      content: item.content,
+      content_sv: item.content_sv ?? item.content,
+      category: item.category,
+      photo_id: item.photo_id ?? null,
+    });
     setFormError(null);
   }
 
@@ -162,7 +184,9 @@ export default function AdminPropertyInfoPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: editValues.title.trim(),
+          title_sv: editValues.title_sv.trim() || editValues.title.trim(),
           content: editValues.content.trim(),
+          content_sv: editValues.content_sv.trim() || editValues.content.trim(),
           category: editValues.category,
           photo_id: editValues.photo_id || null,
         }),
@@ -216,7 +240,9 @@ export default function AdminPropertyInfoPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: addForm.title.trim(),
+          title_sv: addForm.title_sv.trim() || addForm.title.trim(),
           content: addForm.content.trim(),
+          content_sv: addForm.content_sv.trim() || addForm.content.trim(),
           category: addForm.category,
           sort_order: maxOrder + 1,
           photo_id: addForm.photo_id || null,
@@ -379,7 +405,7 @@ export default function AdminPropertyInfoPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title <span className="text-falu-600">*</span>
+                  Title, English <span className="text-falu-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -387,6 +413,16 @@ export default function AdminPropertyInfoPage() {
                   value={addForm.title}
                   onChange={(e) => setAddForm((v) => ({ ...v, title: e.target.value }))}
                   placeholder="e.g. WiFi Password"
+                  className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Title, Swedish</label>
+                <input
+                  type="text"
+                  value={addForm.title_sv}
+                  onChange={(e) => setAddForm((v) => ({ ...v, title_sv: e.target.value }))}
+                  placeholder="t.ex. WiFi-lösenord"
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
                 />
               </div>
@@ -404,7 +440,7 @@ export default function AdminPropertyInfoPage() {
               </div>
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Content <span className="text-falu-600">*</span>
+                  Content, English <span className="text-falu-600">*</span>
                 </label>
                 <textarea
                   required
@@ -412,6 +448,16 @@ export default function AdminPropertyInfoPage() {
                   value={addForm.content}
                   onChange={(e) => setAddForm((v) => ({ ...v, content: e.target.value }))}
                   placeholder="Enter the information for guests..."
+                  className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-y"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Content, Swedish</label>
+                <textarea
+                  rows={4}
+                  value={addForm.content_sv}
+                  onChange={(e) => setAddForm((v) => ({ ...v, content_sv: e.target.value }))}
+                  placeholder="Ange informationen på svenska..."
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-y"
                 />
               </div>
@@ -473,13 +519,22 @@ export default function AdminPropertyInfoPage() {
                           <ErrorBanner message={formError} />
                         )}
                         <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Title</label>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Title, English</label>
                           <input
                             type="text"
                             value={editValues.title}
                             onChange={(e) => setEditValues((v) => ({ ...v, title: e.target.value }))}
                             className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
                             autoFocus
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Title, Swedish</label>
+                          <input
+                            type="text"
+                            value={editValues.title_sv}
+                            onChange={(e) => setEditValues((v) => ({ ...v, title_sv: e.target.value }))}
+                            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
                           />
                         </div>
                         <div>
@@ -495,10 +550,19 @@ export default function AdminPropertyInfoPage() {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Content</label>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Content, English</label>
                           <textarea
                             value={editValues.content}
                             onChange={(e) => setEditValues((v) => ({ ...v, content: e.target.value }))}
+                            rows={4}
+                            className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-y"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Content, Swedish</label>
+                          <textarea
+                            value={editValues.content_sv}
+                            onChange={(e) => setEditValues((v) => ({ ...v, content_sv: e.target.value }))}
                             rows={4}
                             className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-y"
                           />
@@ -538,6 +602,17 @@ export default function AdminPropertyInfoPage() {
                           <pre className="text-sm text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">
                             {item.content}
                           </pre>
+                          {item.title_sv && (
+                            <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2">
+                              <p className="text-xs font-semibold text-blue-800">Swedish</p>
+                              <p className="mt-1 text-sm font-semibold text-gray-900">{item.title_sv}</p>
+                              {item.content_sv && (
+                                <pre className="mt-1 text-sm text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">
+                                  {item.content_sv}
+                                </pre>
+                              )}
+                            </div>
+                          )}
                           {item.photo_id && (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img

@@ -1,26 +1,38 @@
 export const dynamic = 'force-dynamic';
 
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { getGuestSession } from '@/lib/guest-auth';
 import { getDb } from '@/lib/db';
 import StepNavigation from '@/components/portal/StepNavigation';
 import ChecklistWithModals from '@/components/portal/ChecklistWithModals';
 import type { ChecklistItemWithLinks } from '@/components/portal/ChecklistWithModals';
+import { isLocale } from '@/lib/i18n';
 
 export default async function CheckInPage() {
   const session = await getGuestSession();
   if (!session) redirect('/stay');
 
   const sql = getDb();
+  const cookieStore = cookies();
+  const cookieLocale = cookieStore.get('hk-locale')?.value ?? null;
+  const locale = isLocale(cookieLocale) ? cookieLocale : 'en';
   const rows = await sql<(ChecklistItemWithLinks & { linked_info: string })[]>`
-    SELECT ci.id, ci.title, ci.description, ci.sort_order, ci.photo_id,
-      COALESCE(json_agg(json_build_object('id', pi.id, 'title', pi.title, 'content', pi.content, 'photoId', pi.photo_id))
+    SELECT ci.id, ci.title, ci.title_sv, ci.description, ci.description_sv, ci.sort_order, ci.photo_id,
+      COALESCE(json_agg(json_build_object(
+        'id', pi.id,
+        'title', pi.title,
+        'title_sv', pi.title_sv,
+        'content', pi.content,
+        'content_sv', pi.content_sv,
+        'photoId', pi.photo_id
+      ))
         FILTER (WHERE pi.id IS NOT NULL), '[]'::json) AS linked_info
     FROM checklist_items ci
     LEFT JOIN checklist_property_info cpi ON cpi.checklist_item_id = ci.id
     LEFT JOIN property_info pi ON pi.id = cpi.property_info_id
     WHERE ci.type = 'checkin'
-    GROUP BY ci.id, ci.title, ci.description, ci.sort_order, ci.photo_id
+    GROUP BY ci.id, ci.title, ci.title_sv, ci.description, ci.description_sv, ci.sort_order, ci.photo_id
     ORDER BY ci.sort_order ASC
   `;
 
@@ -33,14 +45,14 @@ export default async function CheckInPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-forest-800">Check-in</h1>
-        <p className="text-gray-500 text-sm mt-1">Follow these steps when you arrive</p>
+        <p className="text-gray-500 text-sm mt-1">{locale === 'sv' ? 'Följ de här stegen när du kommer fram' : 'Follow these steps when you arrive'}</p>
       </div>
 
       {items.length > 0 ? (
         <ChecklistWithModals items={items} accentColor="forest" />
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 px-5 py-8 text-center">
-          <p className="text-gray-400 text-sm">No check-in instructions yet.</p>
+          <p className="text-gray-400 text-sm">{locale === 'sv' ? 'Det finns inga incheckningsinstruktioner ännu.' : 'No check-in instructions yet.'}</p>
         </div>
       )}
 

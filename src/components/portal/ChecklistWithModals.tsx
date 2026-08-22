@@ -2,18 +2,24 @@
 
 import { useState } from 'react';
 import PropertyInfoModal from './PropertyInfoModal';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { localizedNullableText, localizedText } from '@/lib/localized-content';
 
 type LinkedPropertyInfo = {
   id: string;
   title: string;
+  title_sv?: string | null;
   content: string;
+  content_sv?: string | null;
   photoId?: string | null;
 };
 
 export type ChecklistItemWithLinks = {
   id: string;
   title: string;
+  title_sv?: string | null;
   description: string | null;
+  description_sv?: string | null;
   sort_order: number;
   photo_id: string | null;
   linked_info: LinkedPropertyInfo[];
@@ -27,6 +33,7 @@ type Props = {
 export default function ChecklistWithModals({ items, accentColor }: Props) {
   const [activeModal, setActiveModal] = useState<LinkedPropertyInfo | null>(null);
   const [activeModalPhotoId, setActiveModalPhotoId] = useState<string | null | undefined>(undefined);
+  const { locale } = useLanguage();
 
   const numberBg = accentColor === 'forest'
     ? 'bg-forest-100 text-forest-700'
@@ -44,9 +51,9 @@ export default function ChecklistWithModals({ items, accentColor }: Props) {
               {index + 1}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-forest-800 text-sm">{item.title}</h3>
-              {item.description && (
-                <p className="text-sm text-gray-600 mt-1 leading-relaxed">{item.description}</p>
+              <h3 className="font-semibold text-forest-800 text-sm">{localizedText(locale, item.title, item.title_sv)}</h3>
+              {localizedNullableText(locale, item.description, item.description_sv) && (
+                <p className="text-sm text-gray-600 mt-1 leading-relaxed">{localizedNullableText(locale, item.description, item.description_sv)}</p>
               )}
               {item.photo_id && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -69,7 +76,7 @@ export default function ChecklistWithModals({ items, accentColor }: Props) {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                           d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
                       </svg>
-                      {info.title}
+                      {localizedText(locale, info.title, info.title_sv)}
                     </button>
                   ))}
                 </div>
@@ -81,8 +88,8 @@ export default function ChecklistWithModals({ items, accentColor }: Props) {
 
       {activeModal && (
         <PropertyInfoModal
-          title={activeModal.title}
-          content={activeModal.content}
+          title={localizedText(locale, activeModal.title, activeModal.title_sv)}
+          content={localizedText(locale, activeModal.content, activeModal.content_sv)}
           photoId={activeModalPhotoId}
           onClose={() => { setActiveModal(null); setActiveModalPhotoId(undefined); }}
         />

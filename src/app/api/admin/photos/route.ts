@@ -20,6 +20,7 @@ export async function GET() {
       p.id,
       p.filename,
       p.caption,
+      p.caption_sv,
       p.category,
       p.sort_order,
       p.storage_url,
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
   }
 
   const caption = (formData.get('caption') as string | null) ?? null;
+  const captionSv = (formData.get('caption_sv') as string | null) ?? null;
   const category = (formData.get('category') as string | null) ?? null;
 
   const arrayBuffer = await file.arrayBuffer();
@@ -103,15 +105,16 @@ export async function POST(request: NextRequest) {
   const nextOrder = (maxResult.max_order as number) + 1;
 
   const [photo] = await sql`
-    INSERT INTO photos (filename, caption, category, sort_order, storage_url)
+    INSERT INTO photos (filename, caption, caption_sv, category, sort_order, storage_url)
     VALUES (
       ${file.name},
       ${caption},
+      ${captionSv || caption},
       ${category},
       ${nextOrder},
       ${storageUrl}
     )
-    RETURNING id, filename, caption, category, sort_order, storage_url, is_public, created_at
+    RETURNING id, filename, caption, caption_sv, category, sort_order, storage_url, is_public, created_at
   `;
 
   return Response.json({

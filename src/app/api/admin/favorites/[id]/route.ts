@@ -24,13 +24,16 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   const updates: Record<string, unknown> = {};
 
   if (body.name !== undefined) updates.name = body.name;
+  if (body.name_sv !== undefined) updates.name_sv = body.name_sv || null;
   if (body.description !== undefined) updates.description = body.description;
+  if (body.description_sv !== undefined) updates.description_sv = body.description_sv || null;
   if (body.category !== undefined) updates.category = body.category;
   if (body.icon !== undefined) updates.icon = body.icon;
   if (body.url !== undefined) updates.url = body.url || null;
   if (body.distance !== undefined) updates.distance = body.distance || null;
   if (body.sort_order !== undefined) updates.sort_order = body.sort_order;
   if (body.owner_tips !== undefined) updates.owner_tips = body.owner_tips || null;
+  if (body.owner_tips_sv !== undefined) updates.owner_tips_sv = body.owner_tips_sv || null;
 
   updates.updated_at = new Date();
 
@@ -42,7 +45,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     UPDATE favorite_places
     SET ${sql(updates)}
     WHERE id = ${id}
-    RETURNING id, name, description, category, icon, url, distance, sort_order, owner_tips, created_at
+    RETURNING id, name, name_sv, description, description_sv, category, icon, url, distance, sort_order, owner_tips, owner_tips_sv, created_at
   `;
 
   return Response.json(updated);

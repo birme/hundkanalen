@@ -9,6 +9,7 @@ type LanguageContextValue = {
 };
 
 const STORAGE_KEY = 'hk-locale';
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
@@ -28,6 +29,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     document.documentElement.lang = locale;
     window.localStorage.setItem(STORAGE_KEY, locale);
+    document.cookie = `${STORAGE_KEY}=${locale}; Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Lax`;
   }, [locale]);
 
   const value = useMemo<LanguageContextValue>(

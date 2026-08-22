@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { localizedNullableText } from '@/lib/localized-content';
 
 type Photo = {
   id: string;
   caption: string | null;
+  caption_sv: string | null;
 };
 
 type PublicImageHeroProps = {
@@ -21,6 +24,7 @@ export default function PublicImageHero({
   align = 'center',
 }: PublicImageHeroProps) {
   const [photo, setPhoto] = useState<Photo | null>(null);
+  const { locale } = useLanguage();
 
   useEffect(() => {
     fetch('/api/public/photos')
@@ -40,7 +44,7 @@ export default function PublicImageHero({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={`/api/photos/${photo.id}`}
-            alt={photo.caption || title}
+            alt={localizedNullableText(locale, photo.caption, photo.caption_sv) || title}
             className="h-full w-full object-cover"
           />
         ) : (

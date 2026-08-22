@@ -6,22 +6,28 @@ import { SiteIcon, iconForCategory } from '@/components/icons/SiteIcon';
 type FavoritePlace = {
   id: string;
   name: string;
+  name_sv: string | null;
   description: string | null;
+  description_sv: string | null;
   category: string;
   icon: string | null;
   url: string | null;
   distance: string | null;
   owner_tips: string | null;
+  owner_tips_sv: string | null;
 };
 
 type NewFavorite = {
   name: string;
+  name_sv: string;
   description: string;
+  description_sv: string;
   category: string;
   icon: string;
   url: string;
   distance: string;
   owner_tips: string;
+  owner_tips_sv: string;
 };
 
 const CATEGORY_OPTIONS = [
@@ -50,12 +56,15 @@ const CATEGORY_BADGE_COLOR: Record<string, string> = {
 
 const DEFAULT_NEW: NewFavorite = {
   name: '',
+  name_sv: '',
   description: '',
+  description_sv: '',
   category: 'activity',
   icon: '',
   url: '',
   distance: '',
   owner_tips: '',
+  owner_tips_sv: '',
 };
 
 function SpinnerIcon({ className = 'size-4' }: { className?: string }) {
@@ -96,12 +105,15 @@ function FavoriteCard({
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<NewFavorite>({
     name: place.name,
+    name_sv: place.name_sv ?? place.name,
     description: place.description ?? '',
+    description_sv: place.description_sv ?? place.description ?? '',
     category: place.category,
     icon: place.icon ?? '',
     url: place.url ?? '',
     distance: place.distance ?? '',
     owner_tips: place.owner_tips ?? '',
+    owner_tips_sv: place.owner_tips_sv ?? place.owner_tips ?? '',
   });
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -145,7 +157,7 @@ function FavoriteCard({
         <form onSubmit={handleSave} className="flex flex-col gap-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Name *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Name, English *</label>
               <input
                 name="name"
                 type="text"
@@ -153,6 +165,16 @@ function FavoriteCard({
                 onChange={handleChange}
                 className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
                 required
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Name, Swedish</label>
+              <input
+                name="name_sv"
+                type="text"
+                value={form.name_sv}
+                onChange={handleChange}
+                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
               />
             </div>
             <div>
@@ -191,7 +213,7 @@ function FavoriteCard({
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Description, English</label>
               <textarea
                 name="description"
                 value={form.description}
@@ -202,7 +224,18 @@ function FavoriteCard({
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Owner&apos;s Tip</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Description, Swedish</label>
+              <textarea
+                name="description_sv"
+                value={form.description_sv}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Beskriv platsen på svenska..."
+                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Owner&apos;s Tip, English</label>
               <textarea
                 name="owner_tips"
                 value={form.owner_tips}
@@ -212,6 +245,17 @@ function FavoriteCard({
                 className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
               />
               <p className="text-xs text-gray-400 mt-1">Personal recommendation shown to guests</p>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Owner&apos;s Tip, Swedish</label>
+              <textarea
+                name="owner_tips_sv"
+                value={form.owner_tips_sv}
+                onChange={handleChange}
+                rows={2}
+                placeholder="t.ex. Missa inte..."
+                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+              />
             </div>
           </div>
           {error && <ErrorBanner message={error} />}
@@ -247,6 +291,7 @@ function FavoriteCard({
           </span>
           <div className="min-w-0">
             <h3 className="font-semibold text-forest-800 truncate">{place.name}</h3>
+            {place.name_sv && <p className="text-xs text-blue-700 truncate">{place.name_sv}</p>}
             <span className={`inline-block text-xs border rounded-full px-2 py-0.5 mt-0.5 ${badgeColor}`}>
               {CATEGORY_LABEL[place.category] ?? place.category}
             </span>
@@ -261,9 +306,17 @@ function FavoriteCard({
       {place.description && (
         <p className="text-sm text-gray-600 leading-relaxed">{place.description}</p>
       )}
+      {place.description_sv && (
+        <p className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm leading-relaxed text-gray-600">
+          <span className="font-semibold text-blue-800">Swedish:</span> {place.description_sv}
+        </p>
+      )}
       {place.owner_tips && (
         <div className="bg-cream-50 border-l-4 border-wood-400 rounded-r-lg px-3 py-2">
           <p className="text-sm text-wood-700 italic">Owner&apos;s tip: {place.owner_tips}</p>
+          {place.owner_tips_sv && (
+            <p className="mt-1 text-sm text-wood-700 italic">Ägarnas tips: {place.owner_tips_sv}</p>
+          )}
         </div>
       )}
       {place.url && (
@@ -342,12 +395,15 @@ export default function AdminFavoritesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: newForm.name.trim(),
+          name_sv: newForm.name_sv.trim() || newForm.name.trim(),
           description: newForm.description.trim() || undefined,
+          description_sv: newForm.description_sv.trim() || newForm.description.trim() || undefined,
           category: newForm.category,
           icon: newForm.icon.trim() || undefined,
           url: newForm.url.trim() || undefined,
           distance: newForm.distance.trim() || undefined,
           owner_tips: newForm.owner_tips.trim() || undefined,
+          owner_tips_sv: newForm.owner_tips_sv.trim() || newForm.owner_tips.trim() || undefined,
         }),
       });
       if (!res.ok) {
@@ -419,7 +475,7 @@ export default function AdminFavoritesPage() {
           <h2 className="font-semibold text-forest-800 mb-4">Add New Place</h2>
           <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Name *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Name, English *</label>
               <input
                 name="name"
                 type="text"
@@ -428,6 +484,17 @@ export default function AdminFavoritesPage() {
                 placeholder="e.g. Järvsöbacken Ski Resort"
                 className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
                 required
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Name, Swedish</label>
+              <input
+                name="name_sv"
+                type="text"
+                value={newForm.name_sv}
+                onChange={handleNewChange}
+                placeholder="t.ex. Järvsöbacken"
+                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm"
               />
             </div>
             <div>
@@ -466,7 +533,7 @@ export default function AdminFavoritesPage() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Description, English</label>
               <textarea
                 name="description"
                 value={newForm.description}
@@ -477,7 +544,18 @@ export default function AdminFavoritesPage() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Owner&apos;s Tip</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Description, Swedish</label>
+              <textarea
+                name="description_sv"
+                value={newForm.description_sv}
+                onChange={handleNewChange}
+                rows={3}
+                placeholder="Beskriv platsen på svenska..."
+                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Owner&apos;s Tip, English</label>
               <textarea
                 name="owner_tips"
                 value={newForm.owner_tips}
@@ -487,6 +565,17 @@ export default function AdminFavoritesPage() {
                 className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
               />
               <p className="text-xs text-gray-400 mt-1">Personal recommendation shown to guests</p>
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Owner&apos;s Tip, Swedish</label>
+              <textarea
+                name="owner_tips_sv"
+                value={newForm.owner_tips_sv}
+                onChange={handleNewChange}
+                rows={2}
+                placeholder="t.ex. Missa inte..."
+                className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm resize-none"
+              />
             </div>
             {addError && (
               <div className="sm:col-span-2">

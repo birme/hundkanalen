@@ -5,7 +5,7 @@ import { getDb } from '@/lib/db';
 export async function GET() {
   const sql = getDb();
   const photos = await sql`
-    SELECT id, filename, caption, category, sort_order
+    SELECT id, filename, caption, caption_sv, category, sort_order
     FROM photos
     WHERE is_public = true
       AND id NOT IN (SELECT photo_id FROM checklist_items WHERE photo_id IS NOT NULL)

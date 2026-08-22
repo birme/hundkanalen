@@ -1,28 +1,40 @@
 export const dynamic = 'force-dynamic';
 
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { getGuestSession } from '@/lib/guest-auth';
 import { getDb } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
 import StepNavigation from '@/components/portal/StepNavigation';
 import ChecklistWithModals from '@/components/portal/ChecklistWithModals';
 import type { ChecklistItemWithLinks } from '@/components/portal/ChecklistWithModals';
+import { isLocale } from '@/lib/i18n';
 
 export default async function CheckOutPage() {
   const session = await getGuestSession();
   if (!session) redirect('/stay');
 
   const sql = getDb();
+  const cookieStore = cookies();
+  const cookieLocale = cookieStore.get('hk-locale')?.value ?? null;
+  const locale = isLocale(cookieLocale) ? cookieLocale : 'en';
   const [rows, [stay]] = await Promise.all([
     sql<(ChecklistItemWithLinks & { linked_info: string })[]>`
-      SELECT ci.id, ci.title, ci.description, ci.sort_order, ci.photo_id,
-        COALESCE(json_agg(json_build_object('id', pi.id, 'title', pi.title, 'content', pi.content, 'photoId', pi.photo_id))
+      SELECT ci.id, ci.title, ci.title_sv, ci.description, ci.description_sv, ci.sort_order, ci.photo_id,
+        COALESCE(json_agg(json_build_object(
+          'id', pi.id,
+          'title', pi.title,
+          'title_sv', pi.title_sv,
+          'content', pi.content,
+          'content_sv', pi.content_sv,
+          'photoId', pi.photo_id
+        ))
           FILTER (WHERE pi.id IS NOT NULL), '[]'::json) AS linked_info
       FROM checklist_items ci
       LEFT JOIN checklist_property_info cpi ON cpi.checklist_item_id = ci.id
       LEFT JOIN property_info pi ON pi.id = cpi.property_info_id
       WHERE ci.type = 'checkout'
-      GROUP BY ci.id, ci.title, ci.description, ci.sort_order, ci.photo_id
+      GROUP BY ci.id, ci.title, ci.title_sv, ci.description, ci.description_sv, ci.sort_order, ci.photo_id
       ORDER BY ci.sort_order ASC
     `,
     sql<{ check_out: string }[]>`
@@ -39,7 +51,7 @@ export default async function CheckOutPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-forest-800">Check-out</h1>
-        <p className="text-gray-500 text-sm mt-1">Please follow these steps before departing</p>
+        <p className="text-gray-500 text-sm mt-1">{locale === 'sv' ? 'Följ de här stegen innan ni åker' : 'Please follow these steps before departing'}</p>
       </div>
 
       {/* Check-out time reminder */}
@@ -51,10 +63,10 @@ export default async function CheckOutPage() {
           </svg>
         </div>
         <div>
-          <p className="font-semibold text-wood-800 text-sm">Check-out by 11:00</p>
+          <p className="font-semibold text-wood-800 text-sm">{locale === 'sv' ? 'Utcheckning senast 11:00' : 'Check-out by 11:00'}</p>
           {stay && (
             <p className="text-sm text-wood-700 mt-0.5">
-              Please leave the property by 11:00 on {formatDate(stay.check_out)}.
+              {locale === 'sv' ? 'Lämna huset senast 11:00 den' : 'Please leave the property by 11:00 on'} {formatDate(stay.check_out)}.
             </p>
           )}
         </div>
@@ -65,7 +77,7 @@ export default async function CheckOutPage() {
         <ChecklistWithModals items={items} accentColor="wood" />
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 px-5 py-8 text-center">
-          <p className="text-gray-400 text-sm">No check-out instructions yet.</p>
+          <p className="text-gray-400 text-sm">{locale === 'sv' ? 'Det finns inga utcheckningsinstruktioner ännu.' : 'No check-out instructions yet.'}</p>
         </div>
       )}
 

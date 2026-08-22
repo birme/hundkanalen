@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getGuestSession } from '@/lib/guest-auth';
 import { getDb } from '@/lib/db';
 import { formatDateShort } from '@/lib/utils';
+import LanguageToggle from '@/components/i18n/LanguageToggle';
 
 export default async function GuestPortalLayout({
   children,
@@ -37,11 +38,14 @@ export default async function GuestPortalLayout({
           >
             Färila anno 1923
           </Link>
+          <div className="flex items-center gap-3">
+          <LanguageToggle compact />
           <div className="text-right">
             <p className="text-white text-sm font-medium">{stay.guest_name.split(' ')[0]}</p>
             <p className="text-forest-300 text-xs">
               {formatDateShort(stay.check_in)} &ndash; {formatDateShort(stay.check_out)}
             </p>
+          </div>
           </div>
         </div>
       </header>
