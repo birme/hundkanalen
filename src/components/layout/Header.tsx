@@ -4,11 +4,46 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
+import LanguageToggle from '@/components/i18n/LanguageToggle';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
+
+const copy = {
+  en: {
+    gallery: 'Gallery',
+    areaGuide: 'Area Guide',
+    contact: 'Contact',
+    stay: 'Access Your Stay',
+    stayCode: 'Stay Code',
+    toggleMenu: 'Toggle menu',
+    dashboard: 'Dashboard',
+    signOut: 'Sign out',
+    admin: 'Admin',
+    adminLogin: 'Admin Login',
+    home: 'Home',
+    photos: 'Photos',
+  },
+  sv: {
+    gallery: 'Galleri',
+    areaGuide: 'Området',
+    contact: 'Kontakt',
+    stay: 'Din vistelse',
+    stayCode: 'Vistelsekod',
+    toggleMenu: 'Öppna meny',
+    dashboard: 'Admin',
+    signOut: 'Logga ut',
+    admin: 'Admin',
+    adminLogin: 'Adminlogin',
+    home: 'Hem',
+    photos: 'Foton',
+  },
+};
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
   const pathname = usePathname();
+  const { locale } = useLanguage();
+  const t = copy[locale];
 
   // Hide site header on admin pages — admin has its own sidebar navigation
   // Hide on portal paths — portal has its own minimal header
@@ -30,32 +65,33 @@ export default function Header() {
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-6">
           <Link href="/gallery" className="text-sm text-gray-600 hover:text-forest-700 transition-colors">
-            Gallery
+            {t.gallery}
           </Link>
           <Link href="/area-guide" className="text-sm text-gray-600 hover:text-forest-700 transition-colors">
-            Area Guide
+            {t.areaGuide}
           </Link>
           <Link href="/contact" className="text-sm text-gray-600 hover:text-forest-700 transition-colors">
-            Contact
+            {t.contact}
           </Link>
           <Link href="/stay" className="text-sm text-forest-700 font-medium hover:text-forest-800 transition-colors">
-            Access Your Stay
+            {t.stay}
           </Link>
+          <LanguageToggle />
           {session ? (
             <div className="flex items-center gap-3">
               <Link href={dashboardHref} className="text-sm text-forest-700 font-medium hover:text-forest-800 transition-colors">
-                {session.user?.name || 'Dashboard'}
+                {session.user?.name || t.dashboard}
               </Link>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
                 className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
               >
-                Sign out
+                {t.signOut}
               </button>
             </div>
           ) : (
             <Link href="/login" className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
-              Admin
+              {t.admin}
             </Link>
           )}
         </div>
@@ -66,12 +102,12 @@ export default function Header() {
             href="/stay"
             className="rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#17123b] shadow-sm transition-colors whitespace-nowrap"
           >
-            Stay Code
+            {t.stayCode}
           </Link>
           <button
             className="rounded-full bg-white/15 p-2 text-white backdrop-blur-md"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={t.toggleMenu}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileMenuOpen ? (
@@ -88,33 +124,36 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="mx-3 mt-1 rounded-3xl border border-white/15 bg-[#17123b]/95 px-4 py-4 text-white shadow-2xl md:hidden">
           <div className="grid gap-2">
+          <div className="px-3 py-2">
+            <LanguageToggle compact />
+          </div>
           <Link href="/gallery" className="rounded-2xl px-3 py-3 text-white/80 hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
-            Gallery
+            {t.gallery}
           </Link>
           <Link href="/area-guide" className="rounded-2xl px-3 py-3 text-white/80 hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
-            Area Guide
+            {t.areaGuide}
           </Link>
           <Link href="/contact" className="rounded-2xl px-3 py-3 text-white/80 hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
-            Contact
+            {t.contact}
           </Link>
           <Link href="/stay" className="rounded-2xl bg-white px-3 py-3 font-medium text-[#17123b]" onClick={() => setMobileMenuOpen(false)}>
-            Access Your Stay
+            {t.stay}
           </Link>
           {session ? (
             <>
               <Link href={dashboardHref} className="rounded-2xl px-3 py-3 font-medium text-white" onClick={() => setMobileMenuOpen(false)}>
-                {session.user?.name || 'Dashboard'}
+                {session.user?.name || t.dashboard}
               </Link>
               <button
                 onClick={() => { setMobileMenuOpen(false); signOut({ callbackUrl: '/' }); }}
                 className="rounded-2xl px-3 py-3 text-left text-white/65"
               >
-                Sign out
+                {t.signOut}
               </button>
             </>
           ) : (
             <Link href="/login" className="rounded-2xl px-3 py-3 text-sm text-white/60" onClick={() => setMobileMenuOpen(false)}>
-              Admin Login
+              {t.adminLogin}
             </Link>
           )}
           </div>
@@ -124,10 +163,10 @@ export default function Header() {
     <nav className="fixed bottom-4 left-4 right-4 z-40 rounded-full border border-white/15 bg-[#17123b]/85 px-3 py-2 text-white shadow-2xl shadow-black/30 backdrop-blur-xl md:hidden">
       <div className="grid grid-cols-4 text-center text-[11px] font-medium">
         {[
-          { href: '/', label: 'Home' },
-          { href: '/gallery', label: 'Photos' },
-          { href: '/stay', label: 'Stay' },
-          { href: '/contact', label: 'Contact' },
+          { href: '/', label: t.home },
+          { href: '/gallery', label: t.photos },
+          { href: '/stay', label: t.stay },
+          { href: '/contact', label: t.contact },
         ].map((item) => {
           const active = pathname === item.href;
           return (

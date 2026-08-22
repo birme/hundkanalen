@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import PublicImageHero from '@/components/layout/PublicImageHero';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
 
 type Photo = {
   id: string;
@@ -9,6 +10,47 @@ type Photo = {
   caption: string | null;
   category: string | null;
   sort_order: number;
+};
+
+const copy = {
+  en: {
+    heroEyebrow: 'Photo Gallery',
+    heroTitle: 'See the house before you arrive',
+    heroDescription:
+      'Explore Färila anno 1923 through photos of the interior, exterior, garden, and the surrounding Hälsingland landscape.',
+    noPhotos: 'No photos available yet.',
+    fullUnlocked: 'Full gallery unlocked - showing all photos.',
+    loading: 'Loading photos...',
+    invalidCode: 'Invalid access code. Please try again.',
+    genericError: 'Something went wrong. Please try again.',
+    unlockTitle: 'Unlock Full Gallery',
+    unlockText:
+      'Enter your access code to view all photos, including detailed interior shots and the surrounding area. The access code is included in your booking confirmation.',
+    accessPlaceholder: 'Enter access code',
+    verifying: 'Verifying...',
+    unlockButton: 'Unlock Gallery',
+    noCode: "Don't have a code?",
+    contactUs: 'Contact us',
+  },
+  sv: {
+    heroEyebrow: 'Fotogalleri',
+    heroTitle: 'Se huset innan du kommer',
+    heroDescription:
+      'Utforska Färila anno 1923 med bilder från interiör, exteriör, trädgård och landskapet runt omkring.',
+    noPhotos: 'Det finns inga foton ännu.',
+    fullUnlocked: 'Hela galleriet är upplåst - alla foton visas.',
+    loading: 'Laddar foton...',
+    invalidCode: 'Ogiltig kod. Försök igen.',
+    genericError: 'Något gick fel. Försök igen.',
+    unlockTitle: 'Lås upp hela galleriet',
+    unlockText:
+      'Ange din vistelsekod för att se alla foton, inklusive detaljerade interiörbilder och närområdet. Koden finns i din bokningsbekräftelse.',
+    accessPlaceholder: 'Ange kod',
+    verifying: 'Verifierar...',
+    unlockButton: 'Lås upp galleriet',
+    noCode: 'Saknar du kod?',
+    contactUs: 'Kontakta oss',
+  },
 };
 
 function SpinnerIcon({ className = 'size-5' }: { className?: string }) {
@@ -30,11 +72,11 @@ function SpinnerIcon({ className = 'size-5' }: { className?: string }) {
   );
 }
 
-function PhotoGrid({ photos }: { photos: Photo[] }) {
+function PhotoGrid({ photos, emptyText }: { photos: Photo[]; emptyText: string }) {
   if (photos.length === 0) {
     return (
       <div className="text-center py-20 text-gray-400">
-        <p className="text-sm">No photos available yet.</p>
+        <p className="text-sm">{emptyText}</p>
       </div>
     );
   }
@@ -71,6 +113,8 @@ export default function GalleryPage() {
   const [accessCode, setAccessCode] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
+  const { locale } = useLanguage();
+  const t = copy[locale];
 
   const checkAccess = useCallback(async () => {
     setCheckingAccess(true);
@@ -146,10 +190,10 @@ export default function GalleryPage() {
         setAccessCode('');
       } else {
         const body = await res.json().catch(() => ({}));
-        setVerifyError(body.error ?? 'Invalid access code. Please try again.');
+        setVerifyError(body.error ?? t.invalidCode);
       }
     } catch {
-      setVerifyError('Something went wrong. Please try again.');
+      setVerifyError(t.genericError);
     } finally {
       setVerifying(false);
     }
@@ -161,9 +205,9 @@ export default function GalleryPage() {
   return (
     <>
       <PublicImageHero
-        eyebrow="Photo Gallery"
-        title="See the house before you arrive"
-        description="Explore Färila anno 1923 through photos of the interior, exterior, garden, and the surrounding Hälsingland landscape."
+        eyebrow={t.heroEyebrow}
+        title={t.heroTitle}
+        description={t.heroDescription}
       />
       <div className="section-padding">
         <div className="container-wide">
@@ -173,7 +217,7 @@ export default function GalleryPage() {
           <div className="flex items-center gap-3 bg-forest-50 border border-forest-200 rounded-xl px-5 py-3 mb-8 max-w-xl mx-auto">
             <span className="text-forest-600 text-lg" aria-hidden="true">&#10003;</span>
             <p className="text-sm font-medium text-forest-800">
-              Full gallery unlocked &mdash; showing all photos.
+              {t.fullUnlocked}
             </p>
           </div>
         )}
@@ -182,10 +226,10 @@ export default function GalleryPage() {
         {isLoading ? (
           <div className="flex items-center justify-center py-24 text-gray-400">
             <SpinnerIcon />
-            <span className="ml-3 text-sm">Loading photos...</span>
+            <span className="ml-3 text-sm">{t.loading}</span>
           </div>
         ) : (
-          <PhotoGrid photos={displayedPhotos} />
+          <PhotoGrid photos={displayedPhotos} emptyText={t.noPhotos} />
         )}
 
         {/* Unlock section — only shown when not verified and not still checking */}
@@ -193,11 +237,9 @@ export default function GalleryPage() {
           <div className="mt-16 max-w-lg mx-auto">
             <div className="bg-cream-50 border border-cream-200 rounded-2xl p-8 text-center">
               <div className="text-4xl mb-4" aria-hidden="true">&#128274;</div>
-              <h2 className="text-xl font-bold text-forest-800 mb-2">Unlock Full Gallery</h2>
+              <h2 className="text-xl font-bold text-forest-800 mb-2">{t.unlockTitle}</h2>
               <p className="text-sm text-gray-600 mb-6">
-                Enter your access code to view all photos, including detailed interior shots
-                and the surrounding area. The access code is included in your booking
-                confirmation.
+                {t.unlockText}
               </p>
               <form onSubmit={handleVerify} className="flex flex-col gap-3">
                 <input
@@ -207,7 +249,7 @@ export default function GalleryPage() {
                     setAccessCode(e.target.value);
                     setVerifyError(null);
                   }}
-                  placeholder="Enter access code"
+                  placeholder={t.accessPlaceholder}
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500 text-sm text-center tracking-widest uppercase"
                   autoComplete="off"
                   spellCheck={false}
@@ -223,12 +265,12 @@ export default function GalleryPage() {
                   className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
                 >
                   {verifying && <SpinnerIcon className="size-4" />}
-                  {verifying ? 'Verifying...' : 'Unlock Gallery'}
+                  {verifying ? t.verifying : t.unlockButton}
                 </button>
               </form>
               <p className="text-xs text-gray-400 mt-4">
-                Don&rsquo;t have a code?{' '}
-                <a href="/contact" className="text-forest-600 hover:underline">Contact us</a>.
+                {t.noCode}{' '}
+                <a href="/contact" className="text-forest-600 hover:underline">{t.contactUs}</a>.
               </p>
             </div>
           </div>

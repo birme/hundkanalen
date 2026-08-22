@@ -2,9 +2,41 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
+
+const copy = {
+  en: {
+    description:
+      'A countryside retreat in the heart of Hälsingland, Sweden. Perfect for families, nature lovers, and those seeking tranquility.',
+    quickLinks: 'Quick Links',
+    gallery: 'Gallery',
+    areaGuide: 'Area Guide',
+    contact: 'Contact',
+    guestAccess: 'Guest Access',
+    region: 'Region',
+    regionText:
+      'A UNESCO World Heritage region known for its decorated farmhouses, vast forests, and the majestic Ljusnan river.',
+    rights: 'All rights reserved.',
+  },
+  sv: {
+    description:
+      'Ett lantligt fritidshus i hjärtat av Hälsingland. Perfekt för familjer, naturälskare och dig som söker lugn.',
+    quickLinks: 'Snabblänkar',
+    gallery: 'Galleri',
+    areaGuide: 'Området',
+    contact: 'Kontakt',
+    guestAccess: 'Gästaccess',
+    region: 'Region',
+    regionText:
+      'En UNESCO-världsarvsregion känd för sina dekorerade hälsingegårdar, stora skogar och mäktiga Ljusnan.',
+    rights: 'Alla rättigheter förbehållna.',
+  },
+};
 
 export default function Footer() {
   const pathname = usePathname();
+  const { locale } = useLanguage();
+  const t = copy[locale];
 
   // Hide site footer on admin pages — admin has its own layout
   // Hide on portal paths — portal has its own minimal layout
@@ -23,48 +55,46 @@ export default function Footer() {
                 Färila anno 1923
               </div>
               <p className="text-sm leading-6 text-white/60">
-                A countryside retreat in the heart of Hälsingland, Sweden.
-                Perfect for families, nature lovers, and those seeking tranquility.
+                {t.description}
               </p>
             </div>
             <div>
-              <h3 className="mb-3 text-sm font-semibold text-white/90">Quick Links</h3>
+              <h3 className="mb-3 text-sm font-semibold text-white/90">{t.quickLinks}</h3>
               <ul className="grid grid-cols-2 gap-2 text-sm md:grid-cols-1">
                 <li>
                   <Link href="/gallery" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
-                    Gallery
+                    {t.gallery}
                   </Link>
                 </li>
                 <li>
                   <Link href="/area-guide" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
-                    Area Guide
+                    {t.areaGuide}
                   </Link>
                 </li>
                 <li>
                   <Link href="/contact" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
-                    Contact
+                    {t.contact}
                   </Link>
                 </li>
                 <li>
                   <Link href="/stay" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
-                    Guest Access
+                    {t.guestAccess}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="mb-3 text-sm font-semibold text-white/90">Region</h3>
+              <h3 className="mb-3 text-sm font-semibold text-white/90">{t.region}</h3>
               <p className="text-sm text-white/70">
                 Hälsingland, Sweden
               </p>
               <p className="mt-2 text-sm leading-6 text-white/60">
-                A UNESCO World Heritage region known for its decorated farmhouses,
-                vast forests, and the majestic Ljusnan river.
+                {t.regionText}
               </p>
             </div>
           </div>
           <div className="mt-7 border-t border-white/10 pt-5 text-center text-xs text-white/40 md:mt-8 md:pt-6">
-            <p>&copy; {new Date().getFullYear()} Birmé &amp; Claise. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Birmé &amp; Claise. {t.rights}</p>
           </div>
         </div>
       </div>

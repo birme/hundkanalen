@@ -3,9 +3,69 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import PublicImageHero from '@/components/layout/PublicImageHero';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
+
+const copy = {
+  en: {
+    heroEyebrow: 'Contact & Booking',
+    heroTitle: 'Plan your stay at Färila anno 1923',
+    heroDescription:
+      'Send an inquiry with your dates and group size, and we will get back to you with availability and pricing.',
+    fullName: 'Full Name *',
+    email: 'Email *',
+    checkin: 'Check-in',
+    checkout: 'Check-out',
+    guests: 'Guests',
+    message: 'Message',
+    messagePlaceholder: 'Tell us about your trip, any questions or special requests...',
+    sending: 'Sending...',
+    send: 'Send Inquiry',
+    sent: 'Thank you! We have received your inquiry and will reply within 24 hours.',
+    error: 'Something went wrong. Please try again or email us directly.',
+    goodToKnow: 'Good to Know',
+    facts: [
+      'Check-in from 15:00, check-out by 11:00',
+      'Minimum stay: 2 nights',
+      'Pets welcome (please let us know)',
+      'Free parking on-site',
+      'WiFi included',
+    ],
+    directContact: 'Direct Contact',
+    directText: 'Prefer to reach us directly? Send an email and we will respond promptly.',
+  },
+  sv: {
+    heroEyebrow: 'Kontakt och bokning',
+    heroTitle: 'Planera din vistelse på Färila anno 1923',
+    heroDescription:
+      'Skicka en förfrågan med datum och antal gäster, så återkommer vi med tillgänglighet och pris.',
+    fullName: 'Namn *',
+    email: 'E-post *',
+    checkin: 'Incheckning',
+    checkout: 'Utcheckning',
+    guests: 'Gäster',
+    message: 'Meddelande',
+    messagePlaceholder: 'Berätta om resan, frågor eller särskilda önskemål...',
+    sending: 'Skickar...',
+    send: 'Skicka förfrågan',
+    sent: 'Tack! Vi har tagit emot din förfrågan och återkommer inom 24 timmar.',
+    error: 'Något gick fel. Försök igen eller mejla oss direkt.',
+    goodToKnow: 'Bra att veta',
+    facts: [
+      'Incheckning från 15:00, utcheckning senast 11:00',
+      'Minsta vistelse: 2 nätter',
+      'Husdjur är välkomna (säg gärna till)',
+      'Gratis parkering på tomten',
+      'WiFi ingår',
+    ],
+    directContact: 'Direktkontakt',
+    directText: 'Vill du kontakta oss direkt? Skicka ett mejl så svarar vi så snart vi kan.',
+  },
+};
 
 export default function ContactPage() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const { locale } = useLanguage();
+  const t = copy[locale];
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,9 +101,9 @@ export default function ContactPage() {
   return (
     <>
       <PublicImageHero
-        eyebrow="Contact & Booking"
-        title="Plan your stay at Färila anno 1923"
-        description="Send an inquiry with your dates and group size, and we will get back to you with availability and pricing."
+        eyebrow={t.heroEyebrow}
+        title={t.heroTitle}
+        description={t.heroDescription}
       />
       <div className="section-padding">
         <div className="container-narrow">
@@ -54,7 +114,7 @@ export default function ContactPage() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name *
+                    {t.fullName}
                   </label>
                   <input
                     type="text"
@@ -66,7 +126,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email *
+                    {t.email}
                   </label>
                   <input
                     type="email"
@@ -81,7 +141,7 @@ export default function ContactPage() {
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
                   <label htmlFor="checkin" className="block text-sm font-medium text-gray-700 mb-1">
-                    Check-in
+                    {t.checkin}
                   </label>
                   <input
                     type="date"
@@ -92,7 +152,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label htmlFor="checkout" className="block text-sm font-medium text-gray-700 mb-1">
-                    Check-out
+                    {t.checkout}
                   </label>
                   <input
                     type="date"
@@ -103,7 +163,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label htmlFor="guests" className="block text-sm font-medium text-gray-700 mb-1">
-                    Guests
+                    {t.guests}
                   </label>
                   <input
                     type="number"
@@ -119,14 +179,14 @@ export default function ContactPage() {
 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                  Message
+                  {t.message}
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
                   className="w-full rounded-lg border-gray-300 focus:border-forest-500 focus:ring-forest-500"
-                  placeholder="Tell us about your trip — any questions or special requests..."
+                  placeholder={t.messagePlaceholder}
                 />
               </div>
 
@@ -135,17 +195,17 @@ export default function ContactPage() {
                 disabled={status === 'sending'}
                 className="btn-primary w-full disabled:opacity-50"
               >
-                {status === 'sending' ? 'Sending...' : 'Send Inquiry'}
+                {status === 'sending' ? t.sending : t.send}
               </button>
 
               {status === 'sent' && (
                 <p className="text-forest-600 text-sm text-center">
-                  Thank you! We have received your inquiry and will reply within 24 hours.
+                  {t.sent}
                 </p>
               )}
               {status === 'error' && (
                 <p className="text-falu-600 text-sm text-center">
-                  Something went wrong. Please try again or email us directly.
+                  {t.error}
                 </p>
               )}
             </form>
@@ -153,19 +213,17 @@ export default function ContactPage() {
 
           <div className="md:col-span-2 space-y-6">
             <div className="bg-cream-50 border border-cream-200 rounded-2xl p-6">
-              <h3 className="font-semibold text-forest-800 mb-3">Good to Know</h3>
+              <h3 className="font-semibold text-forest-800 mb-3">{t.goodToKnow}</h3>
               <ul className="text-sm text-gray-600 space-y-2">
-                <li>Check-in from 15:00, check-out by 11:00</li>
-                <li>Minimum stay: 2 nights</li>
-                <li>Pets welcome (please let us know)</li>
-                <li>Free parking on-site</li>
-                <li>WiFi included</li>
+                {t.facts.map((fact) => (
+                  <li key={fact}>{fact}</li>
+                ))}
               </ul>
             </div>
             <div className="bg-forest-50 border border-forest-200 rounded-2xl p-6">
-              <h3 className="font-semibold text-forest-800 mb-3">Direct Contact</h3>
+              <h3 className="font-semibold text-forest-800 mb-3">{t.directContact}</h3>
               <p className="text-sm text-gray-600">
-                Prefer to reach us directly? Send an email and we will respond promptly.
+                {t.directText}
               </p>
               <p className="text-sm text-forest-700 font-medium mt-2">
                 hundkanalen@birme.se

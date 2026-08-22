@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import PublicImageHero from '@/components/layout/PublicImageHero';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
 
 type FavoritePlace = {
   id: string;
@@ -16,96 +17,210 @@ type FavoritePlace = {
 
 type GroupedPlaces = Record<string, FavoritePlace[]>;
 
-const CATEGORY_CONFIG: Record<string, { label: string; icon: string; color: string }> = {
-  culture:  { label: 'Culture & Heritage', icon: '🏛️', color: 'bg-falu-50 border-falu-200 text-falu-800' },
-  family:   { label: 'Family Activities',  icon: '👨‍👩‍👧', color: 'bg-wood-50 border-wood-200 text-wood-800' },
-  winter:   { label: 'Winter Activities',  icon: '⛷️', color: 'bg-blue-50 border-blue-200 text-blue-800' },
-  nature:   { label: 'Nature & Wildlife',  icon: '🌿', color: 'bg-forest-50 border-forest-200 text-forest-800' },
-  outdoor:  { label: 'Outdoor & Adventure',icon: '🥾', color: 'bg-forest-50 border-forest-200 text-forest-800' },
-  dining:   { label: 'Dining & Cafés',     icon: '☕', color: 'bg-cream-100 border-cream-300 text-cream-900' },
-  activity: { label: 'Activities',         icon: '🎯', color: 'bg-wood-50 border-wood-200 text-wood-800' },
+const CATEGORY_CONFIG: Record<string, { label: { en: string; sv: string }; icon: string; color: string }> = {
+  culture:  { label: { en: 'Culture & Heritage', sv: 'Kultur och arv' }, icon: '🏛️', color: 'bg-falu-50 border-falu-200 text-falu-800' },
+  family:   { label: { en: 'Family Activities', sv: 'Familjeaktiviteter' }, icon: '👨‍👩‍👧', color: 'bg-wood-50 border-wood-200 text-wood-800' },
+  winter:   { label: { en: 'Winter Activities', sv: 'Vinteraktiviteter' }, icon: '⛷️', color: 'bg-blue-50 border-blue-200 text-blue-800' },
+  nature:   { label: { en: 'Nature & Wildlife', sv: 'Natur och djurliv' }, icon: '🌿', color: 'bg-forest-50 border-forest-200 text-forest-800' },
+  outdoor:  { label: { en: 'Outdoor & Adventure', sv: 'Friluftsliv och äventyr' }, icon: '🥾', color: 'bg-forest-50 border-forest-200 text-forest-800' },
+  dining:   { label: { en: 'Dining & Cafés', sv: 'Mat och caféer' }, icon: '☕', color: 'bg-cream-100 border-cream-300 text-cream-900' },
+  activity: { label: { en: 'Activities', sv: 'Aktiviteter' }, icon: '🎯', color: 'bg-wood-50 border-wood-200 text-wood-800' },
 };
 
-const seasons = [
-  {
-    name: 'Summer',
-    period: 'Jun–Aug',
-    icon: '☀️',
-    color: 'bg-amber-50 border-amber-200',
-    headingColor: 'text-amber-800',
-    activities: [
-      'Swimming in lakes and the Ljusnan river',
-      'Hiking the Hälsingeleden trail (160 km)',
-      'Fishing — grayling, trout, and pike',
-      'Berry and mushroom picking (Allemansrätten)',
-      'Visiting UNESCO decorated farmhouses',
-      'Midsummer celebrations',
-      'Cycling the Dellenbanan route',
+const pageCopy = {
+  en: {
+    heroEyebrow: 'Area Guide',
+    heroTitle: 'Forests, river days and Hälsingland culture',
+    heroDescription:
+      'A guide to the local places, seasons and small discoveries that make the stay feel rooted in Färila.',
+    unescoTitle: 'UNESCO World Heritage',
+    unescoText:
+      'The decorated farmhouses of Hälsingland are a UNESCO World Heritage Site. These magnificent timber buildings, with their lavishly painted interiors, represent the pinnacle of Scandinavian folk art and are found throughout the region. Several are open to visitors during summer.',
+    unescoNote:
+      'Notable decorated farmhouse visits in the region: Gästgivars in Stene, Erik-Anders in Asta, and Pallars in Långhed.',
+    loadingRecommendations: 'Loading local recommendations...',
+    localRecommendations: 'Local Recommendations',
+    ownersTip: "Owner's tip:",
+    visitWebsite: 'Visit website',
+    activitiesBySeason: 'Activities by Season',
+    nearbyTowns: 'Nearby Towns',
+    seasons: [
+      {
+        name: 'Summer',
+        period: 'Jun-Aug',
+        icon: '☀️',
+        color: 'bg-amber-50 border-amber-200',
+        headingColor: 'text-amber-800',
+        activities: [
+          'Swimming in lakes and the Ljusnan river',
+          'Hiking the Hälsingeleden trail (160 km)',
+          'Fishing, grayling, trout, and pike',
+          'Berry and mushroom picking (Allemansrätten)',
+          'Visiting UNESCO decorated farmhouses',
+          'Midsummer celebrations',
+          'Cycling the Dellenbanan route',
+        ],
+      },
+      {
+        name: 'Autumn',
+        period: 'Sep-Nov',
+        icon: '🍂',
+        color: 'bg-orange-50 border-orange-200',
+        headingColor: 'text-orange-800',
+        activities: [
+          'Spectacular fall colors in ancient forests',
+          'Mushroom foraging',
+          'Scenic drives through Hälsingland',
+          'Hunting season',
+          'Cozy evenings by the fireplace',
+        ],
+      },
+      {
+        name: 'Winter',
+        period: 'Dec-Feb',
+        icon: '❄️',
+        color: 'bg-blue-50 border-blue-200',
+        headingColor: 'text-blue-800',
+        activities: [
+          'Downhill skiing at Järvsöbacken (20 pistes)',
+          'Cross-country skiing',
+          'Snowmobiling',
+          'Ice fishing',
+          'Northern lights viewing',
+          'Christmas markets',
+        ],
+      },
+      {
+        name: 'Spring',
+        period: 'Mar-May',
+        icon: '🌸',
+        color: 'bg-forest-50 border-forest-200',
+        headingColor: 'text-forest-800',
+        activities: [
+          'Bird watching, cranes and migratory birds',
+          'Early hiking as snow melts',
+          'Spring fishing season',
+          'Walpurgis Night celebrations',
+          'Wildflower meadows',
+        ],
+      },
+    ],
+    nearby: [
+      {
+        place: 'Ljusdal',
+        description: 'The nearest town, with supermarkets, restaurants, pharmacy, and a train station connecting to the wider rail network.',
+      },
+      {
+        place: 'Järvsö',
+        description: 'A popular tourist village with a top-rated ski resort, the Järvsö Djurpark bear and wolf park, and a range of adventure activities.',
+      },
+      {
+        place: 'Hudiksvall',
+        description: 'A charming coastal town offering good shopping, varied dining, and a regional airport.',
+      },
+      {
+        place: 'Sundsvall',
+        description: 'A major city with a large airport, shopping centres, and rich cultural offerings, a great day-trip destination.',
+      },
     ],
   },
-  {
-    name: 'Autumn',
-    period: 'Sep–Nov',
-    icon: '🍂',
-    color: 'bg-orange-50 border-orange-200',
-    headingColor: 'text-orange-800',
-    activities: [
-      'Spectacular fall colors in ancient forests',
-      'Mushroom foraging',
-      'Scenic drives through Hälsingland',
-      'Hunting season',
-      'Cozy evenings by the fireplace',
+  sv: {
+    heroEyebrow: 'Området',
+    heroTitle: 'Skogar, älvdagar och hälsingekultur',
+    heroDescription:
+      'En guide till lokala platser, årstider och små upptäckter som gör vistelsen förankrad i Färila.',
+    unescoTitle: 'UNESCO-världsarv',
+    unescoText:
+      'Hälsinglands dekorerade gårdar är ett UNESCO-världsarv. De praktfulla timmerbyggnaderna med rikt målade interiörer är en höjdpunkt inom nordisk folkkonst och finns runt om i regionen. Flera gårdar är öppna för besök under sommaren.',
+    unescoNote:
+      'Tips på besök i regionen: Gästgivars i Stene, Erik-Anders i Asta och Pallars i Långhed.',
+    loadingRecommendations: 'Laddar lokala rekommendationer...',
+    localRecommendations: 'Lokala rekommendationer',
+    ownersTip: 'Ägarnas tips:',
+    visitWebsite: 'Besök webbplats',
+    activitiesBySeason: 'Aktiviteter efter säsong',
+    nearbyTowns: 'Närliggande orter',
+    seasons: [
+      {
+        name: 'Sommar',
+        period: 'Jun-aug',
+        icon: '☀️',
+        color: 'bg-amber-50 border-amber-200',
+        headingColor: 'text-amber-800',
+        activities: [
+          'Bad i sjöar och Ljusnan',
+          'Vandring på Hälsingeleden (160 km)',
+          'Fiske efter harr, öring och gädda',
+          'Bär- och svampplockning med allemansrätten',
+          'Besök på världsarvsklassade hälsingegårdar',
+          'Midsommarfirande',
+          'Cykling längs Dellenbanan',
+        ],
+      },
+      {
+        name: 'Höst',
+        period: 'Sep-nov',
+        icon: '🍂',
+        color: 'bg-orange-50 border-orange-200',
+        headingColor: 'text-orange-800',
+        activities: [
+          'Starka höstfärger i gamla skogar',
+          'Svampplockning',
+          'Vackra bilutflykter genom Hälsingland',
+          'Jaktsäsong',
+          'Mysiga kvällar vid eldstaden',
+        ],
+      },
+      {
+        name: 'Vinter',
+        period: 'Dec-feb',
+        icon: '❄️',
+        color: 'bg-blue-50 border-blue-200',
+        headingColor: 'text-blue-800',
+        activities: [
+          'Utförsåkning i Järvsöbacken (20 nedfarter)',
+          'Längdskidåkning',
+          'Skoteråkning',
+          'Pimpling',
+          'Norrskensspaning',
+          'Julmarknader',
+        ],
+      },
+      {
+        name: 'Vår',
+        period: 'Mar-maj',
+        icon: '🌸',
+        color: 'bg-forest-50 border-forest-200',
+        headingColor: 'text-forest-800',
+        activities: [
+          'Fågelskådning med tranor och flyttfåglar',
+          'Tidiga vandringar när snön smälter',
+          'Vårfiske',
+          'Valborgsfirande',
+          'Vilda blomsterängar',
+        ],
+      },
+    ],
+    nearby: [
+      {
+        place: 'Ljusdal',
+        description: 'Närmaste tätort med mataffärer, restauranger, apotek och tågstation med vidare förbindelser.',
+      },
+      {
+        place: 'Järvsö',
+        description: 'En populär besöksort med skidbacke, Järvsö Djurpark och flera äventyrsaktiviteter.',
+      },
+      {
+        place: 'Hudiksvall',
+        description: 'En charmig kuststad med shopping, restauranger och regional flygplats.',
+      },
+      {
+        place: 'Sundsvall',
+        description: 'En större stad med flygplats, shopping och kulturutbud, bra för en dagsutflykt.',
+      },
     ],
   },
-  {
-    name: 'Winter',
-    period: 'Dec–Feb',
-    icon: '❄️',
-    color: 'bg-blue-50 border-blue-200',
-    headingColor: 'text-blue-800',
-    activities: [
-      'Downhill skiing at Järvsöbacken (20 pistes)',
-      'Cross-country skiing',
-      'Snowmobiling',
-      'Ice fishing',
-      'Northern lights viewing',
-      'Christmas markets',
-    ],
-  },
-  {
-    name: 'Spring',
-    period: 'Mar–May',
-    icon: '🌸',
-    color: 'bg-forest-50 border-forest-200',
-    headingColor: 'text-forest-800',
-    activities: [
-      'Bird watching — cranes and migratory birds',
-      'Early hiking as snow melts',
-      'Spring fishing season',
-      'Walpurgis Night celebrations',
-      'Wildflower meadows',
-    ],
-  },
-];
-
-const nearby = [
-  {
-    place: 'Ljusdal',
-    description: 'The nearest town, with supermarkets, restaurants, pharmacy, and a train station connecting to the wider rail network.',
-  },
-  {
-    place: 'Järvsö',
-    description: 'A popular tourist village with a top-rated ski resort, the Järvsö Djurpark bear and wolf park, and a range of adventure activities.',
-  },
-  {
-    place: 'Hudiksvall',
-    description: 'A charming coastal town offering good shopping, varied dining, and a regional airport.',
-  },
-  {
-    place: 'Sundsvall',
-    description: 'A major city with a large airport, shopping centres, and rich cultural offerings — a great day-trip destination.',
-  },
-];
+};
 
 function SpinnerIcon({ className = 'size-5' }: { className?: string }) {
   return (
@@ -122,8 +237,16 @@ function SpinnerIcon({ className = 'size-5' }: { className?: string }) {
   );
 }
 
-function FavoritePlaceCard({ place }: { place: FavoritePlace }) {
-  const config = CATEGORY_CONFIG[place.category] ?? { label: place.category, icon: '📍', color: 'bg-gray-50 border-gray-200 text-gray-800' };
+function FavoritePlaceCard({
+  place,
+  ownersTip,
+  visitWebsite,
+}: {
+  place: FavoritePlace;
+  ownersTip: string;
+  visitWebsite: string;
+}) {
+  const config = CATEGORY_CONFIG[place.category] ?? { label: { en: place.category, sv: place.category }, icon: '📍', color: 'bg-gray-50 border-gray-200 text-gray-800' };
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col gap-3 hover:border-forest-300 transition-colors">
@@ -143,7 +266,7 @@ function FavoritePlaceCard({ place }: { place: FavoritePlace }) {
       )}
       {place.owner_tips && (
         <div className="bg-cream-50 border-l-4 border-wood-400 rounded-r-lg px-3 py-2">
-          <p className="text-sm text-wood-700 italic">Owner&apos;s tip: {place.owner_tips}</p>
+          <p className="text-sm text-wood-700 italic">{ownersTip} {place.owner_tips}</p>
         </div>
       )}
       {place.url && (
@@ -153,7 +276,7 @@ function FavoritePlaceCard({ place }: { place: FavoritePlace }) {
           rel="noopener noreferrer"
           className="text-sm text-forest-600 hover:text-forest-800 hover:underline transition-colors mt-auto"
         >
-          Visit website &rarr;
+          {visitWebsite} &rarr;
         </a>
       )}
     </div>
@@ -163,6 +286,8 @@ function FavoritePlaceCard({ place }: { place: FavoritePlace }) {
 export default function AreaGuidePage() {
   const [favorites, setFavorites] = useState<FavoritePlace[]>([]);
   const [loading, setLoading] = useState(true);
+  const { locale } = useLanguage();
+  const t = pageCopy[locale];
 
   const fetchFavorites = useCallback(async () => {
     setLoading(true);
@@ -200,9 +325,9 @@ export default function AreaGuidePage() {
   return (
     <>
       <PublicImageHero
-        eyebrow="Area Guide"
-        title="Forests, river days and Hälsingland culture"
-        description="A guide to the local places, seasons and small discoveries that make the stay feel rooted in Färila."
+        eyebrow={t.heroEyebrow}
+        title={t.heroTitle}
+        description={t.heroDescription}
       />
       <div className="section-padding">
         <div className="container-wide">
@@ -210,16 +335,12 @@ export default function AreaGuidePage() {
         {/* UNESCO Section */}
         <section className="mb-16">
           <div className="bg-falu-50 border border-falu-200 rounded-2xl p-8">
-            <h2 className="text-2xl font-bold text-falu-800 mb-4">UNESCO World Heritage</h2>
+            <h2 className="text-2xl font-bold text-falu-800 mb-4">{t.unescoTitle}</h2>
             <p className="text-gray-700 mb-4">
-              The decorated farmhouses of Hälsingland are a UNESCO World Heritage Site. These
-              magnificent timber buildings, with their lavishly painted interiors, represent the
-              pinnacle of Scandinavian folk art and are found throughout the region. Several are
-              open to visitors during summer.
+              {t.unescoText}
             </p>
             <p className="text-sm text-falu-700">
-              Notable decorated farmhouse visits in the region: Gästgivars in Stene, Erik-Anders
-              in Asta, and Pallars in Långhed.
+              {t.unescoNote}
             </p>
           </div>
         </section>
@@ -229,24 +350,24 @@ export default function AreaGuidePage() {
           <section className="mb-16">
             <div className="flex items-center justify-center py-16 text-gray-400">
               <SpinnerIcon />
-              <span className="ml-3 text-sm">Loading local recommendations...</span>
+              <span className="ml-3 text-sm">{t.loadingRecommendations}</span>
             </div>
           </section>
         ) : Object.keys(grouped).length > 0 ? (
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-forest-800 mb-8 text-center">Local Recommendations</h2>
+            <h2 className="text-2xl font-bold text-forest-800 mb-8 text-center">{t.localRecommendations}</h2>
             <div className="space-y-10">
               {Object.entries(grouped).map(([cat, places]) => {
-                const config = CATEGORY_CONFIG[cat] ?? { label: cat, icon: '📍', color: '' };
+                const config = CATEGORY_CONFIG[cat] ?? { label: { en: cat, sv: cat }, icon: '📍', color: '' };
                 return (
                   <div key={cat}>
                     <div className="flex items-center gap-2 mb-4">
                       <span className="text-xl" aria-hidden="true">{config.icon}</span>
-                      <h3 className="text-lg font-semibold text-forest-800">{config.label}</h3>
+                      <h3 className="text-lg font-semibold text-forest-800">{config.label[locale]}</h3>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {places.map((place) => (
-                        <FavoritePlaceCard key={place.id} place={place} />
+                        <FavoritePlaceCard key={place.id} place={place} ownersTip={t.ownersTip} visitWebsite={t.visitWebsite} />
                       ))}
                     </div>
                   </div>
@@ -258,9 +379,9 @@ export default function AreaGuidePage() {
 
         {/* Seasons */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold text-forest-800 mb-8 text-center">Activities by Season</h2>
+          <h2 className="text-2xl font-bold text-forest-800 mb-8 text-center">{t.activitiesBySeason}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {seasons.map((season) => (
+            {t.seasons.map((season) => (
               <div key={season.name} className={`rounded-xl border p-6 ${season.color}`}>
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-xl" aria-hidden="true">{season.icon}</span>
@@ -284,9 +405,9 @@ export default function AreaGuidePage() {
 
         {/* Nearby towns */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold text-forest-800 mb-8 text-center">Nearby Towns</h2>
+          <h2 className="text-2xl font-bold text-forest-800 mb-8 text-center">{t.nearbyTowns}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {nearby.map((item) => (
+            {t.nearby.map((item) => (
               <div key={item.place} className="bg-cream-50 rounded-xl border border-cream-200 p-5">
                 <h3 className="font-semibold text-forest-800 mb-2">{item.place}</h3>
                 <p className="text-sm text-gray-600">{item.description}</p>

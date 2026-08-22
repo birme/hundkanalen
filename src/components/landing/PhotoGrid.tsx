@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
 
 type Photo = {
   id: string;
@@ -9,9 +10,30 @@ type Photo = {
   category: string | null;
 };
 
+const copy = {
+  en: {
+    gallery: 'Gallery',
+    glimpse: 'A glimpse of what awaits you',
+    comingSoon: 'Photos coming soon',
+    seeHouse: 'See the house',
+    allPhotos: 'All photos',
+    propertyPhoto: 'Property photo',
+  },
+  sv: {
+    gallery: 'Galleri',
+    glimpse: 'En försmak av vad som väntar',
+    comingSoon: 'Foton kommer snart',
+    seeHouse: 'Se huset',
+    allPhotos: 'Alla foton',
+    propertyPhoto: 'Foto från huset',
+  },
+};
+
 export default function PhotoGrid() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
+  const { locale } = useLanguage();
+  const t = copy[locale];
 
   useEffect(() => {
     fetch('/api/public/photos')
@@ -28,8 +50,8 @@ export default function PhotoGrid() {
       <section className="bg-[#17123b] px-4 py-10 text-white sm:px-6 sm:py-16 lg:px-8">
         <div className="container-wide">
           <div className="mb-6">
-            <h2 className="text-3xl font-bold">Gallery</h2>
-            <p className="text-white/60">A glimpse of what awaits you</p>
+            <h2 className="text-3xl font-bold">{t.gallery}</h2>
+            <p className="text-white/60">{t.glimpse}</p>
           </div>
           <div className="flex min-w-0 gap-4 overflow-hidden">
             {[...Array(6)].map((_, i) => (
@@ -46,8 +68,8 @@ export default function PhotoGrid() {
       <section className="bg-[#17123b] px-4 py-10 text-white sm:px-6 sm:py-16 lg:px-8">
         <div className="container-wide">
           <div className="rounded-[2rem] border border-white/10 bg-white/10 p-8 text-center">
-            <h2 className="mb-2 text-3xl font-bold">Gallery</h2>
-            <p className="text-white/60">Photos coming soon</p>
+            <h2 className="mb-2 text-3xl font-bold">{t.gallery}</h2>
+            <p className="text-white/60">{t.comingSoon}</p>
           </div>
         </div>
       </section>
@@ -59,11 +81,11 @@ export default function PhotoGrid() {
       <div className="container-wide">
         <div className="mb-6 flex items-end justify-between gap-4 md:mb-10">
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/45">Gallery</p>
-            <h2 className="text-3xl font-bold leading-tight md:text-4xl">See the house</h2>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/45">{t.gallery}</p>
+            <h2 className="text-3xl font-bold leading-tight md:text-4xl">{t.seeHouse}</h2>
           </div>
           <Link href="/gallery" className="rounded-full border border-white/15 bg-white/15 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-black/15 backdrop-blur-xl hover:bg-white/20">
-            All photos
+            {t.allPhotos}
           </Link>
         </div>
         <div className="flex min-w-0 snap-x gap-4 overflow-x-auto pb-4 overscroll-x-contain md:grid md:grid-cols-3 md:overflow-visible">
@@ -77,7 +99,7 @@ export default function PhotoGrid() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`/api/photos/${photo.id}`}
-                alt={photo.caption || 'Property photo'}
+                alt={photo.caption || t.propertyPhoto}
                 className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                 loading="lazy"
               />

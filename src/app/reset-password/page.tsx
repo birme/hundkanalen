@@ -3,12 +3,48 @@
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
+
+const copy = {
+  en: {
+    mismatch: 'Passwords do not match',
+    resetError: 'Could not reset password',
+    missingToken: 'This reset link is missing a token. Request a new password reset.',
+    updatedTitle: 'Password Updated',
+    updatedText: 'You can now sign in with your new password.',
+    login: 'Go to Login',
+    newPassword: 'New Password',
+    confirmPassword: 'Confirm Password',
+    updating: 'Updating...',
+    update: 'Update Password',
+    pageTitle: 'Set New Password',
+    pageIntro: 'Choose a new password for your admin account.',
+    loading: 'Loading...',
+  },
+  sv: {
+    mismatch: 'Lösenorden matchar inte',
+    resetError: 'Kunde inte återställa lösenordet',
+    missingToken: 'Återställningslänken saknar token. Begär en ny lösenordsåterställning.',
+    updatedTitle: 'Lösenordet är uppdaterat',
+    updatedText: 'Du kan nu logga in med ditt nya lösenord.',
+    login: 'Gå till login',
+    newPassword: 'Nytt lösenord',
+    confirmPassword: 'Bekräfta lösenord',
+    updating: 'Uppdaterar...',
+    update: 'Uppdatera lösenord',
+    pageTitle: 'Ange nytt lösenord',
+    pageIntro: 'Välj ett nytt lösenord för ditt adminkonto.',
+    loading: 'Laddar...',
+  },
+};
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token') || '';
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [error, setError] = useState('');
+  const { locale } = useLanguage();
+  const t = copy[locale];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -20,7 +56,7 @@ function ResetPasswordForm() {
     const confirmPassword = (form.elements.namedItem('confirmPassword') as HTMLInputElement).value;
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t.mismatch);
       setStatus('error');
       return;
     }
@@ -34,13 +70,13 @@ function ResetPasswordForm() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Could not reset password');
+        throw new Error(body.error || t.resetError);
       }
 
       setStatus('saved');
       form.reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not reset password');
+      setError(err instanceof Error ? err.message : t.resetError);
       setStatus('error');
     }
   }
@@ -48,7 +84,7 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="rounded-2xl border border-falu-200 bg-falu-50 p-6 text-center text-sm text-falu-800">
-        This reset link is missing a token. Request a new password reset.
+        {t.missingToken}
       </div>
     );
   }
@@ -56,10 +92,10 @@ function ResetPasswordForm() {
   if (status === 'saved') {
     return (
       <div className="rounded-2xl border border-forest-200 bg-white p-6 text-center sm:p-8">
-        <h2 className="mb-2 text-xl font-bold text-forest-800">Password Updated</h2>
-        <p className="mb-6 text-sm text-gray-600">You can now sign in with your new password.</p>
+        <h2 className="mb-2 text-xl font-bold text-forest-800">{t.updatedTitle}</h2>
+        <p className="mb-6 text-sm text-gray-600">{t.updatedText}</p>
         <Link href="/login" className="btn-primary w-full">
-          Go to Login
+          {t.login}
         </Link>
       </div>
     );
@@ -69,7 +105,7 @@ function ResetPasswordForm() {
     <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
       <div>
         <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
-          New Password
+          {t.newPassword}
         </label>
         <input
           type="password"
@@ -84,7 +120,7 @@ function ResetPasswordForm() {
 
       <div>
         <label htmlFor="confirmPassword" className="mb-1 block text-sm font-medium text-gray-700">
-          Confirm Password
+          {t.confirmPassword}
         </label>
         <input
           type="password"
@@ -104,20 +140,23 @@ function ResetPasswordForm() {
       )}
 
       <button type="submit" disabled={status === 'saving'} className="btn-primary w-full disabled:opacity-50">
-        {status === 'saving' ? 'Updating...' : 'Update Password'}
+        {status === 'saving' ? t.updating : t.update}
       </button>
     </form>
   );
 }
 
 export default function ResetPasswordPage() {
+  const { locale } = useLanguage();
+  const t = copy[locale];
+
   return (
-    <Suspense fallback={<div className="section-padding text-center">Loading...</div>}>
+    <Suspense fallback={<div className="section-padding text-center">{t.loading}</div>}>
       <div className="section-padding">
         <div className="mx-auto max-w-md">
           <div className="mb-8 text-center">
-            <h1 className="mb-2 text-3xl font-bold text-forest-800">Set New Password</h1>
-            <p className="text-gray-600">Choose a new password for your admin account.</p>
+            <h1 className="mb-2 text-3xl font-bold text-forest-800">{t.pageTitle}</h1>
+            <p className="text-gray-600">{t.pageIntro}</p>
           </div>
           <ResetPasswordForm />
         </div>

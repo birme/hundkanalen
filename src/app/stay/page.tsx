@@ -2,11 +2,49 @@
 
 import { useState, FormEvent } from 'react';
 import PublicImageHero from '@/components/layout/PublicImageHero';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
+
+const copy = {
+  en: {
+    heroEyebrow: 'Guest Portal',
+    heroTitle: 'Access your stay',
+    heroDescription: 'Enter the stay code from your hosts to open check-in details, house information and check-out steps.',
+    invalidCode: 'Invalid access code. Please try again.',
+    genericError: 'Something went wrong. Please try again.',
+    cardTitle: 'Guest Portal',
+    location: 'Hälsingland, Sweden',
+    accessCode: 'Access Code',
+    verifying: 'Verifying...',
+    access: 'Access My Stay',
+    help: 'Enter the access code provided by your host',
+    sentBy: 'Your code was sent by the property owners Jonas & Frédérique.',
+    trouble: 'Having trouble?',
+    contactUs: 'Contact us',
+  },
+  sv: {
+    heroEyebrow: 'Gästportal',
+    heroTitle: 'Öppna din vistelse',
+    heroDescription: 'Ange vistelsekoden från dina värdar för att se incheckning, husinformation och utcheckning.',
+    invalidCode: 'Ogiltig kod. Försök igen.',
+    genericError: 'Något gick fel. Försök igen.',
+    cardTitle: 'Gästportal',
+    location: 'Hälsingland, Sverige',
+    accessCode: 'Vistelsekod',
+    verifying: 'Verifierar...',
+    access: 'Öppna min vistelse',
+    help: 'Ange koden du fått av värden',
+    sentBy: 'Koden skickades av fastighetsägarna Jonas & Frédérique.',
+    trouble: 'Problem?',
+    contactUs: 'Kontakta oss',
+  },
+};
 
 export default function StayAccessPage() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { locale } = useLanguage();
+  const t = copy[locale];
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -23,7 +61,7 @@ export default function StayAccessPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Invalid access code. Please try again.');
+        setError(data.error || t.invalidCode);
         setLoading(false);
         return;
       }
@@ -31,7 +69,7 @@ export default function StayAccessPage() {
       // Redirect to portal on success
       window.location.href = '/stay/portal';
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError(t.genericError);
       setLoading(false);
     }
   }
@@ -39,9 +77,9 @@ export default function StayAccessPage() {
   return (
     <>
       <PublicImageHero
-        eyebrow="Guest Portal"
-        title="Access your stay"
-        description="Enter the stay code from your hosts to open check-in details, house information and check-out steps."
+        eyebrow={t.heroEyebrow}
+        title={t.heroTitle}
+        description={t.heroDescription}
       />
       <div className="flex items-center justify-center px-4 pb-28 pt-10 sm:px-6 sm:pb-16 lg:px-8">
         <div className="w-full max-w-md mx-auto">
@@ -50,8 +88,8 @@ export default function StayAccessPage() {
           {/* Card header */}
           <div className="bg-forest-700 px-8 py-8 text-center">
             <div className="text-4xl mb-3">🏡</div>
-            <h1 className="text-2xl font-bold text-white">Guest Portal</h1>
-            <p className="text-forest-200 text-sm mt-1">Hälsingland, Sweden</p>
+            <h1 className="text-2xl font-bold text-white">{t.cardTitle}</h1>
+            <p className="text-forest-200 text-sm mt-1">{t.location}</p>
           </div>
 
           {/* Card body */}
@@ -62,7 +100,7 @@ export default function StayAccessPage() {
                   htmlFor="code"
                   className="block text-sm font-medium text-forest-800 mb-2"
                 >
-                  Access Code
+                  {t.accessCode}
                 </label>
                 <input
                   id="code"
@@ -99,23 +137,23 @@ export default function StayAccessPage() {
                 disabled={loading || code.trim().length === 0}
                 className="btn-primary w-full py-3 text-base disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Verifying...' : 'Access My Stay'}
+                {loading ? t.verifying : t.access}
               </button>
             </form>
 
             <p className="text-center text-sm text-gray-400 mt-6">
-              Enter the access code provided by your host
+              {t.help}
             </p>
           </div>
         </div>
 
         {/* Help text below card */}
         <p className="text-center text-xs text-gray-400 mt-4">
-          Your code was sent by the property owners Jonas &amp; Frédérique.
+          {t.sentBy}
           <br />
-          Having trouble?{' '}
+          {t.trouble}{' '}
           <a href="/contact" className="text-forest-600 hover:text-forest-800 underline">
-            Contact us
+            {t.contactUs}
           </a>
         </p>
         </div>

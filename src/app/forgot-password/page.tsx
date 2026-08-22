@@ -2,10 +2,38 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
+
+const copy = {
+  en: {
+    title: 'Reset Admin Password',
+    intro: 'Enter your admin email and we will send a reset link.',
+    email: 'Email',
+    sendError: 'Could not send reset email',
+    sent: 'If an admin account exists for that email, a reset link has been sent.',
+    sending: 'Sending...',
+    send: 'Send Reset Link',
+    remembered: 'Remembered it?',
+    back: 'Back to login',
+  },
+  sv: {
+    title: 'Återställ adminlösenord',
+    intro: 'Ange din admin-e-post så skickar vi en återställningslänk.',
+    email: 'E-post',
+    sendError: 'Kunde inte skicka återställningsmejl',
+    sent: 'Om det finns ett adminkonto för den e-posten har en återställningslänk skickats.',
+    sending: 'Skickar...',
+    send: 'Skicka återställningslänk',
+    remembered: 'Kom du ihåg det?',
+    back: 'Tillbaka till login',
+  },
+};
 
 export default function ForgotPasswordPage() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [error, setError] = useState('');
+  const { locale } = useLanguage();
+  const t = copy[locale];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,13 +52,13 @@ export default function ForgotPasswordPage() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Could not send reset email');
+        throw new Error(body.error || t.sendError);
       }
 
       setStatus('sent');
       form.reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not send reset email');
+      setError(err instanceof Error ? err.message : t.sendError);
       setStatus('error');
     }
   }
@@ -39,14 +67,14 @@ export default function ForgotPasswordPage() {
     <div className="section-padding">
       <div className="mx-auto max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold text-forest-800">Reset Admin Password</h1>
-          <p className="text-gray-600">Enter your admin email and we will send a reset link.</p>
+          <h1 className="mb-2 text-3xl font-bold text-forest-800">{t.title}</h1>
+          <p className="text-gray-600">{t.intro}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
           <div>
             <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
-              Email
+              {t.email}
             </label>
             <input
               type="email"
@@ -60,7 +88,7 @@ export default function ForgotPasswordPage() {
 
           {status === 'sent' && (
             <p className="rounded-lg border border-forest-200 bg-forest-50 px-4 py-3 text-sm text-forest-800">
-              If an admin account exists for that email, a reset link has been sent.
+              {t.sent}
             </p>
           )}
 
@@ -71,14 +99,14 @@ export default function ForgotPasswordPage() {
           )}
 
           <button type="submit" disabled={status === 'sending'} className="btn-primary w-full disabled:opacity-50">
-            {status === 'sending' ? 'Sending...' : 'Send Reset Link'}
+            {status === 'sending' ? t.sending : t.send}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-500">
-          Remembered it?{' '}
+          {t.remembered}{' '}
           <Link href="/login" className="text-forest-600 underline hover:text-forest-800">
-            Back to login
+            {t.back}
           </Link>
         </p>
       </div>
