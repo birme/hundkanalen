@@ -109,14 +109,24 @@ function signRequest(options: {
   const signingKey = hmac(dateRegionServiceKey, 'aws4_request');
   const signature = hmacHex(signingKey, stringToSign);
 
-  headers.authorization = [
+  const authorization = [
     'AWS4-HMAC-SHA256',
     `Credential=${config.accessKeyId}/${credentialScope}`,
     `SignedHeaders=${signedHeaders}`,
     `Signature=${signature}`,
   ].join(', ');
 
-  return { url, headers };
+  const requestHeaders: Record<string, string> = {
+    Authorization: authorization,
+    'X-Amz-Content-Sha256': payloadHash,
+    'X-Amz-Date': amzDate,
+  };
+
+  if (options.contentType) {
+    requestHeaders['Content-Type'] = options.contentType;
+  }
+
+  return { url, headers: requestHeaders };
 }
 
 function safeFilename(filename: string) {
@@ -175,7 +185,8 @@ export async function putPhotoObject(key: string, body: Buffer, contentType: str
   });
 
   if (!response.ok) {
-    throw new Error(`Photo object upload failed (${response.status})`);
+    const details = await response.text().catch(() => '');
+    throw new Error(`Photo object upload failed (${response.status})${details ? `: ${details.slice(0, 240)}` : ''}`);
   }
 }
 
@@ -193,7 +204,8 @@ export async function getPhotoObject(storageUrl: string): Promise<StoredObject> 
 
   const response = await fetch(url, { method: 'GET', headers });
   if (!response.ok) {
-    throw new Error(`Photo object download failed (${response.status})`);
+    const details = await response.text().catch(() => '');
+    throw new Error(`Photo object download failed (${response.status})${details ? `: ${details.slice(0, 240)}` : ''}`);
   }
 
   const body = Buffer.from(await response.arrayBuffer());
@@ -215,6 +227,7 @@ export async function deletePhotoObject(storageUrl: string) {
 
   const response = await fetch(url, { method: 'DELETE', headers });
   if (!response.ok && response.status !== 404) {
-    throw new Error(`Photo object delete failed (${response.status})`);
+    const details = await response.text().catch(() => '');
+    throw new Error(`Photo object delete failed (${response.status})${details ? `: ${details.slice(0, 240)}` : ''}`);
   }
 }
