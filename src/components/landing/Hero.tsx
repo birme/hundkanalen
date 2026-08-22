@@ -29,7 +29,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-[100svh] overflow-hidden bg-[#15113a] text-white md:min-h-[42rem]">
+    <section className="relative min-h-[100svh] overflow-hidden bg-[#15113a] text-white lg:min-h-[42rem]">
       <div className="absolute inset-0">
         {heroPhoto ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -41,13 +41,13 @@ export default function Hero() {
         ) : (
           <div className="h-full w-full bg-[linear-gradient(145deg,#243c2d,#7c2d45_58%,#c58b4a)]" />
         )}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.22)_0%,rgba(13,10,36,0.10)_36%,rgba(13,10,36,0.74)_100%)] md:bg-[linear-gradient(180deg,rgba(13,10,36,0.38)_0%,rgba(13,10,36,0.22)_34%,rgba(13,10,36,0.86)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.22)_0%,rgba(13,10,36,0.10)_36%,rgba(13,10,36,0.74)_100%)] lg:bg-[linear-gradient(180deg,rgba(13,10,36,0.38)_0%,rgba(13,10,36,0.22)_34%,rgba(13,10,36,0.86)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_12%,rgba(255,255,255,0.20),transparent_30%),linear-gradient(115deg,rgba(255,255,255,0.08),transparent_38%)]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-24 pt-24 sm:px-6 md:min-h-[42rem] md:pb-14 md:pt-28 lg:px-8">
+      <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-24 pt-24 sm:px-6 lg:min-h-[42rem] lg:px-8 lg:pb-14 lg:pt-28">
         <div className="grid min-w-0 gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
-          <div className="min-w-0 md:rounded-[2rem] md:border md:border-white/15 md:bg-[#0f0b2b]/36 md:p-5 md:shadow-2xl md:shadow-black/25 md:backdrop-blur-xl">
+          <div className="min-w-0 lg:rounded-[2rem] lg:border lg:border-white/15 lg:bg-[#0f0b2b]/36 lg:p-5 lg:shadow-2xl lg:shadow-black/25 lg:backdrop-blur-xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-2 text-xs font-medium text-white/90 shadow-sm backdrop-blur-xl">
               <span className="grid size-6 place-items-center rounded-full bg-white/15">⌂</span>
               Färila, Hälsingland
@@ -56,12 +56,12 @@ export default function Hero() {
             <h1 className="max-w-xl text-[3.15rem] font-bold leading-[0.92] tracking-normal drop-shadow-2xl [text-shadow:0_4px_28px_rgba(0,0,0,0.82)] sm:text-6xl lg:text-7xl">
               Färila anno 1923
             </h1>
-            <p className="mt-4 hidden max-w-lg text-base leading-7 text-white/90 drop-shadow [text-shadow:0_2px_14px_rgba(0,0,0,0.65)] sm:block sm:text-lg">
+            <p className="mt-4 hidden max-w-lg text-base leading-7 text-white/90 drop-shadow [text-shadow:0_2px_14px_rgba(0,0,0,0.65)] lg:block lg:text-lg">
               A warm countryside villa with old-house character, modern comfort and quiet access to forest,
               river and UNESCO heritage.
             </p>
 
-            <div className="mt-5 grid max-w-xs grid-cols-2 gap-3 sm:hidden">
+            <div className="mt-5 grid max-w-xs grid-cols-2 gap-3 lg:hidden">
               <Link href="/contact" className="btn-primary !rounded-full !bg-white !px-5 !text-[#17123b] hover:!bg-cream-100">
                 Inquiry
               </Link>
@@ -70,7 +70,7 @@ export default function Hero() {
               </Link>
             </div>
 
-            <div className="mt-6 hidden gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
+            <div className="mt-6 hidden gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex [&::-webkit-scrollbar]:hidden">
               {['Villa', 'Families', 'Nature', 'Winter', 'Heritage'].map((chip, index) => (
                 <span
                   key={chip}
@@ -86,7 +86,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="hidden min-w-0 sm:flex sm:flex-col sm:items-end sm:justify-end sm:gap-3">
+          <div className="hidden min-w-0 lg:flex lg:flex-col lg:items-end lg:justify-end lg:gap-3">
             <div className="w-full rounded-[2rem] border border-white/20 bg-[#17123b]/50 p-4 shadow-2xl shadow-black/25 backdrop-blur-2xl sm:p-5 lg:max-w-[28rem] xl:max-w-[30rem]">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -133,7 +133,7 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="hidden justify-end sm:flex lg:w-full lg:max-w-[28rem] xl:max-w-[30rem]">
+            <div className="hidden justify-end lg:flex lg:w-full lg:max-w-[28rem] xl:max-w-[30rem]">
               <div className="w-full rounded-[1.5rem] border border-white/15 bg-white/15 px-5 py-3 text-center text-sm shadow-2xl backdrop-blur-2xl sm:max-w-[10rem]">
                 <p className="text-xs text-white/60">Drive from</p>
                 <p className="text-lg font-bold">Stockholm</p>
