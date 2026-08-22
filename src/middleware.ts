@@ -4,9 +4,17 @@ import type { NextRequest } from 'next/server';
 const AUTH_COOKIE = '__Secure-authjs.session-token';
 const AUTH_COOKIE_DEV = 'authjs.session-token';
 const GUEST_COOKIE = 'hundkanalen-guest-session';
+const OLD_PUBLIC_HOST = 'hundkanalen.apps.osaas.io';
+const NEW_PUBLIC_ORIGIN = 'https://fritidshuset.birme.se';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const host = request.headers.get('host')?.toLowerCase();
+
+  if (host === OLD_PUBLIC_HOST) {
+    const redirectUrl = new URL(request.nextUrl.pathname + request.nextUrl.search, NEW_PUBLIC_ORIGIN);
+    return NextResponse.redirect(redirectUrl, 308);
+  }
 
   if (pathname.startsWith('/admin')) {
     const sessionToken =
@@ -31,5 +39,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/stay/portal/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };
