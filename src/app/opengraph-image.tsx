@@ -13,7 +13,7 @@ type PublicPhoto = {
   id: string;
 };
 
-async function getOgPhotoUrl() {
+async function getOgPhotoDataUrl() {
   try {
     const response = await fetch(absoluteUrl('/api/public/photos'), {
       next: { revalidate: 3600 },
@@ -22,14 +22,23 @@ async function getOgPhotoUrl() {
 
     const photos = (await response.json()) as PublicPhoto[];
     const photo = photos[0];
-    return photo?.id ? absoluteUrl(`/api/photos/${photo.id}`) : null;
+    if (!photo?.id) return null;
+
+    const photoResponse = await fetch(absoluteUrl(`/api/photos/${photo.id}`), {
+      next: { revalidate: 3600 },
+    });
+    if (!photoResponse.ok) return null;
+
+    const contentType = photoResponse.headers.get('content-type') || 'image/jpeg';
+    const bytes = Buffer.from(await photoResponse.arrayBuffer());
+    return `data:${contentType};base64,${bytes.toString('base64')}`;
   } catch {
     return null;
   }
 }
 
 export default async function Image() {
-  const photoUrl = await getOgPhotoUrl();
+  const photoUrl = await getOgPhotoDataUrl();
 
   return new ImageResponse(
     (
@@ -46,14 +55,17 @@ export default async function Image() {
         }}
       >
         {photoUrl && (
-          <div
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={photoUrl}
+            width={1200}
+            height={630}
             style={{
               position: 'absolute',
-              inset: 0,
-              backgroundImage: `url(${photoUrl})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
+              left: 0,
+              top: 0,
+              width: 1200,
+              height: 630,
             }}
           />
         )}
