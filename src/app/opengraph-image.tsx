@@ -39,8 +39,6 @@ export default async function Image() {
           height: '100%',
           position: 'relative',
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
           padding: 72,
           color: 'white',
           background:
@@ -58,6 +56,7 @@ export default async function Image() {
               width: '100%',
               height: '100%',
               objectFit: 'cover',
+              objectPosition: 'center',
             }}
           />
         )}
@@ -66,7 +65,7 @@ export default async function Image() {
             position: 'absolute',
             inset: 0,
             background:
-              'linear-gradient(90deg, rgba(8,7,24,0.82) 0%, rgba(8,7,24,0.58) 46%, rgba(8,7,24,0.18) 100%), linear-gradient(180deg, rgba(8,7,24,0.16) 0%, rgba(8,7,24,0.62) 100%)',
+              'linear-gradient(90deg, rgba(8,7,24,0.86) 0%, rgba(8,7,24,0.62) 48%, rgba(8,7,24,0.20) 100%), linear-gradient(180deg, rgba(8,7,24,0.18) 0%, rgba(8,7,24,0.72) 100%)',
           }}
         />
         <div
@@ -76,35 +75,48 @@ export default async function Image() {
             flexDirection: 'column',
             height: '100%',
             justifyContent: 'space-between',
+            width: '100%',
           }}
         >
-          <div style={{ fontSize: 30, opacity: 0.82, letterSpacing: 2, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 28, opacity: 0.86, letterSpacing: 2, textTransform: 'uppercase' }}>
             Countryside Retreat
           </div>
           <div
             style={{
               display: 'flex',
               flexDirection: 'column',
-              width: 760,
-              padding: 36,
-              borderRadius: 32,
-              background: 'rgba(15, 11, 43, 0.54)',
-              border: '1px solid rgba(255,255,255,0.18)',
+              width: 860,
             }}
           >
-            <div style={{ fontSize: 86, fontWeight: 800, lineHeight: 0.95 }}>{siteName}</div>
-            <div style={{ marginTop: 28, fontSize: 34, opacity: 0.88 }}>
+            <div
+              style={{
+                fontSize: 92,
+                fontWeight: 800,
+                lineHeight: 0.95,
+                textShadow: '0 6px 34px rgba(0,0,0,0.72)',
+              }}
+            >
+              {siteName}
+            </div>
+            <div
+              style={{
+                marginTop: 28,
+                fontSize: 34,
+                opacity: 0.92,
+                textShadow: '0 4px 24px rgba(0,0,0,0.70)',
+              }}
+            >
               Färila, Hälsingland, Sweden
             </div>
           </div>
           <div style={{ display: 'flex', gap: 18, fontSize: 26 }}>
-            <span style={{ padding: '16px 24px', borderRadius: 999, background: 'rgba(15,11,43,0.66)', border: '1px solid rgba(255,255,255,0.16)' }}>
+            <span style={{ padding: '16px 24px', borderRadius: 999, background: 'rgba(15,11,43,0.74)', border: '1px solid rgba(255,255,255,0.20)' }}>
               4-5 bedrooms
             </span>
-            <span style={{ padding: '16px 24px', borderRadius: 999, background: 'rgba(15,11,43,0.66)', border: '1px solid rgba(255,255,255,0.16)' }}>
+            <span style={{ padding: '16px 24px', borderRadius: 999, background: 'rgba(15,11,43,0.74)', border: '1px solid rgba(255,255,255,0.20)' }}>
               Families
             </span>
-            <span style={{ padding: '16px 24px', borderRadius: 999, background: 'rgba(15,11,43,0.66)', border: '1px solid rgba(255,255,255,0.16)' }}>
+            <span style={{ padding: '16px 24px', borderRadius: 999, background: 'rgba(15,11,43,0.74)', border: '1px solid rgba(255,255,255,0.20)' }}>
               Nature & heritage
             </span>
           </div>
