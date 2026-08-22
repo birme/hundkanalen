@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { SiteIcon } from '@/components/icons/SiteIcon';
 
 const copy = {
   en: {
@@ -51,10 +52,12 @@ export default function Footer() {
           <div className="grid grid-cols-1 gap-7 md:grid-cols-3 md:gap-10">
             <div>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-sm font-semibold">
-                <span className="grid size-7 place-items-center rounded-full bg-white/15">⌂</span>
+                <span className="grid size-7 place-items-center rounded-full bg-white/15">
+                  <SiteIcon name="home" className="size-4" />
+                </span>
                 Färila anno 1923
               </div>
-              <p className="text-sm leading-6 text-white/60">
+              <p className="text-sm leading-6 text-white/75">
                 {t.description}
               </p>
             </div>
@@ -62,22 +65,22 @@ export default function Footer() {
               <h3 className="mb-3 text-sm font-semibold text-white/90">{t.quickLinks}</h3>
               <ul className="grid grid-cols-2 gap-2 text-sm md:grid-cols-1">
                 <li>
-                  <Link href="/gallery" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
+                  <Link href="/gallery" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white">
                     {t.gallery}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/area-guide" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
+                  <Link href="/area-guide" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white">
                     {t.areaGuide}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
+                  <Link href="/contact" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white">
                     {t.contact}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/stay" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/65 transition-colors hover:bg-white/10 hover:text-white">
+                  <Link href="/stay" className="block rounded-2xl bg-white/5 px-3 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white">
                     {t.guestAccess}
                   </Link>
                 </li>
@@ -88,12 +91,12 @@ export default function Footer() {
               <p className="text-sm text-white/70">
                 Hälsingland, Sweden
               </p>
-              <p className="mt-2 text-sm leading-6 text-white/60">
+              <p className="mt-2 text-sm leading-6 text-white/75">
                 {t.regionText}
               </p>
             </div>
           </div>
-          <div className="mt-7 border-t border-white/10 pt-5 text-center text-xs text-white/40 md:mt-8 md:pt-6">
+          <div className="mt-7 border-t border-white/10 pt-5 text-center text-xs text-white/65 md:mt-8 md:pt-6">
             <p>&copy; {new Date().getFullYear()} Birmé &amp; Claise. {t.rights}</p>
           </div>
         </div>

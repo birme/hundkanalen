@@ -37,9 +37,9 @@ function StatusPage({ title, message }: { title: string; message: string }) {
     <main className="min-h-screen bg-[#17123b] px-4 py-10 text-white sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-xl items-center">
         <div className="w-full rounded-[2rem] border border-white/10 bg-white/10 p-6 text-center shadow-2xl shadow-black/20 backdrop-blur sm:p-8">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/50">Färila, Hälsingland</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/75">Färila, Hälsingland</p>
           <h1 className="text-3xl font-bold">{title}</h1>
-          <p className="mt-4 text-sm leading-6 text-white/65">{message}</p>
+          <p className="mt-4 text-sm leading-6 text-white/80">{message}</p>
         </div>
       </div>
     </main>
@@ -109,9 +109,9 @@ export default async function ContractorAccessPage({ params }: PageProps) {
     <main className="min-h-screen bg-[#17123b] px-4 py-6 text-white sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto max-w-2xl">
         <div className="mb-6">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/45">Färila, Hälsingland</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/75">Färila, Hälsingland</p>
           <h1 className="text-3xl font-bold leading-tight">Tillträde för hantverkare</h1>
-          <p className="mt-2 text-sm text-white/65">
+          <p className="mt-2 text-sm text-white/80">
             Hej {access.contractor_name}. Den här länken gäller från {formatDateTime(access.valid_from)} till {formatDateTime(access.valid_until)}.
           </p>
         </div>
@@ -121,7 +121,7 @@ export default async function ContractorAccessPage({ params }: PageProps) {
             <h2 className="text-sm font-semibold text-white/90">Nyckelboxkod</h2>
           </div>
           <div className="px-5 py-8 text-center">
-            <p className="mb-4 text-sm text-white/60">Använd koden nedan för att öppna nyckelboxen.</p>
+            <p className="mb-4 text-sm text-white/80">Använd koden nedan för att öppna nyckelboxen.</p>
             <div className="inline-block rounded-2xl bg-black/30 px-8 py-5">
               <span className="font-mono text-4xl font-bold tracking-[0.25em] text-white">
                 {access.keybox_code}
@@ -145,7 +145,7 @@ export default async function ContractorAccessPage({ params }: PageProps) {
               />
             </div>
             {keyboxPhoto.caption && (
-              <p className="px-5 py-4 text-sm text-white/65">{keyboxPhoto.caption}</p>
+              <p className="px-5 py-4 text-sm text-white/80">{keyboxPhoto.caption}</p>
             )}
           </section>
         )}
@@ -155,7 +155,7 @@ export default async function ContractorAccessPage({ params }: PageProps) {
           <p className="whitespace-pre-wrap text-sm leading-7 text-white/70">{access.instructions}</p>
         </section>
 
-        <p className="mt-5 text-center text-xs text-white/40">
+        <p className="mt-5 text-center text-xs text-white/65">
           Dela inte länken vidare. Koden visas endast under länkens giltighetstid.
         </p>
       </div>

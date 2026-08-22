@@ -19,12 +19,24 @@
     @apply overflow-x-hidden bg-cream-50 text-gray-800 antialiased;
   }
 
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#df8510];
+  }
+
   * {
     box-sizing: border-box;
   }
 }
 
 @layer components {
+  .skip-link {
+    @apply fixed left-4 top-4 z-[100] -translate-y-24 rounded-full bg-white px-4 py-3 text-sm font-semibold text-[#17123b] shadow-xl transition-transform focus:translate-y-0;
+  }
+
   .btn-primary {
     @apply inline-flex items-center justify-center rounded-lg bg-forest-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-forest-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-600;
   }

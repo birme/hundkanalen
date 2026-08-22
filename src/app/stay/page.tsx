@@ -92,7 +92,7 @@ export default function StayAccessPage() {
               <SiteIcon name="home" className="size-6" />
             </span>
             <h1 className="text-2xl font-bold text-white">{t.cardTitle}</h1>
-            <p className="text-forest-200 text-sm mt-1">{t.location}</p>
+            <p className="text-forest-100 text-sm mt-1">{t.location}</p>
           </div>
 
           {/* Card body */}
@@ -144,14 +144,14 @@ export default function StayAccessPage() {
               </button>
             </form>
 
-            <p className="text-center text-sm text-gray-400 mt-6">
+            <p className="text-center text-sm text-gray-600 mt-6">
               {t.help}
             </p>
           </div>
         </div>
 
         {/* Help text below card */}
-        <p className="text-center text-xs text-gray-400 mt-4">
+        <p className="text-center text-xs text-gray-600 mt-4">
           {t.sentBy}
           <br />
           {t.trouble}{' '}

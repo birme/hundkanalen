@@ -6,6 +6,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import LanguageToggle from '@/components/i18n/LanguageToggle';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { SiteIcon } from '@/components/icons/SiteIcon';
 
 const copy = {
   en: {
@@ -21,6 +22,7 @@ const copy = {
     adminLogin: 'Admin Login',
     home: 'Home',
     photos: 'Photos',
+    homeAria: 'Go to homepage',
   },
   sv: {
     gallery: 'Galleri',
@@ -35,6 +37,7 @@ const copy = {
     adminLogin: 'Adminlogin',
     home: 'Hem',
     photos: 'Foton',
+    homeAria: 'Gå till startsidan',
   },
 };
 
@@ -57,23 +60,25 @@ export default function Header() {
     <>
       <header className="fixed left-0 right-0 top-0 z-50 border-white/10 bg-white/10 px-3 py-3 backdrop-blur-xl md:sticky md:border-b md:border-forest-100 md:bg-white/90 md:px-0 md:py-0">
       <nav className="container-wide flex items-center justify-between md:px-6 md:py-4 lg:px-8">
-        <Link href="/" className="flex min-w-0 items-center gap-2 rounded-full bg-white/15 px-2 py-1.5 text-white backdrop-blur-md md:bg-transparent md:p-0 md:text-forest-800">
-          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20 text-base md:size-auto md:bg-transparent md:text-2xl">⌂</span>
+        <Link href="/" aria-label={t.homeAria} className="flex min-w-0 items-center gap-2 rounded-full bg-white/15 px-2 py-1.5 text-white backdrop-blur-md md:bg-transparent md:p-0 md:text-forest-800">
+          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20 md:bg-transparent">
+            <SiteIcon name="home" className="size-4 md:size-5" />
+          </span>
           <span className="truncate text-sm font-semibold md:text-lg">Färila anno 1923</span>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-6">
-          <Link href="/gallery" className="text-sm text-gray-600 hover:text-forest-700 transition-colors">
+          <Link href="/gallery" aria-current={pathname === '/gallery' ? 'page' : undefined} className="text-sm text-gray-700 hover:text-forest-700 transition-colors">
             {t.gallery}
           </Link>
-          <Link href="/area-guide" className="text-sm text-gray-600 hover:text-forest-700 transition-colors">
+          <Link href="/area-guide" aria-current={pathname === '/area-guide' ? 'page' : undefined} className="text-sm text-gray-700 hover:text-forest-700 transition-colors">
             {t.areaGuide}
           </Link>
-          <Link href="/contact" className="text-sm text-gray-600 hover:text-forest-700 transition-colors">
+          <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} className="text-sm text-gray-700 hover:text-forest-700 transition-colors">
             {t.contact}
           </Link>
-          <Link href="/stay" className="text-sm text-forest-700 font-medium hover:text-forest-800 transition-colors">
+          <Link href="/stay" aria-current={pathname === '/stay' ? 'page' : undefined} className="text-sm text-forest-700 font-medium hover:text-forest-800 transition-colors">
             {t.stay}
           </Link>
           <LanguageToggle />
@@ -84,13 +89,13 @@ export default function Header() {
               </Link>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
               >
                 {t.signOut}
               </button>
             </div>
           ) : (
-            <Link href="/login" className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+            <Link href="/login" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">
               {t.admin}
             </Link>
           )}
@@ -108,6 +113,8 @@ export default function Header() {
             className="rounded-full bg-white/15 p-2 text-white backdrop-blur-md"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={t.toggleMenu}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileMenuOpen ? (
@@ -122,7 +129,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="mx-3 mt-1 rounded-3xl border border-white/15 bg-[#17123b]/95 px-4 py-4 text-white shadow-2xl md:hidden">
+        <div id="mobile-menu" className="mx-3 mt-1 rounded-3xl border border-white/15 bg-[#17123b]/95 px-4 py-4 text-white shadow-2xl md:hidden">
           <div className="grid gap-2">
           <div className="px-3 py-2">
             <LanguageToggle compact />
@@ -146,13 +153,13 @@ export default function Header() {
               </Link>
               <button
                 onClick={() => { setMobileMenuOpen(false); signOut({ callbackUrl: '/' }); }}
-                className="rounded-2xl px-3 py-3 text-left text-white/65"
+                className="rounded-2xl px-3 py-3 text-left text-white/80"
               >
                 {t.signOut}
               </button>
             </>
           ) : (
-            <Link href="/login" className="rounded-2xl px-3 py-3 text-sm text-white/60" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/login" className="rounded-2xl px-3 py-3 text-sm text-white/80" onClick={() => setMobileMenuOpen(false)}>
               {t.adminLogin}
             </Link>
           )}
@@ -173,7 +180,8 @@ export default function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-full px-2 py-2 ${active ? 'bg-white/15 text-white' : 'text-white/70'}`}
+              aria-current={active ? 'page' : undefined}
+              className={`rounded-full px-2 py-2 ${active ? 'bg-white/15 text-white' : 'text-white/80'}`}
             >
               {item.label}
             </Link>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
 import { localizedNullableText } from '@/lib/localized-content';
+import { SiteIcon } from '@/components/icons/SiteIcon';
 
 type Photo = {
   id: string;
@@ -81,7 +82,7 @@ export default function Hero() {
         ) : (
           <div className="h-full w-full bg-[linear-gradient(145deg,#243c2d,#7c2d45_58%,#c58b4a)]" />
         )}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.22)_0%,rgba(13,10,36,0.10)_36%,rgba(13,10,36,0.74)_100%)] lg:bg-[linear-gradient(180deg,rgba(13,10,36,0.38)_0%,rgba(13,10,36,0.22)_34%,rgba(13,10,36,0.86)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.38)_0%,rgba(13,10,36,0.26)_36%,rgba(13,10,36,0.82)_100%)] lg:bg-[linear-gradient(180deg,rgba(13,10,36,0.42)_0%,rgba(13,10,36,0.30)_34%,rgba(13,10,36,0.88)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_12%,rgba(255,255,255,0.20),transparent_30%),linear-gradient(115deg,rgba(255,255,255,0.08),transparent_38%)]" />
       </div>
 
@@ -89,14 +90,16 @@ export default function Hero() {
         <div className="grid min-w-0 gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
           <div className="min-w-0 lg:rounded-[2rem] lg:border lg:border-white/15 lg:bg-[#0f0b2b]/36 lg:p-5 lg:shadow-2xl lg:shadow-black/25 lg:backdrop-blur-xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-2 text-xs font-medium text-white/90 shadow-sm backdrop-blur-xl">
-              <span className="grid size-6 place-items-center rounded-full bg-white/15">⌂</span>
+              <span className="grid size-6 place-items-center rounded-full bg-white/15">
+                <SiteIcon name="home" className="size-3.5" />
+              </span>
               {t.location}
             </div>
 
             <h1 className="max-w-xl text-[3.15rem] font-bold leading-[0.92] tracking-normal drop-shadow-2xl [text-shadow:0_4px_28px_rgba(0,0,0,0.82)] sm:text-6xl lg:text-7xl">
               Färila anno 1923
             </h1>
-            <p className="mt-4 hidden max-w-lg text-base leading-7 text-white/90 drop-shadow [text-shadow:0_2px_14px_rgba(0,0,0,0.65)] lg:block lg:text-lg">
+            <p className="mt-4 hidden max-w-lg text-base leading-7 text-white drop-shadow [text-shadow:0_2px_14px_rgba(0,0,0,0.78)] lg:block lg:text-lg">
               {t.description}
             </p>
 
@@ -129,9 +132,9 @@ export default function Hero() {
             <div className="w-full rounded-[2rem] border border-white/20 bg-[#17123b]/50 p-4 shadow-2xl shadow-black/25 backdrop-blur-2xl sm:p-5 lg:max-w-[28rem] xl:max-w-[30rem]">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-white/55">{t.retreat}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-white/75">{t.retreat}</p>
                   <h2 className="mt-1 text-2xl font-bold leading-tight">Färila anno 1923</h2>
-                  <p className="mt-1 text-sm text-white/65">{t.location}</p>
+                  <p className="mt-1 text-sm text-white/80">{t.location}</p>
                 </div>
                 <Link
                   href="/stay"
@@ -149,7 +152,7 @@ export default function Hero() {
                     className="min-w-0 rounded-3xl border border-white/10 bg-white/10 px-3 py-3 text-center backdrop-blur-xl sm:px-4"
                   >
                     <p className="text-xl font-bold sm:text-2xl">{fact.value}</p>
-                    <p className="text-[11px] text-white/60 sm:text-xs">{fact.label}</p>
+                    <p className="text-[11px] text-white/75 sm:text-xs">{fact.label}</p>
                   </div>
                 ))}
               </div>
@@ -174,7 +177,7 @@ export default function Hero() {
 
             <div className="hidden justify-end lg:flex lg:w-full lg:max-w-[28rem] xl:max-w-[30rem]">
               <div className="w-full rounded-[1.5rem] border border-white/15 bg-white/15 px-5 py-3 text-center text-sm shadow-2xl backdrop-blur-2xl sm:max-w-[10rem]">
-                <p className="text-xs text-white/60">{t.driveFrom}</p>
+                <p className="text-xs text-white/75">{t.driveFrom}</p>
                 <p className="text-lg font-bold">Stockholm</p>
                 <p className="text-white/75">3.5-4 h</p>
               </div>

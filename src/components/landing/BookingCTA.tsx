@@ -28,7 +28,7 @@ export default function BookingCTA() {
     <section className="bg-[#17123b] px-4 pb-28 pt-10 text-white sm:px-6 sm:pb-16 sm:pt-16 lg:px-8">
       <div className="container-narrow rounded-[2rem] border border-white/10 bg-white/10 p-6 text-center shadow-2xl shadow-black/20 backdrop-blur md:p-10">
         <h2 className="mb-4 text-3xl font-bold leading-tight md:text-4xl">{t.title}</h2>
-        <p className="mx-auto mb-8 max-w-xl text-sm leading-7 text-white/65 md:text-lg">
+        <p className="mx-auto mb-8 max-w-xl text-sm leading-7 text-white/80 md:text-lg">
           {t.text}
         </p>
         <div className="flex flex-col justify-center gap-3 sm:flex-row">

@@ -76,11 +76,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <a href="#main-content" lang="en" className="skip-link">
+          Skip to main content
+        </a>
         <SessionWrapper>
           <LanguageProvider>
             <div className="flex flex-col min-h-screen">
               <Header />
-              <main className="flex-1">{children}</main>
+              <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
               <Footer />
             </div>
           </LanguageProvider>

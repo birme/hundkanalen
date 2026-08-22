@@ -50,13 +50,13 @@ export default function PublicImageHero({
         ) : (
           <div className="h-full w-full bg-[linear-gradient(145deg,#17123b,#4f28ad_55%,#df8510)]" />
         )}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.22)_0%,rgba(13,10,36,0.12)_34%,rgba(13,10,36,0.78)_100%)] md:bg-[linear-gradient(180deg,rgba(13,10,36,0.36)_0%,rgba(13,10,36,0.24)_34%,rgba(13,10,36,0.88)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.38)_0%,rgba(13,10,36,0.28)_34%,rgba(13,10,36,0.84)_100%)] md:bg-[linear-gradient(180deg,rgba(13,10,36,0.42)_0%,rgba(13,10,36,0.30)_34%,rgba(13,10,36,0.90)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_12%,rgba(255,255,255,0.18),transparent_30%),linear-gradient(115deg,rgba(255,255,255,0.08),transparent_38%)]" />
       </div>
 
       <div className={`container-wide relative flex min-h-[calc(100svh-12rem)] items-end md:min-h-[22rem] ${align === 'center' ? 'justify-center text-center' : ''}`}>
         <div className={`rounded-[2rem] border border-white/15 bg-[#0f0b2b]/42 p-5 shadow-2xl shadow-black/25 backdrop-blur-xl sm:border-white/20 sm:bg-[#0f0b2b]/56 sm:p-7 sm:backdrop-blur-2xl ${align === 'center' ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
-          <p className="mb-3 inline-flex rounded-full border border-white/15 bg-white/15 px-3 py-2 text-xs font-semibold uppercase text-white/85 backdrop-blur-xl">
+          <p className="mb-3 inline-flex rounded-full border border-white/15 bg-[#0f0b2b]/55 px-3 py-2 text-xs font-semibold uppercase text-white backdrop-blur-xl">
             {eyebrow}
           </p>
           <h1 className="text-4xl font-bold leading-none drop-shadow-2xl [text-shadow:0_3px_24px_rgba(0,0,0,0.65)] sm:text-5xl md:text-6xl">{title}</h1>

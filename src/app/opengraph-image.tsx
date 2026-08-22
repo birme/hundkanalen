@@ -74,7 +74,7 @@ export default async function Image() {
             position: 'absolute',
             inset: 0,
             background:
-              'linear-gradient(90deg, rgba(8,7,24,0.82) 0%, rgba(8,7,24,0.54) 42%, rgba(8,7,24,0.12) 72%, rgba(8,7,24,0.02) 100%), linear-gradient(180deg, rgba(8,7,24,0.08) 0%, rgba(8,7,24,0.18) 48%, rgba(8,7,24,0.58) 100%)',
+              'linear-gradient(90deg, rgba(8,7,24,0.92) 0%, rgba(8,7,24,0.72) 44%, rgba(8,7,24,0.28) 74%, rgba(8,7,24,0.06) 100%), linear-gradient(180deg, rgba(8,7,24,0.22) 0%, rgba(8,7,24,0.24) 48%, rgba(8,7,24,0.66) 100%)',
           }}
         />
         <div
@@ -94,13 +94,13 @@ export default async function Image() {
               justifyContent: 'space-between',
               width: '100%',
               fontSize: 24,
-              opacity: 0.9,
+              opacity: 1,
             }}
           >
             <div style={{ letterSpacing: 3, textTransform: 'uppercase' }}>
               Countryside Retreat
             </div>
-            <div style={{ opacity: 0.76 }}>fritidshuset.birme.se</div>
+            <div style={{ opacity: 0.9 }}>fritidshuset.birme.se</div>
           </div>
           <div
             style={{
@@ -114,7 +114,7 @@ export default async function Image() {
                 fontSize: 76,
                 fontWeight: 800,
                 lineHeight: 1,
-                textShadow: '0 6px 34px rgba(0,0,0,0.72)',
+                textShadow: '0 7px 38px rgba(0,0,0,0.86)',
               }}
             >
               {siteName}
@@ -123,8 +123,8 @@ export default async function Image() {
               style={{
                 marginTop: 22,
                 fontSize: 31,
-                opacity: 0.92,
-                textShadow: '0 4px 24px rgba(0,0,0,0.70)',
+                opacity: 1,
+                textShadow: '0 5px 28px rgba(0,0,0,0.82)',
               }}
             >
               Färila, Hälsingland, Sweden
@@ -137,8 +137,8 @@ export default async function Image() {
               gap: 8,
               fontSize: 27,
               lineHeight: 1.32,
-              opacity: 0.94,
-              textShadow: '0 4px 24px rgba(0,0,0,0.68)',
+              opacity: 1,
+              textShadow: '0 5px 28px rgba(0,0,0,0.82)',
               width: 660,
             }}
           >

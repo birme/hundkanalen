@@ -53,7 +53,7 @@ export default function PhotoGrid() {
         <div className="container-wide">
           <div className="mb-6">
             <h2 className="text-3xl font-bold">{t.gallery}</h2>
-            <p className="text-white/60">{t.glimpse}</p>
+            <p className="text-white/75">{t.glimpse}</p>
           </div>
           <div className="flex min-w-0 gap-4 overflow-hidden">
             {[...Array(6)].map((_, i) => (
@@ -71,7 +71,7 @@ export default function PhotoGrid() {
         <div className="container-wide">
           <div className="rounded-[2rem] border border-white/10 bg-white/10 p-8 text-center">
             <h2 className="mb-2 text-3xl font-bold">{t.gallery}</h2>
-            <p className="text-white/60">{t.comingSoon}</p>
+            <p className="text-white/75">{t.comingSoon}</p>
           </div>
         </div>
       </section>
@@ -83,7 +83,7 @@ export default function PhotoGrid() {
       <div className="container-wide">
         <div className="mb-6 flex items-end justify-between gap-4 md:mb-10">
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/45">{t.gallery}</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/70">{t.gallery}</p>
             <h2 className="text-3xl font-bold leading-tight md:text-4xl">{t.seeHouse}</h2>
           </div>
           <Link href="/gallery" className="rounded-full border border-white/15 bg-white/15 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-black/15 backdrop-blur-xl hover:bg-white/20">
