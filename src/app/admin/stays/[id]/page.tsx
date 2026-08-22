@@ -113,7 +113,7 @@ export default async function StayDetailPage({
             <p className="text-xs text-gray-500 mt-2">
               Share this code with the guest so they can access their booking details
               and check-in information at{' '}
-              <strong>hundkanalen.apps.osaas.io/stay</strong>.
+              <strong>fritidshuset.birme.se/stay</strong>.
             </p>
           </div>
 

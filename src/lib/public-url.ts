@@ -1,4 +1,4 @@
-const DEFAULT_PUBLIC_APP_URL = 'https://hundkanalen.apps.osaas.io';
+const DEFAULT_PUBLIC_APP_URL = 'https://fritidshuset.birme.se';
 
 function cleanUrl(value: string | undefined) {
   return value?.trim().replace(/\/$/, '') || null;
@@ -19,7 +19,7 @@ export function getPublicAppUrl(request?: Request) {
   if (configuredUrl) return configuredUrl;
 
   const host = request?.headers.get('host') || '';
-  if (host === 'hundkanalen.apps.osaas.io' && !isRunnerUrl(host)) {
+  if ((host === 'fritidshuset.birme.se' || host === 'hundkanalen.apps.osaas.io') && !isRunnerUrl(host)) {
     const proto = request?.headers.get('x-forwarded-proto') || 'https';
     return `${proto}://${host}`;
   }
