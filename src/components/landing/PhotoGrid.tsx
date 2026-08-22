@@ -33,7 +33,7 @@ export default function PhotoGrid() {
           </div>
           <div className="flex min-w-0 gap-4 overflow-hidden">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-64 min-w-[72%] animate-pulse rounded-[2rem] bg-white/10 md:min-w-0 md:flex-1" />
+              <div key={i} className="h-[72svh] min-w-full animate-pulse rounded-[2rem] bg-white/10 md:h-64 md:min-w-0 md:flex-1" />
             ))}
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function PhotoGrid() {
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/45">Gallery</p>
             <h2 className="text-3xl font-bold leading-tight md:text-4xl">See the house</h2>
           </div>
-          <Link href="/gallery" className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur hover:bg-white/15">
+          <Link href="/gallery" className="rounded-full border border-white/15 bg-white/15 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-black/15 backdrop-blur-xl hover:bg-white/20">
             All photos
           </Link>
         </div>
@@ -70,8 +70,8 @@ export default function PhotoGrid() {
           {photos.map((photo, i) => (
             <div
               key={photo.id}
-              className={`relative min-w-[78%] snap-start overflow-hidden rounded-[2rem] bg-white/10 shadow-xl shadow-black/20 ${
-                i === 0 ? 'h-[28rem] md:col-span-2 md:row-span-2 md:h-auto md:aspect-square' : 'h-80 md:h-auto md:aspect-[4/3]'
+              className={`relative min-w-full snap-start overflow-hidden rounded-[2rem] bg-white/10 shadow-xl shadow-black/20 ${
+                i === 0 ? 'h-[78svh] md:col-span-2 md:row-span-2 md:h-auto md:aspect-square' : 'h-[72svh] md:h-auto md:aspect-[4/3]'
               }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -81,8 +81,9 @@ export default function PhotoGrid() {
                 className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                 loading="lazy"
               />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent p-4">
-                <p className="text-sm font-medium">{photo.caption || 'Färila anno 1923'}</p>
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.04),rgba(13,10,36,0.72))]" />
+              <div className="absolute inset-x-3 bottom-3 rounded-[1.5rem] border border-white/15 bg-[#17123b]/55 p-4 shadow-2xl shadow-black/20 backdrop-blur-2xl">
+                <p className="text-sm font-semibold">{photo.caption || 'Färila anno 1923'}</p>
               </div>
             </div>
           ))}

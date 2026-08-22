@@ -34,7 +34,7 @@ export default function PublicImageHero({
   }, []);
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#17123b] px-4 pb-8 pt-24 text-white sm:px-6 sm:pb-12 sm:pt-28 lg:px-8">
+    <section className="relative isolate min-h-[100svh] overflow-hidden bg-[#17123b] px-4 pb-24 pt-24 text-white sm:px-6 md:min-h-[34rem] md:pb-14 md:pt-28 lg:px-8">
       <div className="absolute inset-0">
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -46,16 +46,17 @@ export default function PublicImageHero({
         ) : (
           <div className="h-full w-full bg-[linear-gradient(145deg,#17123b,#4f28ad_55%,#df8510)]" />
         )}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.38),rgba(13,10,36,0.86))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,10,36,0.24)_0%,rgba(13,10,36,0.18)_34%,rgba(13,10,36,0.86)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_12%,rgba(255,255,255,0.22),transparent_30%),linear-gradient(115deg,rgba(255,255,255,0.10),transparent_38%)]" />
       </div>
 
-      <div className={`container-wide relative min-h-[21rem] content-end ${align === 'center' ? 'text-center' : ''}`}>
-        <div className={`max-w-3xl ${align === 'center' ? 'mx-auto' : ''}`}>
-          <p className="mb-3 inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold uppercase text-white/80 backdrop-blur">
+      <div className={`container-wide relative flex min-h-[calc(100svh-12rem)] items-end md:min-h-[22rem] ${align === 'center' ? 'justify-center text-center' : ''}`}>
+        <div className={`rounded-[2rem] border border-white/20 bg-[#17123b]/50 p-5 shadow-2xl shadow-black/25 backdrop-blur-2xl sm:p-7 ${align === 'center' ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
+          <p className="mb-3 inline-flex rounded-full border border-white/15 bg-white/15 px-3 py-2 text-xs font-semibold uppercase text-white/85 backdrop-blur-xl">
             {eyebrow}
           </p>
-          <h1 className="text-4xl font-bold leading-none sm:text-5xl md:text-6xl">{title}</h1>
-          <p className="mt-4 text-base leading-7 text-white/75 sm:text-lg">{description}</p>
+          <h1 className="text-4xl font-bold leading-none drop-shadow-2xl sm:text-5xl md:text-6xl">{title}</h1>
+          <p className="mt-4 text-base leading-7 text-white/80 sm:text-lg">{description}</p>
         </div>
       </div>
     </section>
