@@ -43,15 +43,15 @@ export default async function Image() {
   return new ImageResponse(
     (
       <div
-        style={{
-          width: '100%',
-          height: '100%',
-          position: 'relative',
-          display: 'flex',
-          padding: 72,
-          color: 'white',
-          background:
-            'linear-gradient(135deg, rgba(23,18,59,1) 0%, rgba(55,35,76,1) 44%, rgba(126,43,39,1) 100%)',
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'relative',
+            display: 'flex',
+            padding: 76,
+            color: 'white',
+            background:
+              'linear-gradient(135deg, rgba(23,18,59,1) 0%, rgba(55,35,76,1) 44%, rgba(126,43,39,1) 100%)',
         }}
       >
         {photoUrl && (
@@ -74,7 +74,7 @@ export default async function Image() {
             position: 'absolute',
             inset: 0,
             background:
-              'linear-gradient(90deg, rgba(8,7,24,0.86) 0%, rgba(8,7,24,0.62) 48%, rgba(8,7,24,0.20) 100%), linear-gradient(180deg, rgba(8,7,24,0.18) 0%, rgba(8,7,24,0.72) 100%)',
+              'linear-gradient(90deg, rgba(8,7,24,0.82) 0%, rgba(8,7,24,0.54) 42%, rgba(8,7,24,0.12) 72%, rgba(8,7,24,0.02) 100%), linear-gradient(180deg, rgba(8,7,24,0.08) 0%, rgba(8,7,24,0.18) 48%, rgba(8,7,24,0.58) 100%)',
           }}
         />
         <div
@@ -87,21 +87,33 @@ export default async function Image() {
             width: '100%',
           }}
         >
-          <div style={{ fontSize: 28, opacity: 0.86, letterSpacing: 2, textTransform: 'uppercase' }}>
-            Countryside Retreat
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              fontSize: 24,
+              opacity: 0.9,
+            }}
+          >
+            <div style={{ letterSpacing: 3, textTransform: 'uppercase' }}>
+              Countryside Retreat
+            </div>
+            <div style={{ opacity: 0.76 }}>fritidshuset.birme.se</div>
           </div>
           <div
             style={{
               display: 'flex',
               flexDirection: 'column',
-              width: 860,
+              width: 760,
             }}
           >
             <div
               style={{
-                fontSize: 92,
+                fontSize: 76,
                 fontWeight: 800,
-                lineHeight: 0.95,
+                lineHeight: 1,
                 textShadow: '0 6px 34px rgba(0,0,0,0.72)',
               }}
             >
@@ -109,8 +121,8 @@ export default async function Image() {
             </div>
             <div
               style={{
-                marginTop: 28,
-                fontSize: 34,
+                marginTop: 22,
+                fontSize: 31,
                 opacity: 0.92,
                 textShadow: '0 4px 24px rgba(0,0,0,0.70)',
               }}
@@ -118,16 +130,20 @@ export default async function Image() {
               Färila, Hälsingland, Sweden
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 18, fontSize: 26 }}>
-            <span style={{ padding: '16px 24px', borderRadius: 999, background: 'rgba(15,11,43,0.74)', border: '1px solid rgba(255,255,255,0.20)' }}>
-              4-5 bedrooms
-            </span>
-            <span style={{ padding: '16px 24px', borderRadius: 999, background: 'rgba(15,11,43,0.74)', border: '1px solid rgba(255,255,255,0.20)' }}>
-              Families
-            </span>
-            <span style={{ padding: '16px 24px', borderRadius: 999, background: 'rgba(15,11,43,0.74)', border: '1px solid rgba(255,255,255,0.20)' }}>
-              Nature & heritage
-            </span>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              fontSize: 27,
+              lineHeight: 1.32,
+              opacity: 0.94,
+              textShadow: '0 4px 24px rgba(0,0,0,0.68)',
+              width: 660,
+            }}
+          >
+            <div>4-5 bedrooms for family stays</div>
+            <div>Forest, skiing, fishing and Hälsingland heritage nearby</div>
           </div>
         </div>
       </div>
