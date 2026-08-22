@@ -57,6 +57,11 @@ async function umamiFetch<T>(path: string, token: string) {
 
   if (!response.ok) {
     const text = await response.text().catch(() => '');
+    if (response.status === 401 || response.status === 403) {
+      throw new Error(
+        `Umami request failed: the configured user/token is authenticated but cannot access website ${getWebsiteId()}. Grant the user access to that website in Umami, or use an API token/user that owns it.`,
+      );
+    }
     throw new Error(`Umami request failed: ${response.status} ${text.slice(0, 200)}`);
   }
 
