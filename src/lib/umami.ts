@@ -23,6 +23,16 @@ function cleanUrl(value: string | undefined) {
   return value?.trim().replace(/\/$/, '') || '';
 }
 
+function decodeBase64(value: string | undefined) {
+  const trimmed = value?.trim();
+  if (!trimmed) return '';
+  try {
+    return Buffer.from(trimmed, 'base64').toString('utf8');
+  } catch {
+    return '';
+  }
+}
+
 function metricValue(value: UmamiStatsValue | undefined) {
   if (typeof value === 'number') return value;
   return value?.value ?? 0;
@@ -58,7 +68,7 @@ async function getToken() {
   if (apiToken) return apiToken;
 
   const username = process.env.UMAMI_USERNAME?.trim();
-  const password = process.env.UMAMI_PASSWORD?.trim();
+  const password = decodeBase64(process.env.UMAMI_PASSWORD_B64) || process.env.UMAMI_PASSWORD?.trim();
   if (!username || !password) return null;
 
   const baseUrl = cleanUrl(process.env.UMAMI_BASE_URL) || DEFAULT_UMAMI_BASE_URL;
@@ -71,6 +81,11 @@ async function getToken() {
 
   if (!response.ok) {
     const text = await response.text().catch(() => '');
+    if (response.status === 401) {
+      throw new Error(
+        'Umami login failed: credentials were loaded but Umami rejected them. Check UMAMI_USERNAME/UMAMI_PASSWORD, use UMAMI_PASSWORD_B64 for passwords with shell-special characters, or set UMAMI_API_TOKEN.',
+      );
+    }
     throw new Error(`Umami login failed: ${response.status} ${text.slice(0, 200)}`);
   }
 

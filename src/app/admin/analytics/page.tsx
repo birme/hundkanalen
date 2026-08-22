@@ -169,8 +169,9 @@ export default function AdminAnalyticsPage() {
           <h2 className="font-semibold text-amber-900">Umami API är inte konfigurerat ännu</h2>
           <p className="mt-2 text-sm leading-6 text-amber-800">
             Lägg till <code>UMAMI_API_TOKEN</code> i appens parameter store, eller använd
-            <code> UMAMI_USERNAME</code> och <code>UMAMI_PASSWORD</code>. Sidan är redan kopplad
-            till website-id <code>{data.websiteId}</code>.
+            <code> UMAMI_USERNAME</code> och <code>UMAMI_PASSWORD</code>. Om lösenordet innehåller
+            specialtecken, använd <code>UMAMI_PASSWORD_B64</code>. Sidan är redan kopplad till
+            website-id <code>{data.websiteId}</code>.
           </p>
         </div>
       )}
