@@ -74,7 +74,19 @@ export default async function Image() {
             position: 'absolute',
             inset: 0,
             background:
-              'linear-gradient(90deg, rgba(8,7,24,0.92) 0%, rgba(8,7,24,0.72) 44%, rgba(8,7,24,0.28) 74%, rgba(8,7,24,0.06) 100%), linear-gradient(180deg, rgba(8,7,24,0.22) 0%, rgba(8,7,24,0.24) 48%, rgba(8,7,24,0.66) 100%)',
+              'linear-gradient(90deg, rgba(8,7,24,0.72) 0%, rgba(8,7,24,0.46) 44%, rgba(8,7,24,0.18) 74%, rgba(8,7,24,0.04) 100%), linear-gradient(180deg, rgba(8,7,24,0.18) 0%, rgba(8,7,24,0.18) 48%, rgba(8,7,24,0.62) 100%)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            left: 48,
+            top: 54,
+            width: 760,
+            height: 526,
+            borderRadius: 42,
+            background: 'rgba(8,7,24,0.58)',
+            border: '1px solid rgba(255,255,255,0.18)',
           }}
         />
         <div
